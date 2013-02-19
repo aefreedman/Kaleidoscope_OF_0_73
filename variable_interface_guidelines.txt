@@ -1,0 +1,42 @@
+///This is how you make a long string with line breaks.
+///   In order to keep the string organized, every time you use a line break 
+///   make a new line in the code with: theString += theStuffYouWanttoAdd
+///   (see below)
+///The \n string makes a new line
+///To convert a variable to a string use the ofToString(variable); function
+
+	string info = ""; 																//Makes empty string
+	info += "Press [c] for circles\n";												//Adds text to string, breaks line
+	info += "\n";																	//line break
+	info += "Total Bodies: "+ofToString(box2d.getBodyCount())+"\n";					//More text & line break
+	info += "Total Joints: "+ofToString(box2d.getJointCount())+"\n\n";				//etc.
+	info += "FPS: "+ofToString(ofGetFrameRate(), 1)+"\n";
+	info += "radiusMod (+1/-2): " + ofToString(radiusMod) + "\n";
+	info += "Gravity (+3/-4): " + ofToString(theGravity) + "m/s\n";
+	info += "Initial Radius (+5/-6): " + ofToString(defRadius) + "\n";
+    info += "Density (+7/-8): " + ofToString(density) + "\n";
+    info += "Bounce (+9/-0): " + ofToString(bounce) + "\n";
+    info += "Linear Damping (+Q/-W): " + ofToString(lDamping) + "\n";
+    info += "Angular Damping (+E/-R): " + ofToString(aDamping) + "\n";
+    info += "\n";
+    info += "Score: " + ofToString(score)+ " (" + ofToString(highScore) + ") " +"\n";
+    info += "Multiplier: " + ofToString(scoreMult) + "x\n";
+	ofSetHexColor(0x444342);														//ofSetColor(); also works
+	ofDrawBitmapString(info, 30, 30);												//Draws string
+	
+	
+///If we want the string to change every time we highlight a new object, simply wrap the string
+///in an if statement. e.g.
+
+if (target == spaceman) {
+	string info = "";
+	info += "Line1\n";
+	info += "Line1\n";
+	}
+if (target == notSpaceman) {
+	string info = "";
+	info += "Line1\n";
+	info += "Line1\n";
+	}
+ofSetColor(255);
+ofDrawBitmapString(info, 30, 30);
