@@ -12,11 +12,11 @@ void testApp::setup() {
 	box2d.setGravity(0, 0);
 	box2d.setFPS(30.0);
 
-    //float r = 100;
-    //ofxBox2dCircle sun;
-    //sun.setPhysics(0.0, 0.53, 0.9);
-    //sun.setup(box2d.getWorld(), ofGetWidth()/4, ofGetHeight()/2, r);
-	//circles.push_back(sun);
+    float r = 100;
+    ofxBox2dCircle sun;
+    sun.setPhysics(0.0, 0.53, 0.9);
+    sun.setup(box2d.getWorld(), ofGetWidth()/4, ofGetHeight()/2, r, 0, 0);
+	circles.push_back(sun);
 
 	for (int i=0; i<2; i++) {
 
@@ -108,7 +108,7 @@ void testApp::keyPressed(int key) {
 		float r = ofRandom(14, 20);		// a random radius 4px - 20px
 		ofxBox2dCircle circle;
 		circle.setPhysics(3.0, 0.53, 0.9);
-		circle.setup(box2d.getWorld(), mouseX, mouseY, r);
+		circle.setup(box2d.getWorld(), mouseX, mouseY, r, 0, 0);
 		circles.push_back(circle);
 	}
 
