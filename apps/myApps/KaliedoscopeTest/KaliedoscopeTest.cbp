@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxBox2d\libs\Box2D\;addons\ofxBox2d\libs\Box2D\Collision\Shapes\;addons\ofxBox2d\libs\Box2D\Collision\;addons\ofxBox2d\libs\Box2D\Common\;addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\;addons\ofxBox2d\libs\Box2D\Dynamics\Joints\;addons\ofxBox2d\libs\Box2D\Dynamics\;addons\ofxBox2d\libs\triangle\;addons\ofxBox2d\src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin\$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -67,25 +67,20 @@
 			<Add directory="..\..\..\libs\poco\include" />
 			<Add directory="..\..\..\libs\tess2\include" />
 			<Add directory="..\..\..\libs\cairo\include\cairo" />
-			<Add directory="../../../addons/ofxVectorGraphics/libs" />
-			<Add directory="../../../addons/ofxVectorGraphics/src" />
-			<Add directory="../../../addons\ofxVectorGraphics\libs" />
-			<Add directory="../../../addons\ofxVectorGraphics\src" />
-			<Add directory="../../../addons/ofxXmlSettings/libs" />
-			<Add directory="../../../addons/ofxXmlSettings/src" />
-			<Add directory="../../../addons\ofxXmlSettings\libs" />
-			<Add directory="../../../addons\ofxXmlSettings\src" />
-			<Add directory="../../../addons/ofxBox2d/libs" />
-			<Add directory="../../../addons/ofxBox2d/src" />
-			<Add directory="../../../addons\ofxBox2d\libs\Box2D" />
-			<Add directory="../../../addons\ofxBox2d\libs\Box2D\Collision" />
-			<Add directory="../../../addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
-			<Add directory="../../../addons\ofxBox2d\libs\Box2D\Common" />
-			<Add directory="../../../addons\ofxBox2d\libs\Box2D\Dynamics" />
-			<Add directory="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-			<Add directory="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-			<Add directory="../../../addons\ofxBox2d\libs\triangle" />
-			<Add directory="../../../addons\ofxBox2d\src" />
+			<Add directory="..\..\..\addons\ofxVectorGraphics\libs" />
+			<Add directory="..\..\..\addons\ofxVectorGraphics\src" />
+			<Add directory="..\..\..\addons\ofxXmlSettings\libs" />
+			<Add directory="..\..\..\addons\ofxXmlSettings\src" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs" />
+			<Add directory="..\..\..\addons\ofxBox2d\src" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\Box2D" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\Box2D\Collision" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\Box2D\Common" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+			<Add directory="..\..\..\addons\ofxBox2d\libs\triangle" />
 		</Compiler>
 		<Linker>
 			<Add library="..\..\..\libs\FreeImage\lib\win_cb\FreeImage.lib" />
@@ -124,10 +119,328 @@
 			<Add library="Comdlg32" />
 		</Linker>
 		<ExtraCommands>
-			<Add after="xcopy /e /i /y &quot;$(PROJECT_DIR)..\..\..\export\win_cb\*.dll&quot;  &quot;$(PROJECT_DIR)bin&quot;" />
-			<Add after="cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;" />
+			<Add after='xcopy /e /i /y &quot;$(PROJECT_DIR)..\..\..\export\win_cb\*.dll&quot;  &quot;$(PROJECT_DIR)bin&quot;' />
+			<Add after='cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;' />
 			<Mode after="always" />
 		</ExtraCommands>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Box2D.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2CircleShape.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2CircleShape.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2PolygonShape.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2PolygonShape.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2Shape.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2BroadPhase.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2BroadPhase.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2CollideCircle.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2CollidePolygon.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2Collision.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2Collision.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2Distance.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2Distance.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2DynamicTree.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2DynamicTree.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2TimeOfImpact.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Collision\b2TimeOfImpact.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2BlockAllocator.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2BlockAllocator.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2Math.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2Math.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2Settings.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2Settings.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2StackAllocator.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Common\b2StackAllocator.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2CircleContact.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2CircleContact.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2Contact.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2Contact.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2ContactSolver.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2ContactSolver.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonContact.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonContact.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2TOISolver.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2TOISolver.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2DistanceJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2DistanceJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2FrictionJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2FrictionJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2GearJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2GearJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2Joint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2Joint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2LineJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2LineJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2MouseJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2MouseJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PrismaticJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PulleyJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PulleyJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2RevoluteJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2WeldJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2WeldJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2Body.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2Body.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2ContactManager.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2ContactManager.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2Fixture.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2Fixture.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2Island.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2Island.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2TimeStep.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2World.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2World.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2WorldCallbacks.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\Box2D\Dynamics\b2WorldCallbacks.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\triangle\assert.hpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\triangle\del_impl.cpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\triangle\del_interface.hpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\triangle\dpoint.hpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\triangle\triangle.h">
+			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\libs\triangle\triangle_impl.hpp">
+			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2d.cpp">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2d.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dBaseShape.cpp">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dBaseShape.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dCircle.cpp">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dCircle.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dContactListener.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dJoint.cpp">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dJoint.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dPolygon.cpp">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dPolygon.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dPolygonUtils.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dRect.cpp">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dRect.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dRender.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxBox2d\src\ofxBox2dUtils.h">
+			<Option virtualFolder="addons\ofxBox2d\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxVectorGraphics\libs\CreEPS.cpp">
+			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxVectorGraphics\libs\CreEPS.hpp">
+			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxVectorGraphics\libs\CreEPS_Types.hpp">
+			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxVectorGraphics\src\ofxVectorGraphics.cpp">
+			<Option virtualFolder="addons\ofxVectorGraphics\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxVectorGraphics\src\ofxVectorGraphics.h">
+			<Option virtualFolder="addons\ofxVectorGraphics\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxml.cpp">
+			<Option virtualFolder="addons\ofxXmlSettings\libs" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h">
+			<Option virtualFolder="addons\ofxXmlSettings\libs" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp">
+			<Option virtualFolder="addons\ofxXmlSettings\libs" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp">
+			<Option virtualFolder="addons\ofxXmlSettings\libs" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp">
+			<Option virtualFolder="addons\ofxXmlSettings\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h">
+			<Option virtualFolder="addons\ofxXmlSettings\src" />
+		</Unit>
+		<Unit filename="src\GravityWell.cpp">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\GravityWell.h">
+			<Option virtualFolder="src\" />
+		</Unit>
 		<Unit filename="src\main.cpp">
 			<Option virtualFolder="src" />
 		</Unit>
@@ -142,317 +455,5 @@
 			<debugger />
 			<envvars />
 		</Extensions>
-		<Unit filename="../../../addons\ofxVectorGraphics\src\ofxVectorGraphics.cpp">
-			<Option virtualFolder="addons\ofxVectorGraphics\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxVectorGraphics\src\ofxVectorGraphics.h">
-			<Option virtualFolder="addons\ofxVectorGraphics\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxVectorGraphics\libs\CreEPS.cpp">
-			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
-		</Unit>
-		<Unit filename="../../../addons\ofxVectorGraphics\libs\CreEPS.hpp">
-			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
-		</Unit>
-		<Unit filename="../../../addons\ofxVectorGraphics\libs\CreEPS_Types.hpp">
-			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
-		</Unit>
-		<Unit filename="../../../addons\ofxXmlSettings\src\ofxXmlSettings.cpp">
-			<Option virtualFolder="addons\ofxXmlSettings\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxXmlSettings\src\ofxXmlSettings.h">
-			<Option virtualFolder="addons\ofxXmlSettings\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxXmlSettings\libs\tinyxml.cpp">
-			<Option virtualFolder="addons\ofxXmlSettings\libs" />
-		</Unit>
-		<Unit filename="../../../addons\ofxXmlSettings\libs\tinyxml.h">
-			<Option virtualFolder="addons\ofxXmlSettings\libs" />
-		</Unit>
-		<Unit filename="../../../addons\ofxXmlSettings\libs\tinyxmlerror.cpp">
-			<Option virtualFolder="addons\ofxXmlSettings\libs" />
-		</Unit>
-		<Unit filename="../../../addons\ofxXmlSettings\libs\tinyxmlparser.cpp">
-			<Option virtualFolder="addons\ofxXmlSettings\libs" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2d.cpp">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2d.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dBaseShape.cpp">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dBaseShape.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dCircle.cpp">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dCircle.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dContactListener.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dPolygon.cpp">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dPolygon.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dPolygonUtils.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dRect.cpp">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dRect.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dRender.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\src\ofxBox2dUtils.h">
-			<Option virtualFolder="addons\ofxBox2d\src" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Box2D.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2BroadPhase.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2BroadPhase.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2CollideCircle.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2CollidePolygon.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2Collision.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2Collision.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2Distance.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2Distance.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2DynamicTree.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2DynamicTree.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2TimeOfImpact.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\b2TimeOfImpact.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2CircleShape.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2CircleShape.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2PolygonShape.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2PolygonShape.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Collision\Shapes\b2Shape.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Collision\Shapes" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2BlockAllocator.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2BlockAllocator.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2Math.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2Math.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2Settings.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2Settings.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2StackAllocator.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Common\b2StackAllocator.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Common" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2Body.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2Body.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2ContactManager.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2ContactManager.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2Fixture.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2Fixture.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2Island.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2Island.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2TimeStep.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2World.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2World.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2WorldCallbacks.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\b2WorldCallbacks.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2CircleContact.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2CircleContact.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2Contact.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2Contact.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2ContactSolver.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2ContactSolver.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonContact.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2PolygonContact.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2TOISolver.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Contacts\b2TOISolver.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Contacts" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2DistanceJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2DistanceJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2FrictionJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2FrictionJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2GearJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2GearJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2Joint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2Joint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2LineJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2LineJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2MouseJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2MouseJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PrismaticJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PulleyJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2PulleyJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2RevoluteJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2WeldJoint.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\Box2D\Dynamics\Joints\b2WeldJoint.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\Box2D\Dynamics\Joints" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\triangle\assert.hpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\triangle\del_impl.cpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\triangle\del_interface.hpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\triangle\dpoint.hpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\triangle\triangle.h">
-			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
-		</Unit>
-		<Unit filename="../../../addons\ofxBox2d\libs\triangle\triangle_impl.hpp">
-			<Option virtualFolder="addons\ofxBox2d\libs\triangle" />
-		</Unit>
 	</Project>
 </CodeBlocks_project_file>
