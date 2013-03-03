@@ -3,6 +3,11 @@
 #include "ofMain.h"
 #include "ofBall.h"
 #include "ofGravitySource.h"
+#include "Thing.h"
+#include "Follower.h"
+#include "BaseShape.h"
+#include "BetterCircle.h"
+#include "BetterRect.h"
 
 class testApp : public ofBaseApp {
 
@@ -25,10 +30,22 @@ public:
     float pointB;
     float radius;
 
-private:
 
-    ofGravitySource *myGravitySource;
+
+private:
+    Thing *myThing;
+    BetterCircle *myBCirc;
+    BetterRect *myBRect;
+    ofGravitySource** myGravitySource;
+    int nGSource;
     ofBall** myBall;
     int nBalls;
+    bool useAccel;
+    bool useVel;
+    int sampleRate;
+    float move;
+    float jump;
+    //ofVec2f** gpos;
+    //ofVec2f ppos;
 
 };

@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;C:\Users\Aaron\PROJECTS\of_v0073_win_cb_release\apps\myApps\Kaleidoscope\src\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;C:\Users\Aaron\PROJECTS\of_v0073_win_cb_release\apps\myApps\Kaleidoscope\src\;src\Base\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin\$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -126,13 +126,51 @@
 		<Unit filename="..\..\..\addons\ofxVectorGraphics\src\ofxVectorGraphics.h">
 			<Option virtualFolder="addons\ofxVectorGraphics\src" />
 		</Unit>
+		<Unit filename="src\BaseShape.cpp">
+			<Option virtualFolder="src\Base\" />
+		</Unit>
+		<Unit filename="src\BaseShape.h">
+			<Option virtualFolder="src\Base\" />
+		</Unit>
+		<Unit filename="src\BetterCircle.cpp">
+			<Option virtualFolder="src\Base\" />
+		</Unit>
+		<Unit filename="src\BetterCircle.h">
+			<Option virtualFolder="src\Base\" />
+		</Unit>
+		<Unit filename="src\BetterRect.cpp">
+			<Option virtualFolder="src\Base\" />
+		</Unit>
+		<Unit filename="src\BetterRect.h">
+			<Option virtualFolder="src\Base\" />
+		</Unit>
+		<Unit filename="src\Thing.cpp">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\Thing.h">
+			<Option virtualFolder="src\" />
+		</Unit>
 		<Unit filename="src\main.cpp">
 			<Option virtualFolder="src" />
 		</Unit>
-		<Unit filename="src\ofBall.cpp" />
-		<Unit filename="src\ofBall.h" />
-		<Unit filename="src\ofGravitySource.cpp" />
-		<Unit filename="src\ofGravitySource.h" />
+		<Unit filename="src\ofBall.cpp">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\ofBall.h">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\ofGravitySource.cpp">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\ofGravitySource.h">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\spring.cpp">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\spring.h">
+			<Option virtualFolder="src\" />
+		</Unit>
 		<Unit filename="src\testApp.cpp">
 			<Option virtualFolder="src" />
 		</Unit>

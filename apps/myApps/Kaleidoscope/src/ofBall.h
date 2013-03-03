@@ -9,15 +9,18 @@ public:
     void update();
     void draw();
     ofVec2f pos;
-    float velY;
-    float velX;
+    ofVec2f vel;
     int dim;
-    ofBall(ofVec2f pos, int dim);
+    int id;
+    ofBall(ofVec2f pos, int dim, int id);
     ~ofBall();
 
 protected:
 
 private:
+
+    //ofBall friends[5];
+
 };
 
 #endif // OFBALL_H

@@ -10,8 +10,10 @@ public:
     void draw();
     ofVec2f pos;
     float gPwr;
-    float dim;
-    ofGravitySource(ofVec2f pos, float dim, float gPwr);
+    int gRange;
+    float r;
+    ofVec2f vel;
+    ofGravitySource(ofVec2f _pos, ofVec2f _vel, float _r, float _gPwr, int _gRange);
     ~ofGravitySource();
 
 protected:

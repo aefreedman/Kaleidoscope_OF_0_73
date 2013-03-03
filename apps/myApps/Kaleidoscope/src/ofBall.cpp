@@ -1,10 +1,11 @@
 #include "ofBall.h"
 
-ofBall::ofBall(ofVec2f _pos, int _dim) {
+ofBall::ofBall(ofVec2f _pos, int _dim, int _id) {
     pos = _pos;
     dim = _dim;
-    velX = ofRandom(-1, 1);
-    velY = ofRandom(-1, 1);
+    float s = 1.2;
+    vel = ofVec2f(ofRandom(-s, s), ofRandom(-s, s));
+    id = _id;
 }
 
 ofBall::~ofBall() {
@@ -14,24 +15,40 @@ ofBall::~ofBall() {
 void ofBall::update() {
     if(pos.x < 0) {
         pos.x = 0;
-        velX *= -1;
+        vel.x *= -1;
     } else if(pos.x > ofGetWidth()) {
         pos.x = ofGetWidth();
-        velX *= -1;
+        vel.x *= -1;
     }
     if(pos.y < 0) {
         pos.y = 0;
-        velY *= -1;
+        vel.y *= -1;
     } else if(pos.y > ofGetHeight()) {
         pos.y = ofGetHeight();
-        velY *= -1;
+        vel.y *= -1;
 
     }
-    pos.x += velX;
-    pos.y += velY;
+    pos += vel;
 }
 
 void ofBall::draw(){
-    ofSetColor(120, 120, 120);
-    ofCircle(pos.x, pos.y, dim);
+
+    ofPushMatrix();
+    ofNoFill();
+    ofSetColor(200, 120, 120);
+    ofCircle(pos, dim);
+    ofPopMatrix();
+
+    ofPushMatrix();
+    ofFill();
+    ofSetColor(0, 0, 0, 205);
+    ofCircle(pos, dim);
+    ofPopMatrix();
+
+    ofPushMatrix();
+    ofNoFill();
+    ofSetColor(200, 120, 120);
+    ofCircle(pos, 5);
+    ofPopMatrix();
+
 }
