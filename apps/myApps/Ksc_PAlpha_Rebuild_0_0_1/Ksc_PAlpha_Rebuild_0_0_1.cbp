@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;src\GRAVITATOR\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin\$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -146,23 +146,33 @@
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h">
 			<Option virtualFolder="addons\ofxXmlSettings\src" />
 		</Unit>
-		<Unit filename="src\BlackHole.cpp" />
-		<Unit filename="src\BlackHole.h" />
+		<Unit filename="src\Astronaut.cpp" />
+		<Unit filename="src\Astronaut.h" />
+		<Unit filename="src\BlackHole.cpp">
+			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
+		<Unit filename="src\BlackHole.h">
+			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
 		<Unit filename="src\Gravitator.cpp">
-			<Option virtualFolder="src\" />
+			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
 		<Unit filename="src\Gravitator.h">
-			<Option virtualFolder="src\" />
+			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
 		<Unit filename="src\Gravitator.h.save" />
 		<Unit filename="src\Planet.cpp">
-			<Option virtualFolder="src\" />
+			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
 		<Unit filename="src\Planet.h">
-			<Option virtualFolder="src\" />
+			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
-		<Unit filename="src\Sun.cpp" />
-		<Unit filename="src\Sun.h" />
+		<Unit filename="src\Sun.cpp">
+			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
+		<Unit filename="src\Sun.h">
+			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
 		<Unit filename="src\main.cpp">
 			<Option virtualFolder="src" />
 		</Unit>

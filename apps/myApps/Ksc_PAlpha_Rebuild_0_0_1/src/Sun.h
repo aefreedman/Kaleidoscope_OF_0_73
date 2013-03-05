@@ -8,7 +8,7 @@ class Sun : public Gravitator
 {
     public:
         Sun();
-        Sun(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable);
+        Sun(ofVec2f _pos, int _r, int _m, int _gR);
         //Sun(ofVec2f _pos, int _r, int _gR);
         void setup();
         void draw();

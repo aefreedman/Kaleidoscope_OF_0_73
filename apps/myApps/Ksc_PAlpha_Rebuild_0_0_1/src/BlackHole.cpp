@@ -1,11 +1,11 @@
 #include "BlackHole.h"
 
-BlackHole::BlackHole()
+BlackHole::BlackHole() : Gravitator()
 {
     //ctor
 }
 
-BlackHole::BlackHole(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable) : Gravitator(_pos, _r, _m, _gR, _habitable) {}
+BlackHole::BlackHole(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) {}
 
 
 BlackHole::~BlackHole()
@@ -13,7 +13,9 @@ BlackHole::~BlackHole()
     //dtor
 }
 
-void BlackHole::setup() {}
+void BlackHole::setup() {
+    habitable = false;
+}
 void BlackHole::update() {}
 void BlackHole::draw() {
     ofSetCircleResolution(64);

@@ -5,12 +5,11 @@ Gravitator::Gravitator()
     //ctor
 }
 
-Gravitator::Gravitator(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable) {
+Gravitator::Gravitator(ofVec2f _pos, int _r, int _m, int _gR) {
     pos = _pos;
     r = _r;
     m = _m;
     gR = _gR;
-    habitable = _habitable;
 
 }
 

@@ -9,13 +9,18 @@ void testApp::setup(){
     nGravitators = 1;
     gravitator = new Gravitator*[nGravitators];
     for (int i = 0; i < nGravitators; i++) {
-        gravitator[i] = new Planet(ofVec2f(100, 100), 54, 5, 170, true);
+        gravitator[i] = new Planet(ofVec2f(100, 100), 54, 5, 170);
     }
+
+    planet2 = Sun(ofVec2f(200, 200), 60, 80, 80);
+    a = Astronaut(ofVec2f(600,600));
+    a.setup();
 
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
+    a.update();
 
 }
 
@@ -24,6 +29,9 @@ void testApp::draw(){
     for (int i = 0; i < nGravitators; i++) {
         gravitator[i]->draw();
     }
+
+    planet2.draw();
+    a.draw();
 
 }
 

@@ -5,6 +5,7 @@
 #include "Planet.h"
 #include "Sun.h"
 #include "BlackHole.h"
+#include "Astronaut.h"
 
 class testApp : public ofBaseApp{
 
@@ -27,5 +28,7 @@ class testApp : public ofBaseApp{
     private:
         Gravitator** gravitator;
         int nGravitators;
+        Sun planet2;
+        Astronaut a;
 
 };

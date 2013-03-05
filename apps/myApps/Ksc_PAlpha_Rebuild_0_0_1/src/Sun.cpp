@@ -1,11 +1,11 @@
 #include "Sun.h"
 
-Sun::Sun()
+Sun::Sun() : Gravitator()
 {
     //ctor
 }
 
-Sun::Sun(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable) : Gravitator(_pos, _r, _m, _gR, _habitable) {
+Sun::Sun(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) {
 
 }
 

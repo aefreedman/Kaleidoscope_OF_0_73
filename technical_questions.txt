@@ -1,0 +1,8 @@
+Should the level editor and the main game be seperate programs?
+If the level editor is part of the main program, how will we:
+	Handle the main menu?
+	How does the game begin?
+	Handle level files?
+	Handle saves?
+If the level editor is not part of the main program how will we:
+	Import/export level files to the main program?

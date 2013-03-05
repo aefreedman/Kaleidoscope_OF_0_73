@@ -8,7 +8,7 @@ class Planet : public Gravitator
 {
     public:
         Planet();
-        Planet(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable);
+        Planet(ofVec2f _pos, int _r, int _m, int _gR);
         Planet(ofVec2f _pos, int _r, int _gR);
         virtual ~Planet();
         void setup();

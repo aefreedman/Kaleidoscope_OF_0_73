@@ -8,7 +8,7 @@ class BlackHole : public Gravitator
 {
     public:
         BlackHole();
-        BlackHole(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable);
+        BlackHole(ofVec2f _pos, int _r, int _m, int _gR);
         void setup();
         void update();
         void draw();

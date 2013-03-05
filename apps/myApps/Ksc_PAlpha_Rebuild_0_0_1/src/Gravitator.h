@@ -7,7 +7,7 @@
 class Gravitator {
 public:
     Gravitator();
-    Gravitator(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable);
+    Gravitator(ofVec2f _pos, int _r, int _m, int _gR);
     Gravitator(ofVec2f _pos, int _r, int _gR);
     virtual void setup();
     virtual void update();
