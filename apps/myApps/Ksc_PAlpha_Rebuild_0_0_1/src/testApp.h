@@ -1,6 +1,10 @@
 #pragma once
-#include "ofxBox2d.h"
+
 #include "ofMain.h"
+#include "Gravitator.h"
+#include "Planet.h"
+#include "Sun.h"
+#include "BlackHole.h"
 
 class testApp : public ofBaseApp{
 
@@ -8,6 +12,7 @@ class testApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+		void addGravitator(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable);
 
 		void keyPressed  (int key);
 		void keyReleased(int key);
@@ -19,11 +24,8 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		ofxBox2d box2d;
-		vector <ofxBox2dCircle> circles;
-		vector <ofxBox2dRect> boxes;
-
-		int startCircles;
-		int defRadius;
+    private:
+        Gravitator** gravitator;
+        int nGravitators;
 
 };
