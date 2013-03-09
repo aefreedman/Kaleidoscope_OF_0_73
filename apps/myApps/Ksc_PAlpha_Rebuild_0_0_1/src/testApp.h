@@ -6,6 +6,12 @@
 #include "Sun.h"
 #include "BlackHole.h"
 #include "Astronaut.h"
+#include "Player.h"
+#include "StrandedAstronaut.h"
+#include "Decor.h"
+#include "Shell.h"
+#include "Solid.h"
+#include "Nonsolid.h"
 
 class testApp : public ofBaseApp{
 
@@ -29,6 +35,6 @@ class testApp : public ofBaseApp{
         Gravitator** gravitator;
         int nGravitators;
         Sun planet2;
-        Astronaut a;
+        Player a;
 
 };

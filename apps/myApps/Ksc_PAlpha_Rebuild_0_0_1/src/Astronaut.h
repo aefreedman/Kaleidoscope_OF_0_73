@@ -11,14 +11,14 @@ class Astronaut
         Astronaut(ofVec2f _pos);
         virtual ~Astronaut();
 
-        void setup();
-        void update();
-        void draw();
-        void move();
+        virtual void update();
+        virtual void draw();
+        virtual void move();
 
         ofVec2f pos;
         ofVec2f v;
         ofVec2f a;
+
         int w;
         int h;
     protected:

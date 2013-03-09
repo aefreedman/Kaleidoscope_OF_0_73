@@ -13,8 +13,8 @@ void testApp::setup(){
     }
 
     planet2 = Sun(ofVec2f(200, 200), 60, 80, 80);
-    a = Astronaut(ofVec2f(600,600));
-    a.setup();
+    a = Player(ofVec2f(300,300));
+
 
 }
 

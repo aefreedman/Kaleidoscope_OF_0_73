@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;src\GRAVITATOR\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;src\GRAVITATOR\;src\ASTRONAUT\;src\DECOR\;src\SHELL\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin\$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -146,13 +146,23 @@
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h">
 			<Option virtualFolder="addons\ofxXmlSettings\src" />
 		</Unit>
-		<Unit filename="src\Astronaut.cpp" />
-		<Unit filename="src\Astronaut.h" />
+		<Unit filename="src\Astronaut.cpp">
+			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
+		<Unit filename="src\Astronaut.h">
+			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
 		<Unit filename="src\BlackHole.cpp">
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
 		<Unit filename="src\BlackHole.h">
 			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
+		<Unit filename="src\Decor.cpp">
+			<Option virtualFolder="src\DECOR\" />
+		</Unit>
+		<Unit filename="src\Decor.h">
+			<Option virtualFolder="src\DECOR\" />
 		</Unit>
 		<Unit filename="src\Gravitator.cpp">
 			<Option virtualFolder="src\GRAVITATOR\" />
@@ -161,11 +171,33 @@
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
 		<Unit filename="src\Gravitator.h.save" />
+		<Unit filename="src\Nonsolid.cpp" />
+		<Unit filename="src\Nonsolid.h" />
 		<Unit filename="src\Planet.cpp">
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
 		<Unit filename="src\Planet.h">
 			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
+		<Unit filename="src\Player.cpp">
+			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
+		<Unit filename="src\Player.h">
+			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
+		<Unit filename="src\Shell.cpp">
+			<Option virtualFolder="src\SHELL\" />
+		</Unit>
+		<Unit filename="src\Shell.h">
+			<Option virtualFolder="src\SHELL\" />
+		</Unit>
+		<Unit filename="src\Solid.cpp" />
+		<Unit filename="src\Solid.h" />
+		<Unit filename="src\StrandedAstronaut.cpp">
+			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
+		<Unit filename="src\StrandedAstronaut.h">
+			<Option virtualFolder="src\ASTRONAUT\" />
 		</Unit>
 		<Unit filename="src\Sun.cpp">
 			<Option virtualFolder="src\GRAVITATOR\" />
