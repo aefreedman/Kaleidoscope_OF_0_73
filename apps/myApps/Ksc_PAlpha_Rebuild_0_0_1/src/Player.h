@@ -19,7 +19,7 @@ public:
     void move();
     void jump();
     void chargeJump();
-    void orientToPlanet(ofVec2f cOfGrav, float gR, float r, bool habitable);
+    void orientToPlanet(ofVec2f cOfGrav, float gR, float r, bool habitable, int mBody);
     void getNearPlanet();
     void gravity();
     void keyPressed(ofKeyEventArgs& args);
@@ -28,20 +28,20 @@ public:
     ofVec2f pos;
     ofVec2f v;
     ofVec2f a;
-    ofVec2f dir;
     ofVec2f p;
     ofVec2f jp;
-    ofVec2f leftDir;
-    ofVec2f rightDir;
+    ofVec2f left;
+    ofVec2f right;
     ofVec2f jumpDir;
+    ofVec2f f;
 
+    float m;
     float rotation;
     float damp;
     float jumpStrength;
 
     int w;
     int h;
-    int closestPlanet;
     int maxJump;
 
     std::vector<Gravitator *> *gravitator;
@@ -49,9 +49,7 @@ protected:
 private:
     bool nearPlanet;
     bool touchingPlanet;
-    ofVec2f momentum;
-    ofVec2f f;
-
+    float G;
 };
 
 #endif // PLAYER_H
