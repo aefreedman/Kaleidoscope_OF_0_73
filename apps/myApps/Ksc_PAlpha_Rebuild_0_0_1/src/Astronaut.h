@@ -3,7 +3,6 @@
 
 #include "ofMain.h"
 
-
 class Astronaut
 {
     public:

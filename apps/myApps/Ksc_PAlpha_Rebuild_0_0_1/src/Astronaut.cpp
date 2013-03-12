@@ -14,4 +14,5 @@ Astronaut::~Astronaut() {
 
 void Astronaut::update() {}
 void Astronaut::draw() {}
-void Astronaut::move() {}
+void Astronaut::move() {
+}

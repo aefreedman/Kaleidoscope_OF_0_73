@@ -2,16 +2,19 @@
 
 Planet::Planet() : Gravitator() {}
 
-Planet::Planet(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) {}
+Planet::Planet(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) {
+    habitable = true;
+}
 
-Planet::Planet(ofVec2f _pos, int _r, int _gR) : Gravitator(_pos, _r, _gR) {}
+Planet::Planet(ofVec2f _pos, int _r, int _gR) : Gravitator(_pos, _r, _gR) {
+    habitable = true;}
 
 Planet::~Planet() {
     //dtor
 }
 
 void Planet::setup() {
-    habitable = true;
+
 }
 
 void Planet::update() {

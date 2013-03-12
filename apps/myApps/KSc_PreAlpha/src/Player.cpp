@@ -75,8 +75,7 @@ void Player::adjustDirPlanet(ofPoint _core, int _size, bool _habitability){
         touchingPlanet = true;
         location = _core + norm.scale(5+_size);
         momentum.set(0,0);
-        }
-        else{
+        } else {
             location.set(0,0);
             dir.set(0,0);
             momentum.set(0,0);

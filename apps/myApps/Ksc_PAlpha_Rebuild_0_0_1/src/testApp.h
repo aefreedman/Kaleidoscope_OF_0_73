@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <iostream>
 #include "ofMain.h"
 #include "Gravitator.h"
 #include "Planet.h"
@@ -31,10 +33,12 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-    private:
-        Gravitator** gravitator;
-        int nGravitators;
+		int nGravitators;
+        std::vector<Gravitator *> gravitator;
         Sun planet2;
         Player a;
+
+    private:
+
 
 };
