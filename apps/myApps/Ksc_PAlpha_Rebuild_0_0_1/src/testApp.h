@@ -21,9 +21,8 @@ class testApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-		void addGravitator(ofVec2f _pos, int _r, int _m, int _gR, bool _habitable);
-
-		void keyPressed  (int key);
+		void addGravitator();
+		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
 		void mouseDragged(int x, int y, int button);
@@ -33,10 +32,20 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		int nGravitators;
+        void exportLevel();
+        void importLevel();
+
         std::vector<Gravitator *> gravitator;
-        Sun planet2;
-        Player a;
+        Player thePlayer;
+
+        string clickState;
+        string levelState;
+        ofVec2f NEW_PLANET_POS;
+        int NEW_PLANET_R;
+        int NEW_PLANET_GR;
+        int NEW_PLANET_M;
+
+    int levelID;
 
     private:
 

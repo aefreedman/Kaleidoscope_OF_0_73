@@ -6,32 +6,38 @@ Player::Player() : Astronaut() {
 
 Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : Astronaut(_pos), gravitator(gravitator) {
     //pos = _pos;
-    w               = 50;
-    h               = 70;
+    w               = 10;
+    h               = 10;
     damp            = 0.99;
     rotation        = 0;
-    maxJump         = 200;
-    m               = 10;
+    maxJump         = 1;
+    m               = 1;
     jumpStrength    = 0;
     G               = 2;
 
     f.set(0,0);
     v.set(0,0);
     pos.set(500,500);
+    dir.set(0, 0);
+
+    //ofRegisterKeyEvents(this);
+    //ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
+    //ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
+
+    DEBUG = true;
 }
 
 Player::~Player() {
 }
 
 void Player::setup() {
-    //ofRegisterKeyEvents(this);
-    //ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
-    //ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
+
 }
 
 void Player::update() {
-    getNearPlanet();
+    detectPlanetCollisions();
     move();
+
 }
 
 void Player::draw() {
@@ -41,94 +47,114 @@ void Player::draw() {
     ofSetColor(0, 255, 240);
     ofFill();
     ofPushMatrix();
-    glTranslatef(pos.x,pos.y, 0);
+    glTranslatef(pos.x, pos.y, 0);
     glRotatef(rotation,0, 0, 1);
-    ofRect(-5, -5, 10, 10);
-    ofRect(-2.5, -10, 5, 5);
+    ofRect(-5, -5, w, h);
+    ofRect(-2.5, -10, w/2, h/2);
     ofPopMatrix();
+
+    //Player info debug
+
+    if (DEBUG) {
+
+    string info = "";
+    string nl  = "\n";
+    info += "f: " + ofToString(f) + nl;
+    info += "g: " + ofToString(gravity) + nl;
+    info += "a: " + ofToString(a) + nl;
+    info += "v: " + ofToString(v) + nl;
+    info += "pos: " + ofToString(pos) + nl;
+
+    if (ON_PLANET) {
+    info += "ON_PLANET" + nl;
+    }
+    if (IN_GRAVITY_WELL) {
+    info += "IN_GRAVITY_WELL" + nl;
+    }
+    ofSetColor(240, 0, 20);
+    ofDrawBitmapString(info, 30, 600);
+    }
 }
 
-void Player::move() {
-    if (nearPlanet == false) {
-        //f.set(0,0);
-    }
+void Player::move() { ///Euler integration & rotation correction
     if (rotation >= 360 || rotation <= -360){
         rotation = 0;
     }
-
     a   = f / m;
     v   += a;
     v   *= damp;
+    //v *= 0.25;
+    pos += v * dir;
     pos += v;
 }
 
-void Player::getNearPlanet() {
-    nearPlanet = false;
-    for (int i = 0; i < gravitator->size(); i++) {
-        if (pos.distance((*gravitator)[i]->pos) <= (*gravitator)[i]->gR) {
-            nearPlanet = true;
-            orientToPlanet((*gravitator)[i]->pos, (*gravitator)[i]->gR, (*gravitator)[i]->r, (*gravitator)[i]->habitable, (*gravitator)[i]->m);
-        }
+void Player::detectPlanetCollisions() {
+    ON_PLANET = false;
+    IN_GRAVITY_WELL = false;
+    EXITED_GRAVITY_WELL = false;
 
-    }
-}
-
-void Player::orientToPlanet(ofVec2f cOfGrav, float gR, float r, bool habitable, int mBody) {
-    ofVec2f normal;
-    normal.set(pos - cOfGrav);
-    ofVec2f perp    = normal.getPerpendicular();
-    ofVec2f down    (0, -1);
-    ofVec2f up      (0, 1);
-    left            = -perp;
-    right           = perp;
-    jumpDir         = normal.getNormalized();
-    rotation        = -normal.angle(up);
-    ofVec2f sqrDist;
-    sqrDist.set(pos.squareDistance(cOfGrav));
-
-    ///Collision detection
-    touchingPlanet = false;
     for (int i = 0; i < gravitator->size(); i++) {
         if (pos.distance((*gravitator)[i]->pos) <= (*gravitator)[i]->r) {
-            touchingPlanet = true;
-            cout << "hit planet!";
+            collision = i;
+            ON_PLANET = true;
+        }
+        if (pos.distance((*gravitator)[i]->pos) <= (*gravitator)[i]->gR) {
+            attractor = i;
+            IN_GRAVITY_WELL = true;
+        }
+        if (pos.distance((*gravitator)[i]->pos) <= (*gravitator)[i]->gR) {
+            attractor = i;
+            IN_GRAVITY_WELL = true;
+        }
+        if (ON_PLANET == true) {
+            orientToPlanet(collision);
+            gravity.set(0, 0);
+            f.set(0, 0);
+            v.set(0, 0);
+        }
+        if (IN_GRAVITY_WELL && !ON_PLANET) {
+            damp = 1.0;
+            calculateGravity(attractor);
+        }
+        if (!IN_GRAVITY_WELL) {
+            gravity.set(0, 0);
+            f.set(0, 0);
+            damp = 0.95;
+
         }
     }
-
-    int a = 30;
-
-    if (touchingPlanet) {
-        pos                 = cOfGrav + normal.scale(r);
-        damp                = 0.80;
-        //f                   = G * (m * mBody) / (sqrDist) * normal.normalized();
-    } else {
-        damp                = 0.99;
-        f                   = -G * (m * mBody) / (sqrDist) * normal.normalized();
-    }
-
-    //cout << "THE NORM IS "+ ofToString(norm.length()) + ".    " + "THE SIZE IS " + ofToString(r) + ".   ";
-    /*
-    int a = 10;
-    if (normal.length() < a + r) { ///hitting planet
-        if (habitable) {
-            touchingPlanet      = true;
-            pos                 = cOfGrav + normal.scale(a + r);
-        } else {
-            //pos.set(0, 0);
-            //rotation = 0;
-        }
-    } else { ///not hitting planet
-            touchingPlanet      = false;
-            f                   = -normal.normalize() * (9.80 * (m * mBody) / (gR * gR));
-    }
-    */
-    //f += left;
-    //f += .1 * right;
 }
 
-void Player::gravity() {
+void Player::calculateGravity(int attractor) {
+    ofVec2f planet_pos = (*gravitator)[attractor]->pos;
+    int planet_gravity_range = (*gravitator)[attractor]->gR;
+    int planet_size =  (*gravitator)[attractor]->r;
+    int planet_mass = (*gravitator)[attractor]->m;
 
+    ofVec2f planet_to_player_normal;
+    //planet_to_player_normal.set(pos - planet_pos);
+    planet_to_player_normal.set(planet_pos - pos);
+    ofVec2f sqrDist;
+    sqrDist.set(pos.squareDistance(planet_pos));
+
+    gravity             = G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
+    f                   = gravity;
 }
+
+void Player::orientToPlanet(int collision) {
+    ofVec2f PLANET_POS = (*gravitator)[collision]->pos;
+
+    ofVec2f PLANET_TO_PLAYER_NORMAL;
+    PLANET_TO_PLAYER_NORMAL.set(pos - PLANET_POS);
+    ofVec2f perp    = PLANET_TO_PLAYER_NORMAL.getPerpendicular();
+    //ofVec2f down    (0, -1);
+    ofVec2f up      (0, -1);
+    left            = -perp;
+    right           = perp;
+    jumpDir         = -PLANET_TO_PLAYER_NORMAL.getNormalized();
+    rotation        = PLANET_TO_PLAYER_NORMAL.angle(up);
+}
+
 
 void Player::chargeJump() {
     if (jumpStrength < maxJump){
@@ -143,18 +169,25 @@ void Player::jump() {
 }
 
 void Player::keyPressed(ofKeyEventArgs& args) {
-    /*
-    switch (args.key) {
-    case OF_KEY_UP:
-        cout << "sadflkjdsflkj";
-        break;
-    case OF_KEY_LEFT:
-        break;
-    case OF_KEY_RIGHT:
-        break;
-    case 32:
-        chargeJump();
-        break;
+
+    if (ON_PLANET == false) {
+        switch (args.key) {
+        case OF_KEY_UP:
+            pos.set(100, 100);
+            break;
+        case OF_KEY_LEFT:
+            rotation += 10;
+            break;
+        case OF_KEY_RIGHT:
+            rotation -= 10;
+            break;
+        case OF_KEY_DOWN:
+            f.y += 100;
+            break;
+        case 32:
+            chargeJump();
+            break;
+        }
     }
 
 
@@ -172,7 +205,7 @@ void Player::keyPressed(ofKeyEventArgs& args) {
     if (args.key == 's') {
         v.y = 100.0;
     }
-    */
+
 }
 
 void Player::keyReleased(ofKeyEventArgs& args) {
