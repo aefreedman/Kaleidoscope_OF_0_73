@@ -172,7 +172,7 @@ void testApp::mousePressed(int x, int y, int button) {
     }
     if(clickState == "setting grav") {
         NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
-        NEW_PLANET_M = NEW_PLANET_GR / NEW_PLANET_R;
+        NEW_PLANET_M = (NEW_PLANET_GR / NEW_PLANET_R) * 100;
         addGravitator();
         clickState = "play mode";
     }

@@ -14,6 +14,8 @@
 #include "Shell.h"
 #include "Solid.h"
 #include "Nonsolid.h"
+#define nl '\n'
+#define fps 60
 
 class testApp : public ofBaseApp{
 

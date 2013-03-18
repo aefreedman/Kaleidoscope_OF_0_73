@@ -1,4 +1,6 @@
 #include "Player.h"
+#define fps 60
+#define dt 1/60
 
 Player::Player() : Astronaut() {
     //ctor
@@ -13,12 +15,14 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : Astronaut(
     maxJump         = 1;
     m               = 1;
     jumpStrength    = 0;
-    G               = 2;
+    G               = 98;
 
     f.set(0,0);
     v.set(0,0);
     pos.set(500,500);
     dir.set(0, 0);
+
+    //dt = 1 / fps;
 
     //ofRegisterKeyEvents(this);
     //ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
@@ -77,15 +81,19 @@ void Player::draw() {
 }
 
 void Player::move() { ///Euler integration & rotation correction
-    if (rotation >= 360 || rotation <= -360){
-        rotation = 0;
-    }
-    a   = f / m;
-    v   += a;
-    v   *= damp;
+    //if (rotation >= 360 || rotation <= -360){
+    //    rotation = 0;
+    //}
+    //a   = f / m;
+    //v   += a * dt;
+    //v   += gravity * dt;
+    //v   *= damp;
     //v *= 0.25;
-    pos += v * dir;
-    pos += v;
+    //pos += v * dir;
+    //pos += v * dt;
+
+    v += gravity * dt;
+    pos += v * dt;
 }
 
 void Player::detectPlanetCollisions() {
@@ -108,9 +116,9 @@ void Player::detectPlanetCollisions() {
         }
         if (ON_PLANET == true) {
             orientToPlanet(collision);
-            gravity.set(0, 0);
-            f.set(0, 0);
-            v.set(0, 0);
+            //gravity.set(0, 0);
+            //f.set(0, 0);
+            //v.set(0, 0);
         }
         if (IN_GRAVITY_WELL && !ON_PLANET) {
             damp = 1.0;
@@ -119,7 +127,7 @@ void Player::detectPlanetCollisions() {
         if (!IN_GRAVITY_WELL) {
             gravity.set(0, 0);
             f.set(0, 0);
-            damp = 0.95;
+            damp = 1.0;
 
         }
     }
@@ -137,8 +145,10 @@ void Player::calculateGravity(int attractor) {
     ofVec2f sqrDist;
     sqrDist.set(pos.squareDistance(planet_pos));
 
-    gravity             = G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
-    f                   = gravity;
+    gravity                = G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
+
+    //gravity             = G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
+    f                   += gravity;
 }
 
 void Player::orientToPlanet(int collision) {
@@ -153,6 +163,14 @@ void Player::orientToPlanet(int collision) {
     right           = perp;
     jumpDir         = -PLANET_TO_PLAYER_NORMAL.getNormalized();
     rotation        = PLANET_TO_PLAYER_NORMAL.angle(up);
+}
+
+inline Player::AngularVelocityToSpin( ofQuaternion orientation, ofVec2f angular_v )
+{
+    float x = angular_v.x();
+    float y = angular_v.y();
+    float z = 0.0;
+    return 0.5 * ofQuaternion( 0, x, y, z ) * orientation;
 }
 
 

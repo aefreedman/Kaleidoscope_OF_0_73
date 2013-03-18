@@ -22,6 +22,7 @@ public:
     void detectPlanetCollisions();
     void orientToPlanet(int collision);
     void calculateGravity(int attractor);
+    inline AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
 
@@ -36,6 +37,8 @@ public:
     ofVec2f jumpDir;
     ofVec2f f;
     ofVec2f dir;
+    ofVec2f angular_v
+    ofQuaternion orientation;
 
     float m;
     float rotation;
@@ -57,6 +60,8 @@ public:
     //bool can_move;
     //bool can_jump;
     //bool has_follower;
+
+    float dt;
 
 
 protected:
