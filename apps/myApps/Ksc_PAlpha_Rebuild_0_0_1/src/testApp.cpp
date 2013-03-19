@@ -1,5 +1,6 @@
 #include "testApp.h"
 #include <fstream>
+#define nl '\n'
 
 //--------------------------------------------------------------
 void testApp::setup() {
@@ -26,7 +27,7 @@ void testApp::draw() {
 
     thePlayer.draw();
 
-
+    /// TODO (Aaron#9#): Move level editor into own class
     ///LEVEL EDITOR---------------------------------------------
     if (clickState == "setting size") {
         ofSetColor(0,255,0);
@@ -60,10 +61,10 @@ void testApp::draw() {
     } else if (clickState == "placing player") {
         ofDrawBitmapString("click to set player location", 40,80);
     }
-    ofDrawBitmapString("dir is " + ofToString(thePlayer.dir),40,95);
+    //ofDrawBitmapString("dir is " + ofToString(thePlayer.dir),40,95);
     ofDrawBitmapString("max jump is " + ofToString(thePlayer.maxJump),40,110);
 
-    ///BOTTOM TEXT DISPLAY
+    ///BOTTOM TEXT DISPLAY----------------------------------------
     ofDrawBitmapString("p to place gravitators.", 600,685);
     ofDrawBitmapString("w to place walls.", 600,700);
     ofDrawBitmapString("s to place player.", 600,715);
@@ -84,8 +85,7 @@ void testApp::keyPressed(int key) {
         break;
     case 's':
         clickState = "placing player";
-        thePlayer.v.set(0,0);
-        thePlayer.dir.set(0,0);
+        thePlayer.setup();
         break;
     case 'w':
         clickState = "placing walls";
@@ -106,7 +106,20 @@ void testApp::keyPressed(int key) {
         gravitator.clear();
         break;
     case OF_KEY_UP:
-        break;
+    /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
+    /// NOTE (Aaron#5#): Do we need jump *and* ABSOLUTE/ROTATIONAL controls?
+        if (thePlayer.ON_PLANET) {
+
+            break;
+        } else if (thePlayer.CAN_JETPACK) {
+            ofVec2f UP_FORCE(0, -1);
+            int MAGNITUDE = 500;
+            thePlayer.f += thePlayer.dir * MAGNITUDE;
+            //thePlayer.f += MAGNITUDE;
+            /// FIXME (Aaron#1#): Impulse direction not applying direction correctly
+            cout << "impulsed at " + ofToString(thePlayer.f.x, 0) + "N, " + ofToString(thePlayer.f.y, 0) + "N" + nl;
+            break;
+        }
     case OF_KEY_DOWN:
         break;
     case OF_KEY_LEFT:
@@ -114,7 +127,15 @@ void testApp::keyPressed(int key) {
             thePlayer.dir.set(thePlayer.left);
             break;
         } else {
+            int PREVIOUS_ROTATION;
+            PREVIOUS_ROTATION = thePlayer.rotation;
+
             thePlayer.rotation -= 3;
+
+            int DELTA_ROTATION;
+            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
+
+            thePlayer.dir.rotate(DELTA_ROTATION);
             break;
         }
     case OF_KEY_RIGHT:
@@ -122,11 +143,25 @@ void testApp::keyPressed(int key) {
             thePlayer.dir.set(thePlayer.right);
             break;
         } else {
+            int PREVIOUS_ROTATION;
+            PREVIOUS_ROTATION = thePlayer.rotation;
+
             thePlayer.rotation += 3;
+
+            int DELTA_ROTATION;
+            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
+
+            thePlayer.dir.rotate(DELTA_ROTATION);
             break;
         }
     case 32:
         thePlayer.chargeJump();
+        break;
+    case '=':
+        thePlayer.damp += 0.01;
+        break;
+    case '-':
+        thePlayer.damp -= 0.01;
         break;
     }
 }
@@ -140,6 +175,9 @@ void testApp::keyReleased(int key) {
         break;
     case 'd':
         break;
+    case OF_KEY_UP:
+        thePlayer.f.set(0, 0);
+        break;
     case 32:
         thePlayer.jump();
         break;
@@ -150,7 +188,7 @@ void testApp::keyReleased(int key) {
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ) {
     if (clickState == "placing player") {
-        thePlayer.pos.set(x,y);
+        thePlayer.pos.set(x, y);
     }
 
 }

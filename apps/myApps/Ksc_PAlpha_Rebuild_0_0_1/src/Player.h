@@ -1,5 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
+#define nl '\n'
 
 #include <vector>
 #include "Astronaut.h"
@@ -22,7 +23,7 @@ public:
     void detectPlanetCollisions();
     void orientToPlanet(int collision);
     void calculateGravity(int attractor);
-    inline AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
+    inline ofQuaternion AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
 
@@ -37,7 +38,7 @@ public:
     ofVec2f jumpDir;
     ofVec2f f;
     ofVec2f dir;
-    ofVec2f angular_v
+    ofVec2f angular_v;
     ofQuaternion orientation;
 
     float m;
@@ -48,15 +49,17 @@ public:
     int w;
     int h;
     int maxJump;
+    int oxygen;
 
     std::vector<Gravitator *> *gravitator;
 
-    bool test;
-    bool TEST2;
     bool ON_PLANET;
     bool IN_GRAVITY_WELL;
     bool EXITED_GRAVITY_WELL;
-    //bool can_jetpack;
+    bool CAN_JETPACK;
+    bool ABSOLUTE_IMPULSE;
+    bool ROTATIONAL_IMPULSE;
+    bool ORIENT_TO_PLANET;
     //bool can_move;
     //bool can_jump;
     //bool has_follower;

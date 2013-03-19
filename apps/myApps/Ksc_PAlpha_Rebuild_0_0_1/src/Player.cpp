@@ -7,22 +7,8 @@ Player::Player() : Astronaut() {
 }
 
 Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : Astronaut(_pos), gravitator(gravitator) {
-    //pos = _pos;
-    w               = 10;
-    h               = 10;
-    damp            = 0.99;
-    rotation        = 0;
-    maxJump         = 1;
-    m               = 1;
-    jumpStrength    = 0;
-    G               = 98;
-
-    f.set(0,0);
-    v.set(0,0);
+    setup();
     pos.set(500,500);
-    dir.set(0, 0);
-
-    //dt = 1 / fps;
 
     //ofRegisterKeyEvents(this);
     //ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
@@ -35,10 +21,32 @@ Player::~Player() {
 }
 
 void Player::setup() {
+    w                       = 10;
+    h                       = 10;
+    oxygen                  = 100;  /// TODO (Aaron#4#): Couple oxygen to movement ability
+    damp                    = 0.95;
+    rotation                = 0;
+    maxJump                 = 100;
+    m                       = 1;
+    jumpStrength            = 0;
+    G                       = 98;
+    /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
+    /// if G is in player & mass is ignored; give planets individual
+    /// G or use newtownian forces
 
+    f.set(0,0);
+    v.set(0,0);
+    dir.set(0, -1);
+
+    ORIENT_TO_PLANET        = false;
+    CAN_JETPACK             = true;
+    ABSOLUTE_IMPULSE        = true;
+    ROTATIONAL_IMPULSE      = false;
+    /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
 }
 
 void Player::update() {
+    /// TODO (Aaron#1#): Implement simple circle-circle collisions
     detectPlanetCollisions();
     move();
 
@@ -47,52 +55,66 @@ void Player::update() {
 void Player::draw() {
     ofSetColor(255, 0, 0);
     ofNoFill();
-    ofCircle(pos,20 * (jumpStrength / maxJump));
+    ofCircle(pos, 20 * (jumpStrength / maxJump));
     ofSetColor(0, 255, 240);
     ofFill();
     ofPushMatrix();
     glTranslatef(pos.x, pos.y, 0);
     glRotatef(rotation,0, 0, 1);
-    ofRect(-5, -5, w, h);
-    ofRect(-2.5, -10, w/2, h/2);
+    ofCircle(0, 0, 5);
+    //ofRect(-5, -5, w, h);
+    //ofRect(-2.5, 5, w/2, h/2);
+    ofLine(ofPoint(0, 0), ofPoint(0, -100));
     ofPopMatrix();
 
-    //Player info debug
-
     if (DEBUG) {
+        int x = 30;
+        int y = 550;
+        int column_width = 100;
+        int PRECISION = 0;
+        string info = "";
+        info += "f: " + ofToString(f, PRECISION) + nl;
+        info += "g: " + ofToString(gravity, PRECISION) + nl;
+        info += "a: " + ofToString(a, PRECISION) + nl;
+        info += "v: " + ofToString(v, PRECISION) + nl;
+        info += "pos: " + ofToString(pos, PRECISION) + nl;
+        info += "dir: " + ofToString(dir, PRECISION + 2) + nl;
+        info += "rot: " + ofToString(rotation) + nl;
+        info += "damp: " + ofToString(damp, 2) + nl;
+        ofSetColor(240, 0, 20);
+        ofDrawBitmapString(info, x, y);
 
-    string info = "";
-    string nl  = "\n";
-    info += "f: " + ofToString(f) + nl;
-    info += "g: " + ofToString(gravity) + nl;
-    info += "a: " + ofToString(a) + nl;
-    info += "v: " + ofToString(v) + nl;
-    info += "pos: " + ofToString(pos) + nl;
-
-    if (ON_PLANET) {
-    info += "ON_PLANET" + nl;
-    }
-    if (IN_GRAVITY_WELL) {
-    info += "IN_GRAVITY_WELL" + nl;
-    }
-    ofSetColor(240, 0, 20);
-    ofDrawBitmapString(info, 30, 600);
+        /// FIXME (Aaron#3#): Why is this only displaying the ends of long strings?
+        string info_b = "";
+        if (ON_PLANET) {
+            info_b += "Testlkjlkjlkjlkjlkjlkj" + nl;
+        }
+        if (IN_GRAVITY_WELL) {
+            info_b += "Test2lkjlkjlkjlkjlkjlkjl" + nl;
+        }
+        ofSetColor(240, 0, 20);
+        ofDrawBitmapString(info_b, x + column_width, y);
     }
 }
 
-void Player::move() { ///Euler integration & rotation correction
-    //if (rotation >= 360 || rotation <= -360){
-    //    rotation = 0;
-    //}
-    //a   = f / m;
+void Player::move() {
+    if (rotation >= 360 || rotation <= -360){
+        rotation = 0;
+    }
+
+    /// FIXME (Aaron#1#): Determine source of direction & forces error (where should dir apply?)
+    //f   = f * dir;
+    a   = (f / m);
     //v   += a * dt;
     //v   += gravity * dt;
-    //v   *= damp;
     //v *= 0.25;
     //pos += v * dir;
     //pos += v * dt;
 
+    v += dir * a * dt;
     v += gravity * dt;
+    v *= damp;
+    //pos += dir * v * dt;
     pos += v * dt;
 }
 
@@ -114,21 +136,16 @@ void Player::detectPlanetCollisions() {
             attractor = i;
             IN_GRAVITY_WELL = true;
         }
-        if (ON_PLANET == true) {
+        if (ON_PLANET) {
+            v *= -1;
+        }
+        if (ON_PLANET && ORIENT_TO_PLANET) {
             orientToPlanet(collision);
-            //gravity.set(0, 0);
-            //f.set(0, 0);
-            //v.set(0, 0);
         }
         if (IN_GRAVITY_WELL && !ON_PLANET) {
-            damp = 1.0;
             calculateGravity(attractor);
         }
         if (!IN_GRAVITY_WELL) {
-            gravity.set(0, 0);
-            f.set(0, 0);
-            damp = 1.0;
-
         }
     }
 }
@@ -146,9 +163,10 @@ void Player::calculateGravity(int attractor) {
     sqrDist.set(pos.squareDistance(planet_pos));
 
     gravity                = G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
+    //gravity                = G * planet_to_player_normal.normalized() / sqrDist;
 
     //gravity             = G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
-    f                   += gravity;
+    //f                   += gravity;
 }
 
 void Player::orientToPlanet(int collision) {
@@ -165,29 +183,32 @@ void Player::orientToPlanet(int collision) {
     rotation        = PLANET_TO_PLAYER_NORMAL.angle(up);
 }
 
-inline Player::AngularVelocityToSpin( ofQuaternion orientation, ofVec2f angular_v )
-{
-    float x = angular_v.x();
-    float y = angular_v.y();
+inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v) {
+    float x = angular_v.x;
+    float y = angular_v.y;
     float z = 0.0;
-    return 0.5 * ofQuaternion( 0, x, y, z ) * orientation;
+    ofQuaternion q;
+    //spin.x 0.5 * ofQuaternion( 0, x, y, z ) * orientation;
+    q.set(0, x, y, z);
+    //return 0.5 * q * orientation;
 }
 
 
 void Player::chargeJump() {
-    if (jumpStrength < maxJump){
+    if (jumpStrength < maxJump) {
         jumpStrength += 0.10 * maxJump;
     }
 }
 
 void Player::jump() {
-    f += (jumpDir * jumpStrength);
+    //f += dir * jumpStrength;
+    v += jumpStrength;
     //f += normTemp;
     jumpStrength = 0;
 }
 
 void Player::keyPressed(ofKeyEventArgs& args) {
-
+    /// TODO (Aaron#9#): Determine why player key listener doesn't apply input (it registers key presses)
     if (ON_PLANET == false) {
         switch (args.key) {
         case OF_KEY_UP:
@@ -207,23 +228,6 @@ void Player::keyPressed(ofKeyEventArgs& args) {
             break;
         }
     }
-
-
-    //Broken: not detecting key presses
-    if (args.key == '1') {
-        v.x = -100.0;
-        cout << "sdfds";
-    }
-    if (args.key == 'd') {
-        v.x = 100.0;
-    }
-    if (args.key == 'w') {
-        v.y = -100.0;
-    }
-    if (args.key == 's') {
-        v.y = 100.0;
-    }
-
 }
 
 void Player::keyReleased(ofKeyEventArgs& args) {
