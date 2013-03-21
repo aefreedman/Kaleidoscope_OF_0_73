@@ -38,7 +38,7 @@ void Player::setup() {
     v.set(0,0);
     dir.set(0, 1);
 
-    ORIENT_TO_PLANET        = false;
+    ORIENT_TO_PLANET        = true;
     CAN_JETPACK             = true;
     ABSOLUTE_IMPULSE        = true;
     ROTATIONAL_IMPULSE      = false;
@@ -141,7 +141,7 @@ void Player::detectPlanetCollisions() {
         if (ON_PLANET) {
             ofVec2f planet_to_player_normal;
             planet_to_player_normal.set(pos - (*gravitator)[i]->pos);
-            //pos = (*gravitator)[i]->pos + planet_to_player_normal.scale(5 + (*gravitator)[i]->r);
+            pos = (*gravitator)[i]->pos + planet_to_player_normal.scale(5 + (*gravitator)[i]->r);
             //v *= -1;
         }
         if (ON_PLANET && ORIENT_TO_PLANET) {
