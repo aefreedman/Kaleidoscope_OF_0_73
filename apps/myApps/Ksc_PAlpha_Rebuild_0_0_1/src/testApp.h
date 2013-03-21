@@ -14,6 +14,7 @@
 #include "Shell.h"
 #include "Solid.h"
 #include "Nonsolid.h"
+#include "Comet.h"
 #define nl '\n'
 #define fps 60
 
@@ -24,6 +25,7 @@ class testApp : public ofBaseApp{
 		void update();
 		void draw();
 		void addGravitator();
+		void addComet();
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -38,10 +40,15 @@ class testApp : public ofBaseApp{
         void importLevel();
 
         std::vector<Gravitator *> gravitator;
+        //std::vector<Comet *> comets;
         Player thePlayer;
 
         string clickState;
         string levelState;
+
+        ofVec2f NEW_COMET_POS;
+        int NEW_COMET_R;
+
         ofVec2f NEW_PLANET_POS;
         int NEW_PLANET_R;
         int NEW_PLANET_GR;

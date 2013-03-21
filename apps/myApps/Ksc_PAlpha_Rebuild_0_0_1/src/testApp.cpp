@@ -17,6 +17,9 @@ void testApp::setup() {
 //--------------------------------------------------------------
 void testApp::update() {
     thePlayer.update();
+        for (int i = 0; i < gravitator.size(); i++) {
+        gravitator[i]->update();
+    }
 }
 
 //--------------------------------------------------------------
@@ -34,6 +37,11 @@ void testApp::draw() {
         ofNoFill();
         ofCircle(NEW_PLANET_POS, ofDist(mouseX, mouseY, NEW_PLANET_POS.x, NEW_PLANET_POS.y));
     }
+    if (clickState == "sizing comet") {
+        ofSetColor(255,100,100);
+        ofNoFill();
+        ofCircle(NEW_COMET_POS, ofDist(mouseX,mouseY,NEW_COMET_POS.x,NEW_COMET_POS.y));
+    }
     if(clickState == "setting grav") {
         ofSetColor(0,255,0);
         ofNoFill();
@@ -44,6 +52,18 @@ void testApp::draw() {
 
         //ofSetColor(0,255,0);
         //ofDrawBitmapString("press 'h' to toggle habitability. (right now it's " + ofToString(planetHabitability) + ".)", 40,100);
+    }
+
+    if(clickState == "placing comet"){
+        ofSetColor(255,100,100);
+        ofNoFill();
+        ofCircle(mouseX,mouseY,10);
+    }
+
+    if(clickState == "sizing comet"){
+        ofSetColor(255,100,100);
+        ofNoFill();
+        ofCircle(NEW_COMET_POS,NEW_COMET_R);
     }
 
     ///TOP TEXT DISPLAY-----------------------------------------
@@ -89,6 +109,13 @@ void testApp::keyPressed(int key) {
         break;
     case 'w':
         clickState = "placing walls";
+        break;
+    case 'c':
+        if (clickState == "placing path"){
+        clickState = "play mode";
+        } else {
+        clickState = "placing comet";
+        }
         break;
     case 'E':
         exportLevel();
@@ -215,9 +242,16 @@ void testApp::mousePressed(int x, int y, int button) {
     if(clickState == "play mode") {
 
     }
+    if(clickState == "placing path") {
+        gravitator[gravitator.size()-1]->pathPoints.push_back(ofVec2f(x,y));
+    }
     if(clickState == "placing player") {
         thePlayer.pos.set(x, y);
         clickState = "play mode";
+    }
+    if(clickState == "placing comet") {
+        NEW_COMET_POS.set(x,y);
+        clickState = "sizing comet";
     }
 }
 
@@ -226,6 +260,11 @@ void testApp::mouseReleased(int x, int y, int button) {
     if (clickState == "setting size") {
         NEW_PLANET_R = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
         clickState = "setting grav";
+    }
+    if (clickState == "sizing comet") {
+        NEW_COMET_R = ofDist(x,y,NEW_COMET_POS.x,NEW_COMET_POS.y);
+        gravitator.push_back(new Comet(NEW_COMET_POS,NEW_COMET_R));
+        clickState = "placing path";
     }
 
 }

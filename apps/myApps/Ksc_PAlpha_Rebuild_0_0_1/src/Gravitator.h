@@ -9,6 +9,7 @@ public:
     Gravitator();
     Gravitator(ofVec2f _pos, int _r, int _m, int _gR);
     Gravitator(ofVec2f _pos, int _r, int _gR);
+    Gravitator(ofVec2f _pos, int _r);
     virtual void setup();
     virtual void update();
     virtual void draw();
@@ -20,6 +21,8 @@ public:
     int m;
     float p;
     bool habitable;
+
+    vector <ofVec2f> pathPoints;
 
 
 protected:
