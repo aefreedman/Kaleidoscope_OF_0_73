@@ -112,11 +112,9 @@ void testApp::keyPressed(int key) {
 
             break;
         } else if (thePlayer.CAN_JETPACK) {
-            ofVec2f UP_FORCE(0, -1);
-            int MAGNITUDE = 500;
-            thePlayer.f += thePlayer.dir * MAGNITUDE;
-            //thePlayer.f += MAGNITUDE;
-            /// FIXME (Aaron#1#): Impulse direction not applying direction correctly
+            int POWER = 5000;
+            ofVec2f VEC_MAGNITUDE(POWER, POWER);
+            thePlayer.f += VEC_MAGNITUDE;
             cout << "impulsed at " + ofToString(thePlayer.f.x, 0) + "N, " + ofToString(thePlayer.f.y, 0) + "N" + nl;
             break;
         }
@@ -210,7 +208,7 @@ void testApp::mousePressed(int x, int y, int button) {
     }
     if(clickState == "setting grav") {
         NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
-        NEW_PLANET_M = (NEW_PLANET_GR / NEW_PLANET_R) * 100;
+        NEW_PLANET_M = (NEW_PLANET_GR / NEW_PLANET_R) * 1000;
         addGravitator();
         clickState = "play mode";
     }

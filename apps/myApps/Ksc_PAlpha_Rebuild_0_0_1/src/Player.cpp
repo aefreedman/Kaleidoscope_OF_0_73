@@ -24,10 +24,10 @@ void Player::setup() {
     w                       = 10;
     h                       = 10;
     oxygen                  = 100;  /// TODO (Aaron#4#): Couple oxygen to movement ability
-    damp                    = 0.95;
-    rotation                = 0;
-    maxJump                 = 100;
-    m                       = 1;
+    damp                    = 1.00;
+    rotation                = 180;
+    maxJump                 = 10000;
+    m                       = 0.1;
     jumpStrength            = 0;
     G                       = 98;
     /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
@@ -36,7 +36,7 @@ void Player::setup() {
 
     f.set(0,0);
     v.set(0,0);
-    dir.set(0, -1);
+    dir.set(0, 1);
 
     ORIENT_TO_PLANET        = false;
     CAN_JETPACK             = true;
@@ -104,7 +104,7 @@ void Player::move() {
 
     /// FIXME (Aaron#1#): Determine source of direction & forces error (where should dir apply?)
     //f   = f * dir;
-    a   = (f / m);
+    a   = (f / m) * dt;
     //v   += a * dt;
     //v   += gravity * dt;
     //v *= 0.25;
@@ -116,6 +116,8 @@ void Player::move() {
     v *= damp;
     //pos += dir * v * dt;
     pos += v * dt;
+    f.set(0, 0);
+    gravity.set(0, 0);
 }
 
 void Player::detectPlanetCollisions() {
@@ -124,7 +126,7 @@ void Player::detectPlanetCollisions() {
     EXITED_GRAVITY_WELL = false;
 
     for (int i = 0; i < gravitator->size(); i++) {
-        if (pos.distance((*gravitator)[i]->pos) <= (*gravitator)[i]->r) {
+        if (pos.distance((*gravitator)[i]->pos) <= (*gravitator)[i]->r + w) {
             collision = i;
             ON_PLANET = true;
         }
@@ -137,7 +139,10 @@ void Player::detectPlanetCollisions() {
             IN_GRAVITY_WELL = true;
         }
         if (ON_PLANET) {
-            v *= -1;
+            ofVec2f planet_to_player_normal;
+            planet_to_player_normal.set(pos - (*gravitator)[i]->pos);
+            //pos = (*gravitator)[i]->pos + planet_to_player_normal.scale(5 + (*gravitator)[i]->r);
+            //v *= -1;
         }
         if (ON_PLANET && ORIENT_TO_PLANET) {
             orientToPlanet(collision);
@@ -146,6 +151,7 @@ void Player::detectPlanetCollisions() {
             calculateGravity(attractor);
         }
         if (!IN_GRAVITY_WELL) {
+
         }
     }
 }
@@ -162,14 +168,15 @@ void Player::calculateGravity(int attractor) {
     ofVec2f sqrDist;
     sqrDist.set(pos.squareDistance(planet_pos));
 
-    gravity                = G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
-    //gravity                = G * planet_to_player_normal.normalized() / sqrDist;
+    /// NOTE (Aaron#5#): Gravity with mass works, but it seems to make everything way too hard.
 
+    gravity                = G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
     //gravity             = G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
     //f                   += gravity;
 }
 
 void Player::orientToPlanet(int collision) {
+    /// TODO (Aaron#1#): I broke this somehow.
     ofVec2f PLANET_POS = (*gravitator)[collision]->pos;
 
     ofVec2f PLANET_TO_PLAYER_NORMAL;
@@ -201,8 +208,8 @@ void Player::chargeJump() {
 }
 
 void Player::jump() {
-    //f += dir * jumpStrength;
-    v += jumpStrength;
+    f += dir * jumpStrength;
+    //v += jumpStrength;
     //f += normTemp;
     jumpStrength = 0;
 }
