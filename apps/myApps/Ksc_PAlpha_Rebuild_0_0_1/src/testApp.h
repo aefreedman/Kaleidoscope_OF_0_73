@@ -16,6 +16,8 @@
 #include "Nonsolid.h"
 #define nl '\n'
 #define fps 60
+#define screen_width 1280
+#define screen_height 720
 
 class testApp : public ofBaseApp{
 

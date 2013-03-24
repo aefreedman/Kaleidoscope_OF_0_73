@@ -1,6 +1,7 @@
 #include "testApp.h"
 #include <fstream>
 #define nl '\n'
+#define screen_width 1280
 
 //--------------------------------------------------------------
 void testApp::setup() {
@@ -80,6 +81,9 @@ void testApp::addGravitator() {
 void testApp::keyPressed(int key) {
 
     switch (key) {
+    case 'g':
+        thePlayer.USING_GRAVITY = !thePlayer.USING_GRAVITY;
+        break;
     case 'p':
         clickState = "placing gravitators";
         break;
@@ -121,8 +125,22 @@ void testApp::keyPressed(int key) {
     case OF_KEY_DOWN:
         break;
     case OF_KEY_LEFT:
+            int PREVIOUS_ROTATION;
+            PREVIOUS_ROTATION = thePlayer.rotation;
+
+            thePlayer.rotation -= 3;
+
+            int DELTA_ROTATION;
+            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
+
+            thePlayer.dir.rotate(DELTA_ROTATION);
+            break;
+        /*
         if (thePlayer.ON_PLANET) {
             thePlayer.dir.set(thePlayer.left);
+            int POWER = 5000;
+            ofVec2f VEC_MAGNITUDE(POWER, POWER);
+            thePlayer.f += VEC_MAGNITUDE;
             break;
         } else {
             int PREVIOUS_ROTATION;
@@ -136,7 +154,19 @@ void testApp::keyPressed(int key) {
             thePlayer.dir.rotate(DELTA_ROTATION);
             break;
         }
+        */
     case OF_KEY_RIGHT:
+            //int PREVIOUS_ROTATION;
+            PREVIOUS_ROTATION = thePlayer.rotation;
+
+            thePlayer.rotation += 3;
+
+            //int DELTA_ROTATION;
+            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
+
+            thePlayer.dir.rotate(DELTA_ROTATION);
+            break;
+        /*
         if (thePlayer.ON_PLANET) {
             thePlayer.dir.set(thePlayer.right);
             break;
@@ -152,6 +182,7 @@ void testApp::keyPressed(int key) {
             thePlayer.dir.rotate(DELTA_ROTATION);
             break;
         }
+        */
     case 32:
         thePlayer.chargeJump();
         break;
@@ -217,6 +248,7 @@ void testApp::mousePressed(int x, int y, int button) {
     }
     if(clickState == "placing player") {
         thePlayer.pos.set(x, y);
+        thePlayer.starting_pos.set(thePlayer.pos);
         clickState = "play mode";
     }
 }

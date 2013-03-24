@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #define nl '\n'
+#define screen_width 1280
+#define screen_height 720
 
 #include <vector>
 #include "Astronaut.h"
@@ -28,6 +30,7 @@ public:
     void keyReleased(ofKeyEventArgs& args);
 
     ofVec2f pos;
+    ofVec2f starting_pos;
     ofVec2f gravity;
     ofVec2f v;
     ofVec2f a;
@@ -60,12 +63,9 @@ public:
     bool ABSOLUTE_IMPULSE;
     bool ROTATIONAL_IMPULSE;
     bool ORIENT_TO_PLANET;
-    //bool can_move;
-    //bool can_jump;
-    //bool has_follower;
-
-    float dt;
-
+    bool USING_GRAVITY;
+    bool LAND_ON_PLANET;
+    bool OFF_SCREEN_RESET;
 
 protected:
 
