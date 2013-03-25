@@ -23,6 +23,8 @@ public:
     void jump();
     void chargeJump();
     void detectPlanetCollisions();
+    bool detectCollisions();
+    void bounce();
     void orientToPlanet(int collision);
     void calculateGravity(int attractor);
     inline ofQuaternion AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
@@ -48,9 +50,11 @@ public:
     float rotation;
     float damp;
     float jumpStrength;
+    float restitution;
 
     int w;
     int h;
+    int r;
     int maxJump;
     int oxygen;
 
@@ -64,8 +68,9 @@ public:
     bool ROTATIONAL_IMPULSE;
     bool ORIENT_TO_PLANET;
     bool USING_GRAVITY;
-    bool LAND_ON_PLANET;
+    bool CAN_LAND_ON_PLANET;
     bool OFF_SCREEN_RESET;
+    bool SIMPLE_GRAVITY;
 
 protected:
 
@@ -75,6 +80,10 @@ private:
     int attractor;
     float G;
     bool DEBUG;
+    int off_screen_limit;
+    ofVec2f display_g;
+    ofVec2f display_a;
+    ofVec2f display_f;
 
 
 };

@@ -84,6 +84,9 @@ void testApp::keyPressed(int key) {
     case 'g':
         thePlayer.USING_GRAVITY = !thePlayer.USING_GRAVITY;
         break;
+    case 'G':
+        thePlayer.SIMPLE_GRAVITY = !thePlayer.SIMPLE_GRAVITY;
+        break;
     case 'p':
         clickState = "placing gravitators";
         break;
@@ -239,7 +242,7 @@ void testApp::mousePressed(int x, int y, int button) {
     }
     if(clickState == "setting grav") {
         NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
-        NEW_PLANET_M = (NEW_PLANET_GR / NEW_PLANET_R) * 1000;
+        NEW_PLANET_M = 100000 + (NEW_PLANET_GR / NEW_PLANET_R) * 5000;
         addGravitator();
         clickState = "play mode";
     }
