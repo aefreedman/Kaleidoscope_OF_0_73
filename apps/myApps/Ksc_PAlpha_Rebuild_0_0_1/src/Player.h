@@ -72,12 +72,14 @@ public:
     bool OFF_SCREEN_RESET;
     bool SIMPLE_GRAVITY;
 
+    int collision;
+    int attractor;
+
 protected:
 
 
 private:
-    int collision;
-    int attractor;
+
     float G;
     bool DEBUG;
     int off_screen_limit;

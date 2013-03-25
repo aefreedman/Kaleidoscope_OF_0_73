@@ -41,7 +41,7 @@ void Player::setup() {
 
     f.set(0,0);
     v.set(0,0);
-    dir.set(0, 1);
+    dir.set(-1, 0);
 
     ON_PLANET               = false;
     CAN_LAND_ON_PLANET      = true;
@@ -73,13 +73,13 @@ void Player::draw() {
     ofCircle(0, 0, r);
     //ofRect(-5, -5, w, h);
     //ofRect(-2.5, 5, w/2, h/2);
-    ofLine(ofPoint(0, 0), ofPoint(0, -100));
+    ofLine(ofPoint(0, 0), ofPoint(100, 0));
     ofPopMatrix();
 
     if (DEBUG) {
         int x = 30;
         int y = 550;
-        int column_width = 100;
+        int column_width = 400;
         int precision = 0;
         string info = "";
         info += "f: " + ofToString(display_f, precision) + nl;
@@ -101,10 +101,16 @@ void Player::draw() {
         /// FIXME (Aaron#3#): Why is this only displaying the ends of long strings?
         string info_b = "";
         if (ON_PLANET) {
-            info_b += "Testlkjlkjlkjlkjlkjlkj" + nl;
+            info_b.append("ON THE PLANET, BRO \n");
         }
         if (IN_GRAVITY_WELL) {
-            info_b += "Test2lkjlkjlkjlkjlkjlkjl" + nl;
+            info_b.append("IN THE GRAVITY WELL, BRO \n");
+        }
+        if (CAN_LAND_ON_PLANET) {
+            info_b.append("CAN LAND ON PLANET, BRO \n");
+        } else {
+            info_b.append("LANDED ON THE PLANET, BRO \n");
+
         }
         ofSetColor(240, 0, 20);
         ofDrawBitmapString(info_b, x + column_width, y);
@@ -231,14 +237,16 @@ void Player::orientToPlanet(int collision) {
     left            = perp;
     right           = -perp;
 
-    jumpDir.set(normalized_normal);
+    jumpDir.set(perp.normalized());
 
     float a1 = v.dot(normalized_normal);
     float optimizedP = (2.0 * a1) / (m + planet_m);
     ofVec2f v_prime = v - optimizedP * planet_m * normalized_normal;
     v_prime *= restitution;
 
-    v.set(v_prime);
+    if (!CAN_LAND_ON_PLANET){
+        v.set(v_prime);
+    }
 
 }
 
@@ -264,9 +272,10 @@ void Player::jump() {
     //f += jumpDir * jumpStrength;
     if (!CAN_LAND_ON_PLANET) {
     f += jumpStrength;
+    //v += 100 * jumpDir * dt;
     }
     //f += normTemp;
-    cout << jumpDir * jumpStrength + nl;
+    //cout << jumpDir * jumpStrength + nl;
     jumpStrength = 0;
 }
 
@@ -278,23 +287,21 @@ void Player::keyPressed(ofKeyEventArgs& args) {
         break;
     }
 
-    if (ON_PLANET == false) {
+    if (!ON_PLANET) {
         switch (args.key) {
         case OF_KEY_UP:
 
             break;
         case OF_KEY_LEFT:
-            rotation += 10;
+
             break;
         case OF_KEY_RIGHT:
-            rotation -= 10;
+
             break;
         case OF_KEY_DOWN:
-            //int p = 5000;
-            //ofVec2f v1(p, p);
-            //f += v1;
+
             cout << "impulsed at " + nl;
-            //f.y += 100;
+
             break;
         case 32:
             chargeJump();

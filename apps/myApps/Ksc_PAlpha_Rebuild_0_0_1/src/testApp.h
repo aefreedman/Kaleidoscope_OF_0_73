@@ -52,6 +52,7 @@ class testApp : public ofBaseApp{
     int levelID;
 
     private:
+        float theta;
 
 
 };

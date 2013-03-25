@@ -2,6 +2,7 @@
 #include <fstream>
 #define nl '\n'
 #define screen_width 1280
+#define dt 1/60
 
 //--------------------------------------------------------------
 void testApp::setup() {
@@ -13,6 +14,7 @@ void testApp::setup() {
 
     clickState = "play mode";
     levelState = "Working from scratch.";
+    theta = 0;
 }
 
 //--------------------------------------------------------------
@@ -112,6 +114,14 @@ void testApp::keyPressed(int key) {
     case 'C':
         gravitator.clear();
         break;
+    case 'z':
+        thePlayer.rotation -= 3;
+        thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
+        break;
+    case 'x':
+        thePlayer.rotation += 3;
+        thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
+        break;
     case OF_KEY_UP:
     /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
     /// NOTE (Aaron#5#): Do we need jump *and* ABSOLUTE/ROTATIONAL controls?
@@ -128,64 +138,37 @@ void testApp::keyPressed(int key) {
     case OF_KEY_DOWN:
         break;
     case OF_KEY_LEFT:
-            int PREVIOUS_ROTATION;
-            PREVIOUS_ROTATION = thePlayer.rotation;
-
-            thePlayer.rotation -= 3;
-
-            int DELTA_ROTATION;
-            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
-
-            thePlayer.dir.rotate(DELTA_ROTATION);
-            break;
-        /*
         if (thePlayer.ON_PLANET) {
-            thePlayer.dir.set(thePlayer.left);
-            int POWER = 5000;
-            ofVec2f VEC_MAGNITUDE(POWER, POWER);
-            thePlayer.f += VEC_MAGNITUDE;
+            float planet_r = gravitator[thePlayer.collision]->r;
+            ofVec2f planet_pos = gravitator[thePlayer.collision]->pos;
+            ofVec2f normal = thePlayer.pos - planet_pos;
+
+            theta = atan2(normal.y / planet_r, normal.x / planet_r);
+            theta -= 150 / planet_r * dt;
+
+            thePlayer.pos.x = (cos(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.x;
+            thePlayer.pos.y = (sin(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.y;
             break;
         } else {
-            int PREVIOUS_ROTATION;
-            PREVIOUS_ROTATION = thePlayer.rotation;
-
             thePlayer.rotation -= 3;
-
-            int DELTA_ROTATION;
-            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
-
-            thePlayer.dir.rotate(DELTA_ROTATION);
+            thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
             break;
         }
-        */
     case OF_KEY_RIGHT:
-            //int PREVIOUS_ROTATION;
-            PREVIOUS_ROTATION = thePlayer.rotation;
-
-            thePlayer.rotation += 3;
-
-            //int DELTA_ROTATION;
-            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
-
-            thePlayer.dir.rotate(DELTA_ROTATION);
-            break;
-        /*
         if (thePlayer.ON_PLANET) {
-            thePlayer.dir.set(thePlayer.right);
+            float planet_r = gravitator[thePlayer.collision]->r;
+            ofVec2f planet_pos = gravitator[thePlayer.collision]->pos;
+            ofVec2f normal = thePlayer.pos - planet_pos;
+            theta = atan2(normal.y / planet_r, normal.x / planet_r);
+            theta += 150 / planet_r * dt;
+            thePlayer.pos.x = (cos(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.x;
+            thePlayer.pos.y = (sin(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.y;
             break;
         } else {
-            int PREVIOUS_ROTATION;
-            PREVIOUS_ROTATION = thePlayer.rotation;
-
             thePlayer.rotation += 3;
-
-            int DELTA_ROTATION;
-            DELTA_ROTATION = thePlayer.rotation - PREVIOUS_ROTATION;
-
-            thePlayer.dir.rotate(DELTA_ROTATION);
+            thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
             break;
         }
-        */
     case 32:
         thePlayer.chargeJump();
         break;
