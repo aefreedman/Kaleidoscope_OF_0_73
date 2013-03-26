@@ -2,7 +2,7 @@
 #include <fstream>
 #define nl '\n'
 #define screen_width 1280
-#define dt 1/60
+#define dt 1.0/60.0
 
 //--------------------------------------------------------------
 void testApp::setup() {

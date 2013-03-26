@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "ofMain.h"
+#include "GameObject.h"
 #include "Gravitator.h"
 #include "Planet.h"
 #include "Sun.h"

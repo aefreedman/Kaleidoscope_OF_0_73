@@ -5,10 +5,22 @@
 #define screen_height 720
 
 #include <vector>
-#include "Astronaut.h"
-#include "Gravitator.h"
 #include <iostream>
-
+#include "ofMain.h"
+#include "Gravitator.h"
+#include "Planet.h"
+#include "Sun.h"
+#include "BlackHole.h"
+#include "Astronaut.h"
+#include "Player.h"
+#include "StrandedAstronaut.h"
+#include "Decor.h"
+#include "Shell.h"
+#include "Solid.h"
+#include "Nonsolid.h"
+#define fps 60
+#define screen_width 1280
+#define screen_height 720
 
 class Player : public Astronaut {
 public:
@@ -35,6 +47,8 @@ public:
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
 
+    std::vector<Gravitator *> *gravitator;
+
     ofVec2f pos;
     ofVec2f starting_pos;
     ofVec2f gravity;
@@ -55,18 +69,19 @@ public:
     float damp;
     float jumpStrength;
     float restitution;
+    float maxJump;
+    float oxygen;
+    float rotation_speed;
+    float speed_on_planet;
+    float jetpack_power;
+    float jump_multiplier;
+    float jetpack_o2_use;
 
     int w;
     int h;
     int r;
-    int maxJump;
-    float oxygen;
-    int rotation_speed;
-    int speed_on_planet;
-    int jetpack_power;
-    int jump_multiplier;
-
-    std::vector<Gravitator *> *gravitator;
+    int collision;
+    int attractor;
 
     bool ON_PLANET;
     bool IN_GRAVITY_WELL;
@@ -80,10 +95,6 @@ public:
     bool OFF_SCREEN_RESET;
     bool SIMPLE_GRAVITY;
     bool GUI;
-
-    int collision;
-    int attractor;
-
 protected:
 
 

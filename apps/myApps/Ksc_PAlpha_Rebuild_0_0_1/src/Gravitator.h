@@ -1,10 +1,9 @@
 #ifndef GRAVITATOR_H
 #define GRAVITATOR_H
 
-#include "ofMain.h"
+#include "GameObject.h"
 
-
-class Gravitator {
+class Gravitator : public GameObject {
 public:
     Gravitator();
     Gravitator(ofVec2f _pos, int _r, int _m, int _gR);

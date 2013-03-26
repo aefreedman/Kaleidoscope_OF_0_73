@@ -1,19 +1,17 @@
 #include "Gravitator.h"
 
-Gravitator::Gravitator()
-{
+Gravitator::Gravitator() : GameObject() {
     //ctor
 }
 
-Gravitator::Gravitator(ofVec2f _pos, int _r, int _m, int _gR) {
+Gravitator::Gravitator(ofVec2f _pos, int _r, int _m, int _gR) : GameObject() {
     pos = _pos;
     r = _r;
     m = _m;
     gR = _gR;
-
 }
 
-Gravitator::Gravitator(ofVec2f _pos, int _r, int _gR) {
+Gravitator::Gravitator(ofVec2f _pos, int _r, int _gR) : GameObject() {
     pos = _pos;
     r = _r;
     gR = _gR;
@@ -31,7 +29,6 @@ void Gravitator::draw() {
 
 }
 
-Gravitator::~Gravitator()
-{
+Gravitator::~Gravitator() {
     //dtor
 }

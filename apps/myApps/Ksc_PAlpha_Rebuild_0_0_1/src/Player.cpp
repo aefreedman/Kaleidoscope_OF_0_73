@@ -1,6 +1,6 @@
 #include "Player.h"
 #define fps 60
-#define dt 1/60
+#define dt 1.0/60.0
 
 Player::Player() : Astronaut() {
     //ctor
@@ -28,16 +28,17 @@ void Player::setup() {
     oxygen                  = 100.0;  /// TODO (Aaron#4#): Couple oxygen to movement ability
     damp                    = 1.00;
     rotation                = 180;
-    maxJump                 = 0;
-    m                       = 1;
-    jumpStrength            = 0;
-    G                       = 20;
+    maxJump                 = 0.0;
+    m                       = 1.0;
+    jumpStrength            = 0.0;
+    G                       = 20.0;
     restitution             = 0.10; /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 200;
-    rotation_speed          = 3;
-    speed_on_planet         = 150;
-    jetpack_power           = 5000;
-    jump_multiplier         = 3000;
+    rotation_speed          = 3.0;
+    speed_on_planet         = 150.0;
+    jetpack_power           = 5000.0;
+    jump_multiplier         = 3000.0;
+    jetpack_o2_use          = 5;
 
     /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
     /// if G is in player & mass is ignored; give planets individual
@@ -327,6 +328,7 @@ void Player::jump() {
 void Player::jetpack() {
     ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
     f += VEC_MAGNITUDE;
+    oxygen -= jetpack_o2_use;
     cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
 }
 
