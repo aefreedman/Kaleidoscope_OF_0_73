@@ -51,8 +51,7 @@ class testApp : public ofBaseApp{
         int NEW_PLANET_R;
         int NEW_PLANET_GR;
         int NEW_PLANET_M;
-
-    int levelID;
+        int levelID;
 
     private:
         int planet_base_m;

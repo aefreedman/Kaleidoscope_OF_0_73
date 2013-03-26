@@ -5,12 +5,12 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
     //ctor
 }
 
-StrandedAstronaut::StrandedAstronaut(ofVec2f _pos) : Astronaut(_pos) {
+StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : Astronaut(_pos), gravitator(gravitator) {
     pos                         = _pos;
     r                           = 5;
 
-    a.set(0, 0);
-    f.set(0, 0);
+    //a.set(0, 0);
+    //f.set(0, 0);
     dir.set(0, 0);
 
 
@@ -40,14 +40,19 @@ void StrandedAstronaut::move() {
         followPlayer();
     }
 
-    a  = (f / m) * dt;
-    v += dir * a * dt;
-    v += gravity * dt;
-    v *= damp;
+    //a  = (f / m) * dt;
+    //v += dir * a * dt;
+    v += dir * dt;
+    //v += gravity * dt;
+    //v *= damp;
     pos += v * dt;
 }
 
 void StrandedAstronaut::followPlayer() {
+    ofVec2f temp;
+    temp.set(10, 10);
+    //pos = player_pos;
+    pos.interpolate(player_pos, .01);
 
 }
 

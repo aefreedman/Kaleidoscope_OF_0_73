@@ -18,9 +18,6 @@
 #include "Shell.h"
 #include "Solid.h"
 #include "Nonsolid.h"
-#define fps 60
-#define screen_width 1280
-#define screen_height 720
 
 class Player : public Astronaut {
 public:
@@ -52,39 +49,13 @@ public:
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
 
-    ofVec2f pos;
-    ofVec2f starting_pos;
-    ofVec2f gravity;
-    ofVec2f v;
-    ofVec2f a;
-    ofVec2f p;
-    ofVec2f jp;
-    ofVec2f left;
-    ofVec2f right;
-    ofVec2f jumpDir;
-    ofVec2f f;
-    ofVec2f dir;
-    ofVec2f angular_v;
-    ofQuaternion orientation;
-
-    float m;
-    float rotation;
-    float damp;
     float jumpStrength;
-    float restitution;
     float maxJump;
-    float oxygen;
     float rotation_speed;
     float speed_on_planet;
     float jetpack_power;
     float jump_multiplier;
     float jetpack_o2_use;
-
-    int w;
-    int h;
-    int r;
-    int collision;
-    int attractor;
 
     bool ON_PLANET;
     bool IN_GRAVITY_WELL;
