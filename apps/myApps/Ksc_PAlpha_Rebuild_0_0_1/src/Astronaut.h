@@ -10,9 +10,9 @@ class Astronaut
         Astronaut(ofVec2f _pos);
         virtual ~Astronaut();
 
-        virtual void update();
-        virtual void draw();
-        virtual void move();
+        virtual void update() = 0;
+        virtual void draw() = 0;
+        virtual void move() = 0;
 
         ofVec2f pos;
         ofVec2f v;

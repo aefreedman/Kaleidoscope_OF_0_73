@@ -6,8 +6,8 @@ class GameObject {
 public:
     GameObject();
     virtual ~GameObject();
-    virtual void update();
-    virtual void draw();
+    virtual void update() = 0;
+    virtual void draw() = 0;
 protected:
 private:
 };

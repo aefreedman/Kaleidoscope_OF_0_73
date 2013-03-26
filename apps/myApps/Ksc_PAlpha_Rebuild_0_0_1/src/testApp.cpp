@@ -2,6 +2,7 @@
 #include <fstream>
 #define nl '\n'
 #define screen_width 1280
+#define screen_height 720
 #define dt 1.0/60.0
 
 //--------------------------------------------------------------
@@ -10,17 +11,24 @@ void testApp::setup() {
     ofEnableAlphaBlending();
     ofBackground(0, 0, 0);
 
-    thePlayer = Player(ofVec2f(300,300), &gravitator);
-
-    clickState = "play mode";
-    levelState = "Working from scratch.";
+    player                          = Player(ofVec2f(300,300), &gravitator, &strandedAstronaut);
+    clickState                      = "play mode";
+    levelState                      = "Working from scratch.";
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
+
+    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2)));
 }
 
 //--------------------------------------------------------------
 void testApp::update() {
-    thePlayer.update();
+    player.update();
+    for (int i = 0; i < gravitator.size(); i++) {
+        gravitator[i]->update();
+    }
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        strandedAstronaut[i]->update();
+    }
 }
 
 //--------------------------------------------------------------
@@ -28,8 +36,11 @@ void testApp::draw() {
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        strandedAstronaut[i]->draw();
+    }
 
-    thePlayer.draw();
+    player.draw();
 
     /// TODO (Aaron#9#): Move level editor into own class
     ///LEVEL EDITOR---------------------------------------------
@@ -37,7 +48,9 @@ void testApp::draw() {
     if (clickState == "setting size") {
         ofSetColor(0,255,0);
         ofNoFill();
+        ofPushMatrix();
         ofCircle(NEW_PLANET_POS, ofDist(mouseX, mouseY, NEW_PLANET_POS.x, NEW_PLANET_POS.y));
+        ofPopMatrix();
     }
     if(clickState == "setting grav") {
         ofSetColor(0,255,0);
@@ -45,7 +58,9 @@ void testApp::draw() {
         ofCircle(NEW_PLANET_POS,ofDist(mouseX,mouseY,NEW_PLANET_POS.x,NEW_PLANET_POS.y));
         ofSetColor(230,230,255);
         ofNoFill();
+        ofPushMatrix();
         ofCircle(NEW_PLANET_POS,NEW_PLANET_R);
+        ofPopMatrix();
 
         //ofSetColor(0,255,0);
         //ofDrawBitmapString("press 'h' to toggle habitability. (right now it's " + ofToString(planetHabitability) + ".)", 40,100);
@@ -79,6 +94,14 @@ void testApp::draw() {
 
 void testApp::addGravitator() {
     gravitator.push_back(new Planet(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+    int chance = ofRandom(3);
+    if (chance == 0) {
+        addStrandedAstronaut();
+    }
+}
+
+void testApp::addStrandedAstronaut() {
+    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(NEW_PLANET_POS.x, NEW_PLANET_POS.y + NEW_PLANET_R)));
 }
 
 //--------------------------------------------------------------
@@ -86,17 +109,17 @@ void testApp::keyPressed(int key) {
 
     switch (key) {
     case 'g':
-        thePlayer.USING_GRAVITY = !thePlayer.USING_GRAVITY;
+        player.USING_GRAVITY = !player.USING_GRAVITY;
         break;
     case 'G':
-        thePlayer.SIMPLE_GRAVITY = !thePlayer.SIMPLE_GRAVITY;
+        player.SIMPLE_GRAVITY = !player.SIMPLE_GRAVITY;
         break;
     case 'p':
         clickState = "placing gravitators";
         break;
     case 's':
         clickState = "placing player";
-        thePlayer.setup();
+        player.setup();
         break;
     case 'w':
         clickState = "placing walls";
@@ -117,47 +140,47 @@ void testApp::keyPressed(int key) {
         gravitator.clear();
         break;
     case 'z':
-        thePlayer.rotateDirection(true);
+        player.rotateDirection(true);
         break;
     case 'x':
-        thePlayer.rotateDirection(false);
+        player.rotateDirection(false);
         break;
     case OF_KEY_UP:
     /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
     /// NOTE (Aaron#5#): Do we need jump *and* ABSOLUTE/ROTATIONAL controls?
-        if (thePlayer.ON_PLANET) {
+        if (player.ON_PLANET) {
 
             break;
-        } else if (thePlayer.CAN_JETPACK) {
-            thePlayer.jetpack();
+        } else if (player.CAN_JETPACK) {
+            player.jetpack();
             break;
         }
     case OF_KEY_DOWN:
         break;
     case OF_KEY_LEFT:
-        if (thePlayer.ON_PLANET) {
-            thePlayer.traversePlanet(true);
+        if (!player.CAN_LAND_ON_PLANET) {
+            player.traversePlanet(true);
             break;
         } else {
-            thePlayer.rotateDirection(true);
+            player.rotateDirection(true);
             break;
         }
     case OF_KEY_RIGHT:
-        if (thePlayer.ON_PLANET) {
-            thePlayer.traversePlanet(false);
+        if (!player.CAN_LAND_ON_PLANET) {
+            player.traversePlanet(false);
             break;
         } else {
-            thePlayer.rotateDirection(false);
+            player.rotateDirection(false);
             break;
         }
     case 32:
-        thePlayer.chargeJump();
+        player.chargeJump();
         break;
     case '=':
-        thePlayer.damp += 0.01;
+        player.damp += 0.01;
         break;
     case '-':
-        thePlayer.damp -= 0.01;
+        player.damp -= 0.01;
         break;
     }
 }
@@ -172,7 +195,7 @@ void testApp::keyReleased(int key) {
     case OF_KEY_UP:
         break;
     case 32:
-        thePlayer.jump();
+        player.jump();
         break;
     }
 
@@ -181,7 +204,7 @@ void testApp::keyReleased(int key) {
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ) {
     if (clickState == "placing player") {
-        thePlayer.pos.set(x, y);
+        player.pos.set(x, y);
     }
 
 }
@@ -211,8 +234,8 @@ void testApp::mousePressed(int x, int y, int button) {
 
     }
     if(clickState == "placing player") {
-        thePlayer.pos.set(x, y);
-        thePlayer.starting_pos.set(thePlayer.pos);
+        player.pos.set(x, y);
+        player.starting_pos.set(player.pos);
         clickState = "play mode";
     }
 }

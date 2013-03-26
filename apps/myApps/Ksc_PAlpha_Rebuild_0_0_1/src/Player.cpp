@@ -6,7 +6,7 @@ Player::Player() : Astronaut() {
     //ctor
 }
 
-Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : Astronaut(_pos), gravitator(gravitator) {
+Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut) {
     setup();
     pos.set(500,500);
     starting_pos.set(pos);
@@ -28,7 +28,7 @@ void Player::setup() {
     oxygen                  = 100.0;  /// TODO (Aaron#4#): Couple oxygen to movement ability
     damp                    = 1.00;
     rotation                = 180;
-    maxJump                 = 0.0;
+    maxJump                 = 100000.0;
     m                       = 1.0;
     jumpStrength            = 0.0;
     G                       = 20.0;
@@ -37,7 +37,7 @@ void Player::setup() {
     rotation_speed          = 3.0;
     speed_on_planet         = 150.0;
     jetpack_power           = 5000.0;
-    jump_multiplier         = 3000.0;
+    jump_multiplier         = 30.0;
     jetpack_o2_use          = 5;
 
     /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
@@ -64,6 +64,7 @@ void Player::setup() {
 
 void Player::update() {
     detectPlanetCollisions();
+    detectAstronautCollisions();
     move();
 }
 
@@ -176,13 +177,28 @@ void Player::move() {
 
 }
 
+void Player::detectAstronautCollisions() {
+    for (int i = 0; i < strandedAstronaut->size(); i++) {
+        float dist                  = pos.distance((*strandedAstronaut)[i]->pos);
+        float astronaut_r           = (*strandedAstronaut)[i]->r;
+
+        if (dist <= r + astronaut_r) {
+            (*strandedAstronaut)[i]->FOLLOWING_PLAYER = true;
+            cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
+        }
+        if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER == true) {
+            (*strandedAstronaut)[i]->getPlayerData(pos);
+        }
+    }
+}
+
 void Player::detectPlanetCollisions() {
     ON_PLANET = false;
     IN_GRAVITY_WELL = false;
     EXITED_GRAVITY_WELL = false;
 
     for (int i = 0; i < gravitator->size(); i++) {
-        float dist                  = pos.distance((*gravitator)[i]->pos);
+        float dist                = pos.distance((*gravitator)[i]->pos);
         int planet_r              = (*gravitator)[i]->r;
         int planet_gravity_range  = (*gravitator)[i]->gR;
 
@@ -198,12 +214,16 @@ void Player::detectPlanetCollisions() {
             IN_GRAVITY_WELL = true;
         }
     }
-
+    if (ON_PLANET) {
+        oxygen = 100.0;
+    }
     if (ON_PLANET && CAN_LAND_ON_PLANET) {
             CAN_LAND_ON_PLANET = false;
+            collisionData(collision);
         }
     if (ON_PLANET && ORIENT_TO_PLANET) {
             orientToPlanet(collision);
+            bounce();
         }
     if (IN_GRAVITY_WELL && CAN_LAND_ON_PLANET && USING_GRAVITY) {
             calculateGravity(attractor);
@@ -214,7 +234,7 @@ void Player::detectPlanetCollisions() {
         }
 }
 
-bool Player::detectCollisions() {
+bool Player::detectCollisions() {  ///Not in use
     for (int i = 0; i < gravitator->size(); i++) {
         float dist = pos.distance((*gravitator)[i]->pos);
         float sum_radii = r + (*gravitator)[i]->r;
@@ -222,8 +242,31 @@ bool Player::detectCollisions() {
     }
 }
 
-void Player::bounce() {
+void Player::collisionData(int collision) {
+    planet_pos                          = (*gravitator)[collision]->pos;
+    planet_m                            = (*gravitator)[collision]->m;
+    planet_r                            = (*gravitator)[collision]->r;
+    collision_normal.set(pos - planet_pos);
+    normalized_collision_normal         = collision_normal.getNormalized();
+    collision_perpendicular             = collision_normal.getPerpendicular();
+    left                                = collision_perpendicular;
+    right                               = -collision_perpendicular;
 
+    maxJump= jump_multiplier * planet_m;
+    //cout << ofToString(planet_m) << endl;
+}
+
+void Player::bounce() {
+    /*
+    float a1 = v.dot(normalized_collision_normal);
+    float optimizedP = (2.0 * a1) / (m + planet_m);
+    ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
+    v_prime *= restitution;
+
+    if (!CAN_LAND_ON_PLANET){
+        v.set(v_prime);
+    }
+    */
 }
 
 void Player::calculateGravity(int attractor) {
@@ -233,7 +276,6 @@ void Player::calculateGravity(int attractor) {
     int planet_mass = (*gravitator)[attractor]->m;
 
     ofVec2f planet_to_player_normal;
-    //planet_to_player_normal.set(pos - planet_pos);
     planet_to_player_normal.set(planet_pos - pos);
     ofVec2f sqrDist;
     //sqrDist.set(pos.squareDistance(planet_pos) - (planet_to_player_normal * planet_to_player_normal));
@@ -249,37 +291,21 @@ void Player::calculateGravity(int attractor) {
 }
 
 void Player::orientToPlanet(int collision) {
-    ofVec2f planet_pos = (*gravitator)[collision]->pos;
-    int planet_m = (*gravitator)[collision]->m;
+    jumpDir.set(collision_perpendicular.normalized());
 
-    ofVec2f planet_to_player_normal;
-    planet_to_player_normal.set(pos - planet_pos);
-    ofVec2f normalized_normal = planet_to_player_normal.getNormalized();
-
-    ofVec2f perp    = planet_to_player_normal.getPerpendicular();
-    ofVec2f up      (0, -1);
-    left            = perp;
-    right           = -perp;
-
-    jumpDir.set(perp.normalized());
-
-    float a1 = v.dot(normalized_normal);
+    float a1 = v.dot(normalized_collision_normal);
     float optimizedP = (2.0 * a1) / (m + planet_m);
-    ofVec2f v_prime = v - optimizedP * planet_m * normalized_normal;
+    ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
     v_prime *= restitution;
 
     if (!CAN_LAND_ON_PLANET){
         v.set(v_prime);
     }
-
 }
 
 void Player::traversePlanet(bool move_left) {
     float theta;
-    float planet_r = (*gravitator)[collision]->r;
-    ofVec2f planet_pos = (*gravitator)[collision]->pos;
-    ofVec2f normal = pos - planet_pos;
-    theta = atan2(normal.y / planet_r, normal.x / planet_r);
+    theta = atan2(collision_normal.y / planet_r, collision_normal.x / planet_r);
 
     if (move_left) {
         theta -= speed_on_planet / planet_r * dt;
@@ -312,7 +338,6 @@ inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVe
 
 
 void Player::chargeJump() {
-    maxJump = jump_multiplier * display_g.length();
     if (jumpStrength < maxJump) {
         jumpStrength += 0.10 * maxJump;
     }

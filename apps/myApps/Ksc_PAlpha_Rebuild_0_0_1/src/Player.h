@@ -25,7 +25,7 @@
 class Player : public Astronaut {
 public:
     Player();
-    Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator);
+    Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut);
     virtual ~Player();
 
     void setup();
@@ -35,7 +35,9 @@ public:
     void move();
     void jump();
     void chargeJump();
+    void detectAstronautCollisions();
     void detectPlanetCollisions();
+    void collisionData(int collision);
     bool detectCollisions();
     void bounce();
     void orientToPlanet(int collision);
@@ -48,6 +50,7 @@ public:
     void keyReleased(ofKeyEventArgs& args);
 
     std::vector<Gravitator *> *gravitator;
+    std::vector<StrandedAstronaut *> *strandedAstronaut;
 
     ofVec2f pos;
     ofVec2f starting_pos;
@@ -106,6 +109,13 @@ private:
     ofVec2f display_g;
     ofVec2f display_a;
     ofVec2f display_f;
+
+    ofVec2f planet_pos;
+    ofVec2f collision_normal;
+    ofVec2f normalized_collision_normal;
+    ofVec2f collision_perpendicular;
+    float planet_m;
+    float planet_r;
 
 
 };

@@ -7,6 +7,3 @@ GameObject::GameObject() {
 GameObject::~GameObject() {
     //dtor
 }
-
-void GameObject::update() {}
-void GameObject::draw() {}

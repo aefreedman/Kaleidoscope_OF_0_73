@@ -11,8 +11,3 @@ Astronaut::Astronaut(ofVec2f _pos) {
 Astronaut::~Astronaut() {
     //dtor
 }
-
-void Astronaut::update() {}
-void Astronaut::draw() {}
-void Astronaut::move() {
-}

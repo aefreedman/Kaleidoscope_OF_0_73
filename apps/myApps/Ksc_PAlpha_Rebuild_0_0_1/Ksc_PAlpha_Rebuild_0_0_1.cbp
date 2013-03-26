@@ -164,6 +164,8 @@
 		<Unit filename="src\Decor.h">
 			<Option virtualFolder="src\DECOR\" />
 		</Unit>
+		<Unit filename="src\GameObject.cpp" />
+		<Unit filename="src\GameObject.h" />
 		<Unit filename="src\Gravitator.cpp">
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>

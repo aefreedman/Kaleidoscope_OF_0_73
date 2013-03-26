@@ -27,6 +27,7 @@ class testApp : public ofBaseApp{
 		void update();
 		void draw();
 		void addGravitator();
+		void addStrandedAstronaut();
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -41,7 +42,8 @@ class testApp : public ofBaseApp{
         void importLevel();
 
         std::vector<Gravitator *> gravitator;
-        Player thePlayer;
+        std::vector<StrandedAstronaut *> strandedAstronaut;
+        Player player;
 
         string clickState;
         string levelState;
