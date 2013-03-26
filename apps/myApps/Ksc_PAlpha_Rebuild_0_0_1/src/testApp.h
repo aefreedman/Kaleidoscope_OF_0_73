@@ -52,7 +52,8 @@ class testApp : public ofBaseApp{
     int levelID;
 
     private:
-        float theta;
+        int planet_base_m;
+        int planet_mass_multiplier;
 
 
 };

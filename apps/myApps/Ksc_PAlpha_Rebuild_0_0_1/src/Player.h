@@ -19,6 +19,7 @@ public:
     void setup();
     void update();
     void draw();
+    void drawGUI();
     void move();
     void jump();
     void chargeJump();
@@ -26,7 +27,10 @@ public:
     bool detectCollisions();
     void bounce();
     void orientToPlanet(int collision);
+    void rotateDirection(bool rotate_left);
+    void traversePlanet(bool move_left);
     void calculateGravity(int attractor);
+    void jetpack();
     inline ofQuaternion AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
@@ -56,7 +60,11 @@ public:
     int h;
     int r;
     int maxJump;
-    int oxygen;
+    float oxygen;
+    int rotation_speed;
+    int speed_on_planet;
+    int jetpack_power;
+    int jump_multiplier;
 
     std::vector<Gravitator *> *gravitator;
 
@@ -71,6 +79,7 @@ public:
     bool CAN_LAND_ON_PLANET;
     bool OFF_SCREEN_RESET;
     bool SIMPLE_GRAVITY;
+    bool GUI;
 
     int collision;
     int attractor;

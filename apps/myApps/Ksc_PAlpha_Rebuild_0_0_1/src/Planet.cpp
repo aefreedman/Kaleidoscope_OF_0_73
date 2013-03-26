@@ -31,5 +31,8 @@ void Planet::draw() {
     ofNoFill();
     ofCircle(pos, gR);
 
+    ofSetColor(255, 0, 0, 255);
+    ofDrawBitmapString(ofToString(m), pos);
+
 }
 

@@ -14,7 +14,8 @@ void testApp::setup() {
 
     clickState = "play mode";
     levelState = "Working from scratch.";
-    theta = 0;
+    planet_base_m                   = 1000;
+    planet_mass_multiplier          = 250;
 }
 
 //--------------------------------------------------------------
@@ -32,6 +33,7 @@ void testApp::draw() {
 
     /// TODO (Aaron#9#): Move level editor into own class
     ///LEVEL EDITOR---------------------------------------------
+    int text_gap = 15;
     if (clickState == "setting size") {
         ofSetColor(0,255,0);
         ofNoFill();
@@ -50,9 +52,9 @@ void testApp::draw() {
     }
 
     ///TOP TEXT DISPLAY-----------------------------------------
-    ofSetColor(0,255,0);
+    ofSetColor(0, 255, 0);
     ofDrawBitmapString("level " + ofToString(levelID), ofGetWidth()/2, 20);
-    ofDrawBitmapString("shift + w to advance level ID, shift + q to go back. shift + e to export, shift + i to import.", ofGetWidth()/2 - 300, 50);
+    ofDrawBitmapString("W (level++), Q (level--), E to export, I to import.", ofGetWidth()/2 - 300, 50);
     ofDrawBitmapString(levelState, ofGetWidth()/2, 35);
     ofDrawBitmapString(clickState, 40,65);
     if (clickState == "placing gravitators") {
@@ -64,15 +66,15 @@ void testApp::draw() {
     } else if (clickState == "placing player") {
         ofDrawBitmapString("click to set player location", 40,80);
     }
-    //ofDrawBitmapString("dir is " + ofToString(thePlayer.dir),40,95);
-    ofDrawBitmapString("max jump is " + ofToString(thePlayer.maxJump),40,110);
 
     ///BOTTOM TEXT DISPLAY----------------------------------------
-    ofDrawBitmapString("p to place gravitators.", 600,685);
-    ofDrawBitmapString("w to place walls.", 600,700);
-    ofDrawBitmapString("s to place player.", 600,715);
-    ofDrawBitmapString("shift + c to clear gravitators.", 600,730);
-    ofDrawBitmapString("1 key lowers max jump strength. 2 key raises.", 600,745);
+    int x = 50;
+    int y = 100;
+    string info = "";
+    info += "p to place gravitators\n" ;
+    info += "s to place player\n";
+    info += "shift + c to clear gravitators\n";
+    ofDrawBitmapString(info, x, y);
 }
 
 void testApp::addGravitator() {
@@ -115,12 +117,10 @@ void testApp::keyPressed(int key) {
         gravitator.clear();
         break;
     case 'z':
-        thePlayer.rotation -= 3;
-        thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
+        thePlayer.rotateDirection(true);
         break;
     case 'x':
-        thePlayer.rotation += 3;
-        thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
+        thePlayer.rotateDirection(false);
         break;
     case OF_KEY_UP:
     /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
@@ -129,44 +129,25 @@ void testApp::keyPressed(int key) {
 
             break;
         } else if (thePlayer.CAN_JETPACK) {
-            int POWER = 5000;
-            ofVec2f VEC_MAGNITUDE(POWER, POWER);
-            thePlayer.f += VEC_MAGNITUDE;
-            cout << "impulsed at " + ofToString(thePlayer.f.x, 0) + "N, " + ofToString(thePlayer.f.y, 0) + "N" + nl;
+            thePlayer.jetpack();
             break;
         }
     case OF_KEY_DOWN:
         break;
     case OF_KEY_LEFT:
         if (thePlayer.ON_PLANET) {
-            float planet_r = gravitator[thePlayer.collision]->r;
-            ofVec2f planet_pos = gravitator[thePlayer.collision]->pos;
-            ofVec2f normal = thePlayer.pos - planet_pos;
-
-            theta = atan2(normal.y / planet_r, normal.x / planet_r);
-            theta -= 150 / planet_r * dt;
-
-            thePlayer.pos.x = (cos(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.x;
-            thePlayer.pos.y = (sin(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.y;
+            thePlayer.traversePlanet(true);
             break;
         } else {
-            thePlayer.rotation -= 3;
-            thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
+            thePlayer.rotateDirection(true);
             break;
         }
     case OF_KEY_RIGHT:
         if (thePlayer.ON_PLANET) {
-            float planet_r = gravitator[thePlayer.collision]->r;
-            ofVec2f planet_pos = gravitator[thePlayer.collision]->pos;
-            ofVec2f normal = thePlayer.pos - planet_pos;
-            theta = atan2(normal.y / planet_r, normal.x / planet_r);
-            theta += 150 / planet_r * dt;
-            thePlayer.pos.x = (cos(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.x;
-            thePlayer.pos.y = (sin(theta) * (planet_r - 0.1 + thePlayer.r)) + planet_pos.y;
+            thePlayer.traversePlanet(false);
             break;
         } else {
-            thePlayer.rotation += 3;
-            thePlayer.dir.set(cos(ofDegToRad(thePlayer.rotation)), sin(ofDegToRad(thePlayer.rotation)));
+            thePlayer.rotateDirection(false);
             break;
         }
     case 32:
@@ -185,13 +166,10 @@ void testApp::keyPressed(int key) {
 void testApp::keyReleased(int key) {
     switch (key) {
     case 'a':
-        //cout << "a";
-        //thePlayer.f -= thePlayer.left;
         break;
     case 'd':
         break;
     case OF_KEY_UP:
-        thePlayer.f.set(0, 0);
         break;
     case 32:
         thePlayer.jump();
@@ -225,7 +203,7 @@ void testApp::mousePressed(int x, int y, int button) {
     }
     if(clickState == "setting grav") {
         NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
-        NEW_PLANET_M = 100000 + (NEW_PLANET_GR / NEW_PLANET_R) * 5000;
+        NEW_PLANET_M = (planet_base_m * NEW_PLANET_R) + (NEW_PLANET_GR * planet_mass_multiplier / NEW_PLANET_R);
         addGravitator();
         clickState = "play mode";
     }

@@ -25,15 +25,19 @@ void Player::setup() {
     w                       = 10;
     h                       = 10;
     r                       = 5;
-    oxygen                  = 100;  /// TODO (Aaron#4#): Couple oxygen to movement ability
+    oxygen                  = 100.0;  /// TODO (Aaron#4#): Couple oxygen to movement ability
     damp                    = 1.00;
     rotation                = 180;
-    maxJump                 = 100000;
-    m                       = 0.1;
+    maxJump                 = 0;
+    m                       = 1;
     jumpStrength            = 0;
-    G                       = 98;
-    restitution             = 0.75; /// Used to calculate the amount of momentum conserved when bouncing off a planet
+    G                       = 20;
+    restitution             = 0.10; /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 200;
+    rotation_speed          = 3;
+    speed_on_planet         = 150;
+    jetpack_power           = 5000;
+    jump_multiplier         = 3000;
 
     /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
     /// if G is in player & mass is ignored; give planets individual
@@ -52,6 +56,7 @@ void Player::setup() {
     ROTATIONAL_IMPULSE      = true;
     OFF_SCREEN_RESET        = true;
     SIMPLE_GRAVITY          = false;
+    GUI                     = true;
 
     /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
 }
@@ -64,7 +69,7 @@ void Player::update() {
 void Player::draw() {
     ofSetColor(255, 0, 0);
     ofNoFill();
-    ofCircle(pos, 20 * (jumpStrength / maxJump));
+    ofCircle(pos, (20 * (jumpStrength / maxJump)) + r) ;
     ofSetColor(0, 255, 240);
     ofFill();
     ofPushMatrix();
@@ -76,12 +81,26 @@ void Player::draw() {
     ofLine(ofPoint(0, 0), ofPoint(100, 0));
     ofPopMatrix();
 
+    if (GUI) {
+        drawGUI();
+    }
+}
+
+void Player::drawGUI() {
+    int x = 1000;
+    int y = 600;
+    string gui = "";
+    gui += "O2: " + ofToString(oxygen, 6) + nl;
+    ofSetColor(0, 50, 255);
+    ofDrawBitmapString(gui, x, y);
+
     if (DEBUG) {
         int x = 30;
         int y = 550;
         int column_width = 400;
         int precision = 0;
         string info = "";
+        info += "DEBUG MENU" + nl;
         info += "f: " + ofToString(display_f, precision) + nl;
         if (SIMPLE_GRAVITY) {
         info += "g: " + ofToString(display_g, precision) + " (simple)" + nl;
@@ -95,6 +114,8 @@ void Player::draw() {
         info += "rot: " + ofToString(rotation) + nl;
         info += "damp: " + ofToString(damp, 2) + nl;
         info += "jump: " + ofToString(jumpDir, 2) + nl;
+        info += "maxJump: " + ofToString(maxJump, 2) + nl;
+
         ofSetColor(240, 0, 20);
         ofDrawBitmapString(info, x, y);
 
@@ -187,7 +208,8 @@ void Player::detectPlanetCollisions() {
             calculateGravity(attractor);
         }
     if (!IN_GRAVITY_WELL) {
-
+        display_g.set(0);
+        oxygen -= dt;
         }
 }
 
@@ -213,6 +235,7 @@ void Player::calculateGravity(int attractor) {
     //planet_to_player_normal.set(pos - planet_pos);
     planet_to_player_normal.set(planet_pos - pos);
     ofVec2f sqrDist;
+    //sqrDist.set(pos.squareDistance(planet_pos) - (planet_to_player_normal * planet_to_player_normal));
     sqrDist.set(pos.squareDistance(planet_pos));
 
     /// NOTE (Aaron#5#): Gravity with mass works, but it seems to make everything way too hard.
@@ -250,6 +273,32 @@ void Player::orientToPlanet(int collision) {
 
 }
 
+void Player::traversePlanet(bool move_left) {
+    float theta;
+    float planet_r = (*gravitator)[collision]->r;
+    ofVec2f planet_pos = (*gravitator)[collision]->pos;
+    ofVec2f normal = pos - planet_pos;
+    theta = atan2(normal.y / planet_r, normal.x / planet_r);
+
+    if (move_left) {
+        theta -= speed_on_planet / planet_r * dt;
+    } else {
+        theta += speed_on_planet / planet_r * dt;
+    }
+    pos.x = (cos(theta) * (planet_r + r)) + planet_pos.x;
+    pos.y = (sin(theta) * (planet_r + r)) + planet_pos.y;
+
+}
+
+void Player::rotateDirection(bool rotate_left) {
+    if (rotate_left) {
+        rotation -= rotation_speed;
+    } else {
+        rotation += rotation_speed;
+    }
+    dir.set(cos(ofDegToRad(rotation)), sin(ofDegToRad(rotation)));
+}
+
 inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v) {
     float x = angular_v.x;
     float y = angular_v.y;
@@ -262,21 +311,23 @@ inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVe
 
 
 void Player::chargeJump() {
+    maxJump = jump_multiplier * display_g.length();
     if (jumpStrength < maxJump) {
         jumpStrength += 0.10 * maxJump;
     }
 }
 
 void Player::jump() {
-    //dir = jumpDir;
-    //f += jumpDir * jumpStrength;
     if (!CAN_LAND_ON_PLANET) {
     f += jumpStrength;
-    //v += 100 * jumpDir * dt;
     }
-    //f += normTemp;
-    //cout << jumpDir * jumpStrength + nl;
     jumpStrength = 0;
+}
+
+void Player::jetpack() {
+    ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
+    f += VEC_MAGNITUDE;
+    cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
 }
 
 void Player::keyPressed(ofKeyEventArgs& args) {
