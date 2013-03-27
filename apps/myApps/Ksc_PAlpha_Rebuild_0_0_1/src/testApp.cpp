@@ -18,7 +18,7 @@ void testApp::setup() {
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
 
-    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator));
+    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &gui));
     gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
 }
 
@@ -31,6 +31,9 @@ void testApp::update() {
     for (int i = 0; i < strandedAstronaut.size(); i++) {
         strandedAstronaut[i]->update();
     }
+    for (int i = 0; i < gui.size(); i++) {
+        gui[i]->update();
+    }
 }
 
 //--------------------------------------------------------------
@@ -40,6 +43,9 @@ void testApp::draw() {
     }
     for (int i = 0; i < strandedAstronaut.size(); i++) {
         strandedAstronaut[i]->draw();
+    }
+    for (int i = 0; i < gui.size(); i++) {
+        gui[i]->draw();
     }
 
     player.draw();
@@ -112,7 +118,7 @@ void testApp::addGravitator() {
 }
 
 void testApp::addStrandedAstronaut() {
-    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(NEW_PLANET_POS.x, NEW_PLANET_POS.y + NEW_PLANET_R), &gravitator));
+    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(NEW_PLANET_POS.x, NEW_PLANET_POS.y + NEW_PLANET_R), &gravitator, &gui));
 }
 
 //--------------------------------------------------------------

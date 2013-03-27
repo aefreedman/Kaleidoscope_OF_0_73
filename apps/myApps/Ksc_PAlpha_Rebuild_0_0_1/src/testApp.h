@@ -15,6 +15,8 @@
 #include "Shell.h"
 #include "Solid.h"
 #include "Nonsolid.h"
+#include "GUI.h"
+#include "Message.h"
 #define nl '\n'
 #define fps 60
 #define screen_width 1280
@@ -43,6 +45,7 @@ class testApp : public ofBaseApp{
 
         std::vector<Gravitator *> gravitator;
         std::vector<StrandedAstronaut *> strandedAstronaut;
+        std::vector<GUI *> gui;
         Player player;
 
         string clickState;
