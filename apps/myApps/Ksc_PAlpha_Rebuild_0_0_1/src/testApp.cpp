@@ -20,6 +20,7 @@ void testApp::setup() {
 
     strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &gui));
     gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
+    gui.push_back(new Message(ofVec2f(600, 600), "Testing messaging system"));
 }
 
 //--------------------------------------------------------------

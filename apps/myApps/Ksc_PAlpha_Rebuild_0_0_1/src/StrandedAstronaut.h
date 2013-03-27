@@ -2,6 +2,7 @@
 #define STRANDEDASTRONAUT_H
 
 #include "Astronaut.h"
+#include "Shell.h"
 #include <vector>
 
 class StrandedAstronaut : public Astronaut {
@@ -19,7 +20,7 @@ public:
     void orientToPlanet(int collision);
     //void bounce();
     void calculateGravity(int attractor);
-    bool displayMessage();
+    void displayMessage();
     bool displayMessageTimer();
     string pickMessage();
 
@@ -40,7 +41,6 @@ private:
     int message_dieroll;
     float message_timer;
     int message_delay;
-    int display_message_time;
     ofVec2f player_pos;
 
     bool DRAW_MESSAGE;

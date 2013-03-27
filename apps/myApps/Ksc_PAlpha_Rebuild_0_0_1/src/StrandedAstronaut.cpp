@@ -1,5 +1,7 @@
 #include "StrandedAstronaut.h"
+#include "Message.h"
 #define dt 1.0/60.0
+#define nl "\n"
 
 StrandedAstronaut::StrandedAstronaut() : Astronaut() {
     //ctor
@@ -14,10 +16,10 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     damp                        = 1.0;
     restitution                 = 0.0;
     oxygen                      = 100;
-    message_timer               = 0.0;
-    message_delay               = 1;
-    message_display_chance      = 1;
-    display_message_time        = 3;
+    message_timer               = 0.0;      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
+    message_delay               = 7;        ///Minimum delay between messages
+    message_display_chance      = 5;        ///larger number makes random delay between messages higher
+
 
     a.set(0, 0);
     f.set(0, 0);
@@ -45,14 +47,15 @@ void StrandedAstronaut::update() {
     detectGravitatorCollisions();
     move();
     DRAW_MESSAGE = displayMessageTimer();
+    if (DRAW_MESSAGE) {
+        displayMessage();
+    }
 }
 
-bool StrandedAstronaut::displayMessage() {
+void StrandedAstronaut::displayMessage() {
     string message = pickMessage();
-    ofColor bkg(50, 50, 50);
-    ofColor fgd(0, 50, 255);
-    ofDrawBitmapStringHighlight(message, pos + ofVec2f(0, -15), bkg, fgd);
-    //return false;
+    (*gui).push_back(new Message(pos, message));
+    DRAW_MESSAGE = false;
 }
 
 bool StrandedAstronaut::displayMessageTimer() {
@@ -69,7 +72,7 @@ bool StrandedAstronaut::displayMessageTimer() {
 }
 
 string StrandedAstronaut::pickMessage() {
-    int which_message = ofRandom(5);
+    int which_message = ofRandom(13);
     string message = "";
 
     switch (which_message) {
@@ -80,7 +83,8 @@ string StrandedAstronaut::pickMessage() {
         message = "Oh no!";
         break;
         case 2:
-        message = "Well, this isn't exactly what I would call a vacation.";
+        message += "Well, this isn't exactly \n";
+        message += "what I would call a vacation.";
         break;
         case 3:
         message = "Could you help me out, please?";
@@ -91,15 +95,38 @@ string StrandedAstronaut::pickMessage() {
         case 5:
         message = "I hate space.";
         break;
+        case 6:
+        message = "Why am I still floating?";
+        break;
+        case 7:
+        message = "I hope I can float my way to a bathroom...";
+        break;
+        case 8:
+        message = "WHY DID YOU LET ME GO?!";
+        break;
+        case 9:
+        message = "Oops.";
+        break;
+        case 10:
+        message = "Guys...";
+        break;
+        case 11:
+        message += "If a tree falls in \n";
+        message += "space can you hear it?";
+        break;
+        case 12:
+        message = "Can we talk for a moment?";
+        break;
+        case 13:
+        message = "Hey.";
+        break;
+
+
     }
     return message;
 }
 
 void StrandedAstronaut::draw() {
-    ofColor bkg(50, 50, 50);
-    ofColor fgd(0, 50, 255);
-    ofDrawBitmapStringHighlight(pickMessage(), pos + ofVec2f(0, -15), bkg, fgd);
-
 
     ofNoFill();
     ofSetColor(100, 100, 100);

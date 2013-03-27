@@ -14,6 +14,8 @@ public:
     ofVec2f pos;
 
 protected:
+    //ofColor dark_grey;
+    //ofColor light_blue;
 private:
 };
 

@@ -4,16 +4,19 @@
 #include "GUI.h"
 
 
-class Message : public GUI
-{
-    public:
-        Message();
-        Message(ofVec2f _pos);
-        virtual ~Message();
-        void update();
-        void draw();
-    protected:
-    private:
+class Message : public GUI {
+public:
+    Message();
+    Message(ofVec2f _pos, string _message);
+    virtual ~Message();
+    void update();
+    void draw();
+protected:
+private:
+    string message;
+    float message_life;
+    float timer;
+    bool DISPLAY;
 };
 
 #endif // MESSAGE_H
