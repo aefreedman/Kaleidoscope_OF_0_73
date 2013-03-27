@@ -14,10 +14,12 @@ void testApp::setup() {
     player                          = Player(ofVec2f(300,300), &gravitator, &strandedAstronaut);
     clickState                      = "play mode";
     levelState                      = "Working from scratch.";
+    new_gravitator_type             = "planet";
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
 
     strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator));
+    gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
 }
 
 //--------------------------------------------------------------
@@ -72,6 +74,7 @@ void testApp::draw() {
     ofDrawBitmapString("W (level++), Q (level--), E to export, I to import.", ofGetWidth()/2 - 300, 50);
     ofDrawBitmapString(levelState, ofGetWidth()/2, 35);
     ofDrawBitmapString(clickState, 40,65);
+    ofDrawBitmapString(new_gravitator_type, 40, 50);
     if (clickState == "placing gravitators") {
         ofDrawBitmapString("click & hold to place origin, release to set size.",40,80);
     } else if (clickState == "setting size") {
@@ -93,10 +96,18 @@ void testApp::draw() {
 }
 
 void testApp::addGravitator() {
-    gravitator.push_back(new Planet(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
-    int chance = ofRandom(3);
-    if (chance == 0) {
-        addStrandedAstronaut();
+    if (new_gravitator_type == "planet"){
+        gravitator.push_back(new Planet(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+        int chance = ofRandom(3);
+        if (chance == 0) {
+            addStrandedAstronaut();
+        }
+    }
+    if (new_gravitator_type == "sun") {
+        gravitator.push_back(new Sun(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+    }
+    if (new_gravitator_type == "black hole") {
+        gravitator.push_back(new BlackHole(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
     }
 }
 
@@ -146,6 +157,20 @@ void testApp::keyPressed(int key) {
         player.rotateDirection(false);
         break;
     case OF_KEY_UP:
+        if (clickState == "placing gravitators"){
+            if (new_gravitator_type == "planet") {
+                new_gravitator_type = "sun";
+                break;
+            }
+            if (new_gravitator_type == "sun") {
+                new_gravitator_type = "black hole";
+                break;
+            }
+            if (new_gravitator_type == "black hole") {
+                new_gravitator_type = "planet";
+                break;
+            }
+        }
     /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
     /// NOTE (Aaron#5#): Do we need jump *and* ABSOLUTE/ROTATIONAL controls?
         if (player.ON_PLANET) {

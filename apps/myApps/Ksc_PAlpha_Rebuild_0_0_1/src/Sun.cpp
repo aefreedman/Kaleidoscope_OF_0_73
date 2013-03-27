@@ -6,6 +6,7 @@ Sun::Sun() : Gravitator()
 }
 
 Sun::Sun(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) {
+    type = "sun";
 
 }
 

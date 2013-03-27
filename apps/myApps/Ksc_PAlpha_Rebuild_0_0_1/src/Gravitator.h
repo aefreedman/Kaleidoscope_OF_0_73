@@ -14,11 +14,13 @@ public:
     virtual ~Gravitator();
 
     ofVec2f pos;
+    float G;
     int r;
     int gR;
     int m;
     float p;
     bool habitable;
+    string type;
 
 
 protected:

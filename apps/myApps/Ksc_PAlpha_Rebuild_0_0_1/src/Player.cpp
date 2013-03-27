@@ -56,7 +56,7 @@ void Player::setup() {
     ABSOLUTE_IMPULSE        = false;
     ROTATIONAL_IMPULSE      = true;
     OFF_SCREEN_RESET        = true;
-    SIMPLE_GRAVITY          = false;
+    SIMPLE_GRAVITY          = true;
     GUI                     = true;
 
     /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
@@ -200,10 +200,11 @@ void Player::detectGravitatorCollisions() {
 
     for (int i = 0; i < gravitator->size(); i++) {
         float dist                = pos.distance((*gravitator)[i]->pos);
+        string gravitator_type    = (*gravitator)[i]->type;
         int planet_r              = (*gravitator)[i]->r;
         int planet_gravity_range  = (*gravitator)[i]->gR;
 
-        if (dist <= planet_r + r) {
+        if (dist <= planet_r + r && gravitator_type == "planet") {
             collision = i;
             ON_PLANET = true;
         }

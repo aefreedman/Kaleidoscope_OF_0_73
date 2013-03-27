@@ -47,6 +47,7 @@ class testApp : public ofBaseApp{
 
         string clickState;
         string levelState;
+        string new_gravitator_type;
         ofVec2f NEW_PLANET_POS;
         int NEW_PLANET_R;
         int NEW_PLANET_GR;

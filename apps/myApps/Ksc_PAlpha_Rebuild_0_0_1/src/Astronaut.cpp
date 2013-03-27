@@ -6,6 +6,7 @@ Astronaut::Astronaut() {
 
 Astronaut::Astronaut(ofVec2f _pos) {
     pos = _pos;
+    SIMPLE_GRAVITY = true;
 }
 
 void Astronaut::detectGravitatorCollisions() {
