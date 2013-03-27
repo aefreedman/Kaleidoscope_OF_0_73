@@ -63,7 +63,8 @@ void Player::setup() {
 }
 
 void Player::update() {
-    detectPlanetCollisions();
+    detectGravitatorCollisions();
+    display_g.set(gravity);
     detectAstronautCollisions();
     move();
 }
@@ -192,7 +193,7 @@ void Player::detectAstronautCollisions() {
     }
 }
 
-void Player::detectPlanetCollisions() {
+void Player::detectGravitatorCollisions() {
     ON_PLANET = false;
     IN_GRAVITY_WELL = false;
     EXITED_GRAVITY_WELL = false;
@@ -256,7 +257,7 @@ void Player::collisionData(int collision) {
     //cout << ofToString(planet_m) << endl;
 }
 
-void Player::bounce() {
+//void Player::bounce() {
     /*
     float a1 = v.dot(normalized_collision_normal);
     float optimizedP = (2.0 * a1) / (m + planet_m);
@@ -267,7 +268,7 @@ void Player::bounce() {
         v.set(v_prime);
     }
     */
-}
+//}
 
 void Player::calculateGravity(int attractor) {
     ofVec2f planet_pos = (*gravitator)[attractor]->pos;
@@ -287,20 +288,11 @@ void Player::calculateGravity(int attractor) {
     } else {
     gravity               += G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
     }
-    display_g.set(gravity);
+
 }
 
 void Player::orientToPlanet(int collision) {
     jumpDir.set(collision_perpendicular.normalized());
-
-    float a1 = v.dot(normalized_collision_normal);
-    float optimizedP = (2.0 * a1) / (m + planet_m);
-    ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
-    v_prime *= restitution;
-
-    if (!CAN_LAND_ON_PLANET){
-        v.set(v_prime);
-    }
 }
 
 void Player::traversePlanet(bool move_left) {

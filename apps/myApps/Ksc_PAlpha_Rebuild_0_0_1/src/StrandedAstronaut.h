@@ -13,6 +13,13 @@ public:
     void update();
     void draw();
     void move();
+
+    void detectGravitatorCollisions();
+    void collisionData(int collision);
+    void orientToPlanet(int collision);
+    //void bounce();
+    void calculateGravity(int attractor);
+
     void detectPlayerCollisions();
     void followPlayer();
     void getPlayerData(ofVec2f _player_pos);

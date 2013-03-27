@@ -33,10 +33,9 @@ public:
     void jump();
     void chargeJump();
     void detectAstronautCollisions();
-    void detectPlanetCollisions();
+    void detectGravitatorCollisions();
     void collisionData(int collision);
     bool detectCollisions();
-    void bounce();
     void orientToPlanet(int collision);
     void rotateDirection(bool rotate_left);
     void traversePlanet(bool move_left);
@@ -57,37 +56,37 @@ public:
     float jump_multiplier;
     float jetpack_o2_use;
 
-    bool ON_PLANET;
-    bool IN_GRAVITY_WELL;
-    bool EXITED_GRAVITY_WELL;
+    //bool ON_PLANET;
+    //bool IN_GRAVITY_WELL;
+    //bool EXITED_GRAVITY_WELL;
     bool CAN_JETPACK;
     bool ABSOLUTE_IMPULSE;
     bool ROTATIONAL_IMPULSE;
-    bool ORIENT_TO_PLANET;
-    bool USING_GRAVITY;
+    //bool ORIENT_TO_PLANET;
+    //bool USING_GRAVITY;
     bool CAN_LAND_ON_PLANET;
     bool OFF_SCREEN_RESET;
-    bool SIMPLE_GRAVITY;
+    //bool SIMPLE_GRAVITY;
     bool GUI;
 protected:
 
 
 private:
 
-    float G;
+    //float G;
     bool DEBUG;
     int off_screen_limit;
     ofVec2f display_g;
     ofVec2f display_a;
     ofVec2f display_f;
-
+/*
     ofVec2f planet_pos;
     ofVec2f collision_normal;
     ofVec2f normalized_collision_normal;
     ofVec2f collision_perpendicular;
     float planet_m;
     float planet_r;
-
+*/
 
 };
 

@@ -17,13 +17,13 @@ public:
     virtual void draw() = 0;
     virtual void move() = 0;
 
-    void detectPlanetcollisions();
-    void collisionData(int collision);
+    virtual void detectGravitatorCollisions();
+    virtual void collisionData(int collision);
+    virtual void orientToPlanet(int collision);
     void bounce();
-    void calculateGravity(int attractor);
+    virtual void calculateGravity(int attractor);
 
     std::vector<Gravitator *> *gravitator;
-
 
     ofVec2f pos;
     ofVec2f starting_pos;
@@ -40,6 +40,15 @@ public:
     ofVec2f angular_v;
     ofQuaternion orientation;
 
+    bool ON_PLANET;
+    bool IN_GRAVITY_WELL;
+    bool EXITED_GRAVITY_WELL;
+    bool ORIENT_TO_PLANET;
+    bool USING_GRAVITY;
+    bool SIMPLE_GRAVITY;
+    bool CAN_LAND_ON_PLANET;
+
+    float G;
     float m;
     float rotation;
     float damp;
@@ -52,7 +61,16 @@ public:
     int collision;
     int attractor;
 protected:
+
+
+    ofVec2f planet_pos;
+    ofVec2f collision_normal;
+    ofVec2f normalized_collision_normal;
+    ofVec2f collision_perpendicular;
+    float planet_m;
+    float planet_r;
 private:
+
 
 
 };
