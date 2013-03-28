@@ -1,24 +1,8 @@
-#pragma once
+#ifndef _TEST_APP
+#define _TEST_APP
 
-#include <vector>
-#include <iostream>
+
 #include "ofMain.h"
-#include "Gravitator.h"
-#include "Planet.h"
-#include "Sun.h"
-#include "BlackHole.h"
-#include "Astronaut.h"
-#include "Player.h"
-#include "StrandedAstronaut.h"
-#include "Decor.h"
-#include "Shell.h"
-#include "Solid.h"
-#include "Nonsolid.h"
-#include "Comet.h"
-#include "ofxSpriteSheetRenderer.h"
-#define nl '\n'
-#define fps 60
-
 #include "ofxSpriteSheetRenderer.h"
 
 //create a new animation. This could be done optinally in your code andnot as a static, just by saying animation_t walkAnimation; walkAnimation.index =0, walkAnimation.frame=0 etc. I find this method the easiest though
@@ -48,42 +32,18 @@ class testApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-		void addGravitator();
-		void addComet();
-		void keyPressed(int key);
+
+		void keyPressed  (int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
 		void mouseDragged(int x, int y, int button);
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
 
-        void exportLevel();
-        void importLevel();
 
-        std::vector<Gravitator *> gravitator;
-        //std::vector<Comet *> comets;
-        Player thePlayer;
-
-        string clickState;
-        string levelState;
-
-        ofVec2f NEW_COMET_POS;
-        int NEW_COMET_R;
-
-        ofVec2f NEW_PLANET_POS;
-        int NEW_PLANET_R;
-        int NEW_PLANET_GR;
-        int NEW_PLANET_M;
-
-    int levelID;
-
-    ofxSpriteSheetRenderer * spriteRenderer;	// our spriteRenderer
+	ofxSpriteSheetRenderer * spriteRenderer;	// our spriteRenderer
 	vector<basicSprite *> sprites;				// our vector of sprites
-
-    private:
-
-
 };
+
+#endif
