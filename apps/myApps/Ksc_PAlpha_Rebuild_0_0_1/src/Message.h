@@ -16,7 +16,6 @@ private:
     string message;
     float message_life;
     float timer;
-    bool DISPLAY;
 };
 
 #endif // MESSAGE_H

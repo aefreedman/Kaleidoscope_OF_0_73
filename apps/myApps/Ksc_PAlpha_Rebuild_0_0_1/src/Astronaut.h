@@ -18,7 +18,9 @@ public:
     virtual void draw() = 0;
     virtual void move() = 0;
 /// TODO (Aaron#1#): Astronaut gravity and movement can be moved to Astronaut, but needs to handle the Gravitator vector first.
+/// TODO (Aaron#1#): Different collision conditions for objects
     virtual void detectGravitatorCollisions();
+
     virtual void collisionData(int collision);
     virtual void orientToPlanet(int collision);
     void bounce();

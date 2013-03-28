@@ -5,6 +5,7 @@
 #define screen_height 720
 #define dt 1.0/60.0
 #define spacer "  >>  "
+#define bar "  ||  "
 #define gap "   "
 
 //--------------------------------------------------------------
@@ -23,6 +24,7 @@ void testApp::setup() {
 
     strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &gui));
     gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
+    gui.push_back(new GUIOverlay(ofVec2f(ofGetWidth()/2, ofGetHeight() - 100), "Testing GUIOverlay system"));
 }
 
 //--------------------------------------------------------------
@@ -87,6 +89,8 @@ void testApp::draw() {
     top_text.append(gap);
     if (clickState == "play mode") {
         top_text.append("[F1] to edit level");
+        top_text.append(bar);
+        top_text.append("[s] to place player");
     } else if (clickState == "edit mode") {
         top_text.append(levelState + "\n");
         top_text.append("\n");
@@ -127,7 +131,6 @@ void testApp::draw() {
             int y = 100;
             string info = "";
             info += "p to place gravitators\n" ;
-            info += "s to place player\n";
             info += "shift + c to clear gravitators\n";
             ofDrawBitmapString(info, draw_x, draw_y1);
         }
@@ -356,7 +359,7 @@ void testApp::exportLevel() {
     while (true) {
         string levelName = "level_" + ofToString(levelID++);
         std::ifstream input(levelName.c_str());
-        if  (!input.good()) {
+        if  (input.good()) {
             std::ofstream output(levelName.c_str());
             output << gravitator.size() << std::endl;
             for (int i = 0; i < gravitator.size(); i++) {
@@ -367,7 +370,7 @@ void testApp::exportLevel() {
                 << gravitator[i]->gR << ' '
                 << std::endl;
             }
-            levelState = "exported as " + ofToString(levelName) + ".";
+            levelState = ofToString(levelName) + " saved";
             break;
         }
     }
@@ -389,6 +392,7 @@ void testApp::importLevel() {
     } else {
         levelState = "That level doesn't exist.";
         gravitator.clear();
+        gui.clear();        /// NOTE (Aaron#9#): Don't forget to remove this later.
     }
 
 }

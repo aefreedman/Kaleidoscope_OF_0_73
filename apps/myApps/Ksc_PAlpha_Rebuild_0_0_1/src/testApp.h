@@ -17,6 +17,8 @@
 #include "Nonsolid.h"
 #include "GUI.h"
 #include "Message.h"
+#include "LevelEditor.h"
+#include "GUIOverlay.h"
 #define nl '\n'
 #define fps 60
 #define screen_width 1280

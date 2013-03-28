@@ -214,19 +214,6 @@ void StrandedAstronaut::collisionData(int collision) {
     right                               = -collision_perpendicular;
 }
 
-//void StrandedAstronaut::bounce() {
-/*
-float a1 = v.dot(normalized_collision_normal);
-float optimizedP = (2.0 * a1) / (m + planet_m);
-ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
-v_prime *= restitution;
-
-if (!CAN_LAND_ON_PLANET){
-    v.set(v_prime);
-}
-*/
-//}
-
 void StrandedAstronaut::calculateGravity(int attractor) {
     ofVec2f planet_pos = (*gravitator)[attractor]->pos;
     int planet_gravity_range = (*gravitator)[attractor]->gR;
@@ -255,8 +242,7 @@ void StrandedAstronaut::orientToPlanet(int collision) {
 void StrandedAstronaut::followPlayer() {
     ofVec2f temp;
     temp.set(10, 10);
-    //pos = player_pos;
-    pos.interpolate(player_pos, .01);
+    pos.interpolate(player_pos, .01);  /// TODO (Aaron#1#): Update player-following behavior
 
 }
 

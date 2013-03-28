@@ -25,7 +25,7 @@ void Player::setup() {
     w                       = 10;
     h                       = 10;
     r                       = 5;
-    oxygen                  = 100.0;
+    oxygen                  = 100.0;        /// TODO (Aaron#1#): Add lose condition to running out of o2
     damp                    = 1.00;
     rotation                = 180;
     maxJump                 = 1000000.0;
