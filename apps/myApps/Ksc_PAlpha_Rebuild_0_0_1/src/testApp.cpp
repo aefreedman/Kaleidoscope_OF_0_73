@@ -22,9 +22,17 @@ void testApp::setup() {
     planet_mass_multiplier          = 250;
     CAN_EDIT_LEVEL                  = false;
 
+    ///Starting level
+    importLevel(0);
+
     strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &gui));
-    gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
-    gui.push_back(new GUIOverlay(ofVec2f(ofGetWidth()/2, ofGetHeight() - 100), "Testing GUIOverlay system"));
+    //gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
+    //gui.push_back(new GUIOverlay(ofVec2f(ofGetWidth()/2, ofGetHeight() - 100), "Testing GUIOverlay system"));
+
+    ///Testing sound system
+    mySound.loadSound("Jupiter.mp3");
+    mySound.setLoop(true);
+    mySound.play();
 }
 
 //--------------------------------------------------------------
@@ -92,14 +100,14 @@ void testApp::draw() {
         top_text.append(bar);
         top_text.append("[s] to place player");
     } else if (clickState == "edit mode") {
-        top_text.append(levelState + "\n");
-        top_text.append("\n");
-        top_text.append("\n");
+        top_text.append(levelState);
+        top_text.append(gap);
+        top_text.append(gap);
         top_text.append("[F2] (previous level) || [F3] (next level) || [F5] save level");
     }
 
     ofDrawBitmapString(top_text, 1, 10);
-
+    ///FLOATING MOUSE TEXT ----------------------------------
     if (clickState != "play mode") {
         int draw_x = mouseX + 20;
         int draw_y1 = mouseY + 20;
@@ -109,6 +117,12 @@ void testApp::draw() {
             string mouse_text = "";
             mouse_text.append("placing: ");
             mouse_text.append(new_gravitator_type);
+            if (clickState == "placing player") {
+                mouse_text.append("player");
+            }
+            if (clickState == "placing astronaut") {
+                mouse_text.append("astronaut");
+            }
             ofDrawBitmapString(mouse_text, draw_x, draw_y1);
         }
 
@@ -125,13 +139,14 @@ void testApp::draw() {
         } else placement_text = "";
         ofDrawBitmapString(placement_text, draw_x, draw_y2);
 
-        ///BOTTOM TEXT DISPLAY----------------------------------------
         if (clickState == "edit mode") {
             int x = 50;
             int y = 100;
             string info = "";
-            info += "p to place gravitators\n" ;
+            info += "[p] to place gravitators\n" ;
             info += "shift + c to clear gravitators\n";
+            info += "\n";
+            info += "[a] to place astronaut";
             ofDrawBitmapString(info, draw_x, draw_y1);
         }
 
@@ -175,6 +190,11 @@ void testApp::keyPressed(int key) {
         if (CAN_EDIT_LEVEL) {
             clickState = "placing gravitators";
             new_gravitator_type = "planet";
+        }
+        break;
+    case 'a':
+        if (CAN_EDIT_LEVEL) {
+            clickState = "placing astronaut";
         }
         break;
     case 's':
@@ -239,10 +259,14 @@ void testApp::keyPressed(int key) {
 
             break;
         } else if (player.CAN_JETPACK) {
-            player.jetpack();
+            player.jetpack(true);
             break;
         }
     case OF_KEY_DOWN:
+        if (player.CAN_JETPACK) {
+            player.jetpack(false);
+            break;
+        }
         break;
     case OF_KEY_LEFT:
         if (player.TRAVERSING_PLANET) {
@@ -329,6 +353,10 @@ void testApp::mousePressed(int x, int y, int button) {
         player.starting_pos.set(player.pos);
         clickState = "play mode";
     }
+    if(clickState == "placing astronaut") {
+        strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(mouseX, mouseY), &gravitator, &gui));
+        clickState = "edit mode";
+    }
 }
 
 //--------------------------------------------------------------
@@ -368,6 +396,7 @@ void testApp::exportLevel() {
                 << gravitator[i]->r << ' '
                 << gravitator[i]->m << ' '
                 << gravitator[i]->gR << ' '
+                << gravitator[i]->type << ' '
                 << std::endl;
             }
             levelState = ofToString(levelName) + " saved";
@@ -385,8 +414,46 @@ void testApp::importLevel() {
         input >> listSize;
         for(int i = 0; i < listSize; i++) {
             int x, y, r, m, gR;
-            input >> x >> y >> r >> m >> gR;
-            gravitator.push_back(new Planet(ofVec2f(x, y), r, m, gR));
+            string type;
+            input >> x >> y >> r >> m >> gR >> type;
+            if (type == "planet") {
+                gravitator.push_back(new Planet(ofVec2f(x, y), r, m, gR));
+            }
+            if (type == "sun") {
+                gravitator.push_back(new Sun(ofVec2f(x, y), r, m, gR));
+            }
+            if (type == "blackhole") {
+                gravitator.push_back(new BlackHole(ofVec2f(x, y), r, m, gR));
+            }
+        }
+        levelState = "loaded " + ofToString(levelID) + ".";
+    } else {
+        levelState = "That level doesn't exist.";
+        gravitator.clear();
+        gui.clear();        /// NOTE (Aaron#9#): Don't forget to remove this later.
+    }
+
+}
+
+void testApp::importLevel(int levelID) {
+    std::ifstream input(("level_" + ofToString(levelID)).c_str());
+    if (input.good()) {
+        gravitator.clear();
+        int listSize;
+        input >> listSize;
+        for(int i = 0; i < listSize; i++) {
+            int x, y, r, m, gR;
+            string type;
+            input >> x >> y >> r >> m >> gR >> type;
+            if (type == "planet") {
+                gravitator.push_back(new Planet(ofVec2f(x, y), r, m, gR));
+            }
+            if (type == "sun") {
+                gravitator.push_back(new Sun(ofVec2f(x, y), r, m, gR));
+            }
+            if (type == "blackhole") {
+                gravitator.push_back(new BlackHole(ofVec2f(x, y), r, m, gR));
+            }
         }
         levelState = "loaded " + ofToString(levelID) + ".";
     } else {

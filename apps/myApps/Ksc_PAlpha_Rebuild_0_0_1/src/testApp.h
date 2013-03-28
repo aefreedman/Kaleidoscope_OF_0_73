@@ -44,6 +44,7 @@ class testApp : public ofBaseApp{
 
         void exportLevel();
         void importLevel();
+        void importLevel(int levelID);
 
         std::vector<Gravitator *> gravitator;
         std::vector<StrandedAstronaut *> strandedAstronaut;
@@ -63,6 +64,6 @@ class testApp : public ofBaseApp{
         int planet_base_m;
         int planet_mass_multiplier;
         bool CAN_EDIT_LEVEL;
-
+        ofSoundPlayer mySound;
 
 };

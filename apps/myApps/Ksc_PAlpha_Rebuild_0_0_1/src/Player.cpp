@@ -39,6 +39,7 @@ void Player::setup() {
     jetpack_power           = 50000.0;
     jump_multiplier         = 30.0;
     jetpack_o2_use          = 5;
+    astronaut_pickup_range  = 20;
 
     /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
     /// if G is in player & mass is ignored; give planets individual
@@ -73,16 +74,14 @@ void Player::update() {
 void Player::draw() {
     ofSetColor(255, 0, 0);
     ofNoFill();
-    ofCircle(pos, (20 * (jumpStrength / maxJump)) + r) ;
+    ofCircle(pos, (20 * (jumpStrength / maxJump)) + r - 1) ;
     ofSetColor(0, 255, 240);
     ofFill();
     ofPushMatrix();
     glTranslatef(pos.x, pos.y, 0);
     glRotatef(rotation,0, 0, 1);
     ofCircle(0, 0, r);
-    //ofRect(-5, -5, w, h);
-    //ofRect(-2.5, 5, w/2, h/2);
-    ofLine(ofPoint(0, 0), ofPoint(100, 0));
+    ofLine(ofPoint(0, 0), ofPoint(50, 0));
     ofPopMatrix();
 
     if (GUI) {
@@ -94,7 +93,7 @@ void Player::drawGUI() {
     int x = 1000;
     int y = 600;
     string gui = "";
-    gui += "O2: " + ofToString(oxygen, 6) + nl;
+    gui += "O2: " + ofToString(oxygen, 2) + nl;
     ofSetColor(0, 50, 255);
     ofDrawBitmapString(gui, x, y);
 
@@ -186,7 +185,7 @@ void Player::detectAstronautCollisions() {
         float dist                  = pos.distance((*strandedAstronaut)[i]->pos);
         float astronaut_r           = (*strandedAstronaut)[i]->r;
 
-        if (dist <= r + astronaut_r) {
+        if (dist <= r + astronaut_r + astronaut_pickup_range) {
             (*strandedAstronaut)[i]->FOLLOWING_PLAYER = true;
             cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
         }
@@ -355,10 +354,16 @@ void Player::jump() {
     jumpStrength = 0;
 }
 
-void Player::jetpack() {
-    ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
-    f += VEC_MAGNITUDE;
-    oxygen -= jetpack_o2_use;
+void Player::jetpack(bool JETPACK_FORWARD) {
+    if (JETPACK_FORWARD) {
+        ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
+        f += VEC_MAGNITUDE;
+        oxygen -= jetpack_o2_use;
+    } else {
+        ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
+        f -= VEC_MAGNITUDE;
+        oxygen -= jetpack_o2_use;
+    }
     cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
 }
 

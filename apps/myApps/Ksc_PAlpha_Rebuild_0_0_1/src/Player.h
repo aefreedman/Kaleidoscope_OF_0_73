@@ -40,7 +40,7 @@ public:
     void rotateDirection(bool rotate_left);
     void traversePlanet(bool move_left);
     void calculateGravity(int attractor);
-    void jetpack();
+    void jetpack(bool JETPACK_FORWARD);
     inline ofQuaternion AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
@@ -67,7 +67,7 @@ protected:
 
 
 private:
-
+    int astronaut_pickup_range;
     //float G;
     bool DEBUG;
     int off_screen_limit;

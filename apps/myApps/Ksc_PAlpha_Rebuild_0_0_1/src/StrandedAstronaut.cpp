@@ -17,8 +17,8 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     restitution                 = 0.0;
     oxygen                      = 100;
     message_timer               = 0.0;      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
-    message_delay               = 7;        ///Minimum delay between messages
-    message_display_chance      = 5;        ///larger number makes random delay between messages higher
+    message_delay               = 10;        ///Minimum delay between messages
+    message_display_chance      = 7;        ///larger number makes random delay between messages higher
 
 
     a.set(0, 0);
@@ -68,7 +68,6 @@ bool StrandedAstronaut::displayMessageTimer() {
             return true;
         }
     } else return false;
-    cout << "Timer: " + ofToString(message_timer) + "DM: " + ofToString(DRAW_MESSAGE) << endl;
 }
 
 string StrandedAstronaut::pickMessage() {
@@ -127,7 +126,6 @@ string StrandedAstronaut::pickMessage() {
 }
 
 void StrandedAstronaut::draw() {
-
     ofNoFill();
     ofSetColor(100, 100, 100);
     ofFill();
@@ -135,12 +133,8 @@ void StrandedAstronaut::draw() {
     glTranslatef(pos.x, pos.y, 0);
     glRotatef(rotation,0, 0, 1);
     ofCircle(0, 0, r);
-    //ofRect(-5, -5, w, h);
-    //ofRect(-2.5, 5, w/2, h/2);
-    ofLine(ofPoint(0, 0), ofPoint(100, 0));
+    ofLine(ofPoint(0, 0), ofPoint(20, 0));
     ofPopMatrix();
-
-
 }
 
 void StrandedAstronaut::move() {
@@ -150,7 +144,6 @@ void StrandedAstronaut::move() {
 
     a  = (f / m) * dt;
     v += dir * a * dt;
-    v += dir * dt;
     v += gravity * dt;
     v *= damp;
     pos += v * dt;
@@ -184,7 +177,6 @@ void StrandedAstronaut::detectGravitatorCollisions() {
     if (ON_PLANET) {
         oxygen = 100.0;
         collisionData(collision);
-        cout << ofToString(planet_pos) << endl;
     }
     if (ON_PLANET && CAN_LAND_ON_PLANET) {
         CAN_LAND_ON_PLANET = false;
