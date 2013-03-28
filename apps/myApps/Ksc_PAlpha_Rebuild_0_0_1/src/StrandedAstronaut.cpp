@@ -234,7 +234,7 @@ void StrandedAstronaut::orientToPlanet(int collision) {
 void StrandedAstronaut::followPlayer() {
     ofVec2f temp;
     temp.set(10, 10);
-    pos.interpolate(player_pos, .01);  /// TODO (Aaron#1#): Update player-following behavior
+    pos.interpolate(player_pos, .005);  /// TODO (Aaron#1#): Update player-following behavior
 
 }
 

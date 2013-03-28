@@ -162,19 +162,23 @@ void Player::move() {
         if (pos.x > screen_width + off_screen_limit) {
             pos.set(starting_pos);
             setup();
+            releaseAllAstronauts();
         }
         if (pos.x < -off_screen_limit) {
             pos.set(starting_pos);
             setup();
-
+            releaseAllAstronauts();
         }
         if (pos.y > screen_height + off_screen_limit) {
             pos.set(starting_pos);
             setup();
+            releaseAllAstronauts();
+
         }
         if (pos.y < -off_screen_limit) {
             pos.set(starting_pos);
             setup();
+            releaseAllAstronauts();
         }
     }
 
@@ -195,6 +199,16 @@ void Player::detectAstronautCollisions() {
     }
 }
 
+void Player::releaseAstronaut(int i) {
+    (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
+}
+
+void Player::releaseAllAstronauts() {
+    for (int i = 0; i < strandedAstronaut->size(); i++) {
+        (*strandedAstronaut)[i]->FOLLOWING_PLAYER =  false;
+    }
+}
+
 void Player::detectGravitatorCollisions() {
     ON_PLANET = false;
     IN_GRAVITY_WELL = false;
@@ -206,7 +220,7 @@ void Player::detectGravitatorCollisions() {
         int planet_r                = (*gravitator)[i]->r;
         int planet_gravity_range    = (*gravitator)[i]->gR;
 
-        if (dist <= planet_r + r && gravitator_type == "planet") {
+        if (dist <= planet_r + r) {
             collision               = i;
             ON_PLANET               = true;
         }
@@ -348,8 +362,9 @@ void Player::chargeJump() {
 
 void Player::jump() {
     if (!CAN_LAND_ON_PLANET) {
-    f += jumpStrength;
-    TRAVERSING_PLANET = false;
+        starting_pos = pos;
+        f += jumpStrength;
+        TRAVERSING_PLANET = false;
     }
     jumpStrength = 0;
 }

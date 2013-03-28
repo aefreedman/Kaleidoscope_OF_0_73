@@ -33,6 +33,8 @@ public:
     void jump();
     void chargeJump();
     void detectAstronautCollisions();
+    void releaseAstronaut(int i);
+    void releaseAllAstronauts();
     void detectGravitatorCollisions();
     void collisionData(int collision);
     bool detectCollisions();
