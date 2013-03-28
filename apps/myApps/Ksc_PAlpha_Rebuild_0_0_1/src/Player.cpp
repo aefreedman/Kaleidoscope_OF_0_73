@@ -15,7 +15,7 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
     ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
 
-    DEBUG = true;
+    DEBUG = false;
 }
 
 Player::~Player() {
@@ -25,18 +25,18 @@ void Player::setup() {
     w                       = 10;
     h                       = 10;
     r                       = 5;
-    oxygen                  = 100.0;  /// TODO (Aaron#4#): Couple oxygen to movement ability
+    oxygen                  = 100.0;
     damp                    = 1.00;
     rotation                = 180;
-    maxJump                 = 100000.0;
+    maxJump                 = 1000000.0;
     m                       = 1.0;
     jumpStrength            = 0.0;
-    G                       = 20.0;
+    G                       = 100.0;
     restitution             = 0.10; /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 200;
     rotation_speed          = 3.0;
     speed_on_planet         = 150.0;
-    jetpack_power           = 5000.0;
+    jetpack_power           = 50000.0;
     jump_multiplier         = 30.0;
     jetpack_o2_use          = 5;
 
@@ -58,6 +58,7 @@ void Player::setup() {
     OFF_SCREEN_RESET        = true;
     SIMPLE_GRAVITY          = true;
     GUI                     = true;
+    TRAVERSING_PLANET       = false;
 
     /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
 }
@@ -134,7 +135,9 @@ void Player::drawGUI() {
             info_b.append("CAN LAND ON PLANET, BRO \n");
         } else {
             info_b.append("LANDED ON THE PLANET, BRO \n");
-
+        }
+        if (TRAVERSING_PLANET) {
+            info_b.append("TRAVERSING THE PLANET, BRO \n");
         }
         ofSetColor(240, 0, 20);
         ofDrawBitmapString(info_b, x + column_width, y);
@@ -199,28 +202,34 @@ void Player::detectGravitatorCollisions() {
     EXITED_GRAVITY_WELL = false;
 
     for (int i = 0; i < gravitator->size(); i++) {
-        float dist                = pos.distance((*gravitator)[i]->pos);
-        string gravitator_type    = (*gravitator)[i]->type;
-        int planet_r              = (*gravitator)[i]->r;
-        int planet_gravity_range  = (*gravitator)[i]->gR;
+        float dist                  = pos.distance((*gravitator)[i]->pos);
+        string gravitator_type      = (*gravitator)[i]->type;
+        int planet_r                = (*gravitator)[i]->r;
+        int planet_gravity_range    = (*gravitator)[i]->gR;
 
         if (dist <= planet_r + r && gravitator_type == "planet") {
-            collision = i;
-            ON_PLANET = true;
+            collision               = i;
+            ON_PLANET               = true;
         }
-        if (dist >= planet_r + (r * 2)) {
-            CAN_LAND_ON_PLANET = true;
+        if (dist >= planet_r + (r)) {
+            CAN_LAND_ON_PLANET      = true;
         }
         if (dist <= planet_gravity_range + r) {
-            attractor = i;
-            IN_GRAVITY_WELL = true;
+            attractor               = i;
+            IN_GRAVITY_WELL         = true;
         }
     }
     if (ON_PLANET) {
         oxygen = 100.0;
     }
+    if (!ON_PLANET) {
+        TRAVERSING_PLANET = false;
+    }
+    if (ON_PLANET && !TRAVERSING_PLANET) {
+        TRAVERSING_PLANET       = true;
+    }
     if (ON_PLANET && CAN_LAND_ON_PLANET) {
-            CAN_LAND_ON_PLANET = false;
+            CAN_LAND_ON_PLANET      = false;
             collisionData(collision);
         }
     if (ON_PLANET && ORIENT_TO_PLANET) {
@@ -254,7 +263,9 @@ void Player::collisionData(int collision) {
     left                                = collision_perpendicular;
     right                               = -collision_perpendicular;
 
-    maxJump= jump_multiplier * planet_m;
+    if (!SIMPLE_GRAVITY) {
+        maxJump= jump_multiplier * planet_m;
+    }
     //cout << ofToString(planet_m) << endl;
 }
 
@@ -339,6 +350,7 @@ void Player::chargeJump() {
 void Player::jump() {
     if (!CAN_LAND_ON_PLANET) {
     f += jumpStrength;
+    TRAVERSING_PLANET = false;
     }
     jumpStrength = 0;
 }

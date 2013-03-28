@@ -8,6 +8,10 @@ Astronaut::Astronaut(ofVec2f _pos) {
     pos = _pos;
     SIMPLE_GRAVITY = true;
 }
+Astronaut::Astronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : gravitator(gravitator) {
+    pos = _pos;
+    SIMPLE_GRAVITY = true;
+}
 
 void Astronaut::detectGravitatorCollisions() {
 

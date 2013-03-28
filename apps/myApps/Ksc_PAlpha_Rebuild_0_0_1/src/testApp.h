@@ -60,6 +60,7 @@ class testApp : public ofBaseApp{
     private:
         int planet_base_m;
         int planet_mass_multiplier;
+        bool CAN_EDIT_LEVEL;
 
 
 };

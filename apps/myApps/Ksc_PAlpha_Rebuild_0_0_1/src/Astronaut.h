@@ -11,7 +11,7 @@ class Astronaut {
 public:
     Astronaut();
     Astronaut(ofVec2f _pos);
-    //Astronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator);
+    Astronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator);
     virtual ~Astronaut();
 
     virtual void update() = 0;

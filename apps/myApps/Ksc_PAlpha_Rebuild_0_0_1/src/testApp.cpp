@@ -4,6 +4,8 @@
 #define screen_width 1280
 #define screen_height 720
 #define dt 1.0/60.0
+#define spacer "  >>  "
+#define gap "   "
 
 //--------------------------------------------------------------
 void testApp::setup() {
@@ -14,13 +16,13 @@ void testApp::setup() {
     player                          = Player(ofVec2f(300,300), &gravitator, &strandedAstronaut);
     clickState                      = "play mode";
     levelState                      = "Working from scratch.";
-    new_gravitator_type             = "planet";
+    new_gravitator_type             = "";
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
+    CAN_EDIT_LEVEL                  = false;
 
     strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &gui));
     gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
-    gui.push_back(new Message(ofVec2f(600, 600), "Testing messaging system"));
 }
 
 //--------------------------------------------------------------
@@ -35,6 +37,7 @@ void testApp::update() {
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->update();
     }
+
 }
 
 //--------------------------------------------------------------
@@ -77,33 +80,63 @@ void testApp::draw() {
 
     ///TOP TEXT DISPLAY-----------------------------------------
     ofSetColor(0, 255, 0);
-    ofDrawBitmapString("level " + ofToString(levelID), ofGetWidth()/2, 20);
-    ofDrawBitmapString("W (level++), Q (level--), E to export, I to import.", ofGetWidth()/2 - 300, 50);
-    ofDrawBitmapString(levelState, ofGetWidth()/2, 35);
-    ofDrawBitmapString(clickState, 40,65);
-    ofDrawBitmapString(new_gravitator_type, 40, 50);
-    if (clickState == "placing gravitators") {
-        ofDrawBitmapString("click & hold to place origin, release to set size.",40,80);
-    } else if (clickState == "setting size") {
-        ofDrawBitmapString("release to set size.",40,80);
-    } else if (clickState == "setting grav") {
-        ofDrawBitmapString("click to set gravity range.", 40,80);
-    } else if (clickState == "placing player") {
-        ofDrawBitmapString("click to set player location", 40,80);
+    string top_text = "";
+    top_text.append("level " + ofToString(levelID));
+    top_text.append(spacer);
+    top_text.append(clickState);
+    top_text.append(gap);
+    if (clickState == "play mode") {
+        top_text.append("[F1] to edit level");
+    } else if (clickState == "edit mode") {
+        top_text.append(levelState + "\n");
+        top_text.append("\n");
+        top_text.append("\n");
+        top_text.append("[F2] (previous level) || [F3] (next level) || [F5] save level");
     }
 
-    ///BOTTOM TEXT DISPLAY----------------------------------------
-    int x = 50;
-    int y = 100;
-    string info = "";
-    info += "p to place gravitators\n" ;
-    info += "s to place player\n";
-    info += "shift + c to clear gravitators\n";
-    ofDrawBitmapString(info, x, y);
+    ofDrawBitmapString(top_text, 1, 10);
+
+    if (clickState != "play mode") {
+        int draw_x = mouseX + 20;
+        int draw_y1 = mouseY + 20;
+        int draw_y2 = draw_y1 + 15;
+
+        if (clickState != "edit mode") {
+            string mouse_text = "";
+            mouse_text.append("placing: ");
+            mouse_text.append(new_gravitator_type);
+            ofDrawBitmapString(mouse_text, draw_x, draw_y1);
+        }
+
+        string placement_text = "";
+        if (clickState == "placing gravitators") {
+            placement_text.append("click & drag to make gravitator \n");
+            placement_text.append("press [UP] to cycle placement type");
+        } else if (clickState == "setting size") {
+            placement_text = "release to set size.";
+        } else if (clickState == "setting grav") {
+            placement_text = "click to set gravity range.";
+        } else if (clickState == "placing player") {
+            placement_text = "click to set player location";
+        } else placement_text = "";
+        ofDrawBitmapString(placement_text, draw_x, draw_y2);
+
+        ///BOTTOM TEXT DISPLAY----------------------------------------
+        if (clickState == "edit mode") {
+            int x = 50;
+            int y = 100;
+            string info = "";
+            info += "p to place gravitators\n" ;
+            info += "s to place player\n";
+            info += "shift + c to clear gravitators\n";
+            ofDrawBitmapString(info, draw_x, draw_y1);
+        }
+
+    }
 }
 
 void testApp::addGravitator() {
-    if (new_gravitator_type == "planet"){
+    if (new_gravitator_type == "planet") {
         gravitator.push_back(new Planet(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
         int chance = ofRandom(3);
         if (chance == 0) {
@@ -116,6 +149,7 @@ void testApp::addGravitator() {
     if (new_gravitator_type == "black hole") {
         gravitator.push_back(new BlackHole(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
     }
+    new_gravitator_type = "";
 }
 
 void testApp::addStrandedAstronaut() {
@@ -126,36 +160,50 @@ void testApp::addStrandedAstronaut() {
 void testApp::keyPressed(int key) {
 
     switch (key) {
-    case 'g':
-        player.USING_GRAVITY = !player.USING_GRAVITY;
-        break;
-    case 'G':
-        player.SIMPLE_GRAVITY = !player.SIMPLE_GRAVITY;
+    case OF_KEY_F1:
+        CAN_EDIT_LEVEL = !CAN_EDIT_LEVEL;
+        if (clickState == "play mode") {
+            clickState = "edit mode";
+        } else {
+            clickState = "play mode";
+        }
         break;
     case 'p':
-        clickState = "placing gravitators";
+        if (CAN_EDIT_LEVEL) {
+            clickState = "placing gravitators";
+            new_gravitator_type = "planet";
+        }
         break;
     case 's':
         clickState = "placing player";
         player.setup();
         break;
-    case 'w':
-        clickState = "placing walls";
-        break;
-    case 'E':
+    case OF_KEY_F5:
         exportLevel();
         break;
-    case 'I':
-        importLevel();
+    case OF_KEY_F2:
+        if (levelID > 0) {
+            levelID--;
+            importLevel();
+        }
         break;
-    case 'Q':
-        levelID--;
-        break;
-    case 'W':
-        levelID++;
+    case OF_KEY_F3:
+        if (levelState != "That level doesn't exist.") {
+            levelID++;
+            importLevel();
+        }
+
         break;
     case 'C':
-        gravitator.clear();
+        if (CAN_EDIT_LEVEL) {
+            gravitator.clear();
+        }
+        break;
+    case 'g':
+        player.USING_GRAVITY = !player.USING_GRAVITY;
+        break;
+    case 'G':
+        player.SIMPLE_GRAVITY = !player.SIMPLE_GRAVITY;
         break;
     case 'z':
         player.rotateDirection(true);
@@ -164,7 +212,11 @@ void testApp::keyPressed(int key) {
         player.rotateDirection(false);
         break;
     case OF_KEY_UP:
-        if (clickState == "placing gravitators"){
+        if (clickState == "placing gravitators") {
+            if (new_gravitator_type == "") {
+                new_gravitator_type = "planet";
+                break;
+            }
             if (new_gravitator_type == "planet") {
                 new_gravitator_type = "sun";
                 break;
@@ -178,8 +230,8 @@ void testApp::keyPressed(int key) {
                 break;
             }
         }
-    /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
-    /// NOTE (Aaron#5#): Do we need jump *and* ABSOLUTE/ROTATIONAL controls?
+        /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
+        /// NOTE (Aaron#5#): Do we need jump *and* ABSOLUTE/ROTATIONAL controls?
         if (player.ON_PLANET) {
 
             break;
@@ -190,7 +242,7 @@ void testApp::keyPressed(int key) {
     case OF_KEY_DOWN:
         break;
     case OF_KEY_LEFT:
-        if (!player.CAN_LAND_ON_PLANET) {
+        if (player.TRAVERSING_PLANET) {
             player.traversePlanet(true);
             break;
         } else {
@@ -198,7 +250,7 @@ void testApp::keyPressed(int key) {
             break;
         }
     case OF_KEY_RIGHT:
-        if (!player.CAN_LAND_ON_PLANET) {
+        if (player.TRAVERSING_PLANET) {
             player.traversePlanet(false);
             break;
         } else {
@@ -257,10 +309,14 @@ void testApp::mousePressed(int x, int y, int button) {
         clickState = "setting size";
     }
     if(clickState == "setting grav") {
+        if (NEW_PLANET_R < 1) {
+            clickState = "edit mode";
+            return;
+        }
         NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
         NEW_PLANET_M = (planet_base_m * NEW_PLANET_R) + (NEW_PLANET_GR * planet_mass_multiplier / NEW_PLANET_R);
         addGravitator();
-        clickState = "play mode";
+        clickState = "edit mode";
     }
     if(clickState == "play mode") {
 
@@ -319,7 +375,6 @@ void testApp::exportLevel() {
 }
 
 void testApp::importLevel() {
-
     std::ifstream input(("level_" + ofToString(levelID)).c_str());
     if (input.good()) {
         gravitator.clear();
@@ -333,6 +388,7 @@ void testApp::importLevel() {
         levelState = "loaded " + ofToString(levelID) + ".";
     } else {
         levelState = "That level doesn't exist.";
+        gravitator.clear();
     }
 
 }

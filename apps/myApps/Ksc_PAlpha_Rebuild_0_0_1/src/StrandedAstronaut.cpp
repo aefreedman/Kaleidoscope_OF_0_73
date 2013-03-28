@@ -54,7 +54,7 @@ void StrandedAstronaut::update() {
 
 void StrandedAstronaut::displayMessage() {
     string message = pickMessage();
-    (*gui).push_back(new Message(pos, message));
+    (*gui).push_back(new Message(pos + ofVec2f(0, -15), message));
     DRAW_MESSAGE = false;
 }
 
@@ -184,6 +184,7 @@ void StrandedAstronaut::detectGravitatorCollisions() {
     if (ON_PLANET) {
         oxygen = 100.0;
         collisionData(collision);
+        cout << ofToString(planet_pos) << endl;
     }
     if (ON_PLANET && CAN_LAND_ON_PLANET) {
         CAN_LAND_ON_PLANET = false;
