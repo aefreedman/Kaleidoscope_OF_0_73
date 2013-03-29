@@ -17,6 +17,11 @@ Gravitator::Gravitator(ofVec2f _pos, int _r, int _gR) : GameObject() {
     gR = _gR;
 }
 
+Gravitator::Gravitator(ofVec2f _pos, int _r) {
+    pos = _pos;
+    r = _r;
+}
+
 void Gravitator::setup() {
 
 }

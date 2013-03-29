@@ -183,6 +183,12 @@
 		<Unit filename="src\BlackHole.h">
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
+		<Unit filename="src\Comet.cpp">
+			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
+		<Unit filename="src\Comet.h">
+			<Option virtualFolder="src\GRAVITATOR\" />
+		</Unit>
 		<Unit filename="src\Decor.cpp">
 			<Option virtualFolder="src\DECOR\" />
 		</Unit>

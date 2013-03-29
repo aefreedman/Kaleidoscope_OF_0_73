@@ -74,7 +74,7 @@ void testApp::draw() {
         ofCircle(NEW_PLANET_POS, ofDist(mouseX, mouseY, NEW_PLANET_POS.x, NEW_PLANET_POS.y));
         ofPopMatrix();
     }
-    if(clickState == "setting grav") {
+    if (clickState == "setting grav") {
         ofSetColor(0,255,0);
         ofNoFill();
         ofCircle(NEW_PLANET_POS,ofDist(mouseX,mouseY,NEW_PLANET_POS.x,NEW_PLANET_POS.y));
@@ -86,6 +86,20 @@ void testApp::draw() {
 
         //ofSetColor(0,255,0);
         //ofDrawBitmapString("press 'h' to toggle habitability. (right now it's " + ofToString(planetHabitability) + ".)", 40,100);
+    }
+    if (clickState == "sizing comet") {
+        ofPushMatrix();
+        ofSetColor(255, 100, 100);
+        ofNoFill;
+        ofCircle(NEW_COMET_POS, ofDist(mouseX, mouseY, NEW_COMET_POS.x, NEW_COMET_POS.y));
+        ofPopMatrix();
+    }
+    if (clickState == "placing comet") {
+        ofPushMatrix();
+        ofSetColor(255, 100, 100);
+        ofNoFill();
+        ofCircle(mouseX, mouseY, 10);
+        ofPopMatrix();
     }
 
     ///TOP TEXT DISPLAY-----------------------------------------
@@ -123,6 +137,12 @@ void testApp::draw() {
             if (clickState == "placing astronaut") {
                 mouse_text.append("astronaut");
             }
+            if (clickState == "placing comet") {
+                mouse_text.append("comet");
+            }
+            if (clickState == "placing path") {
+                mouse_text.append("comet path");
+            }
             ofDrawBitmapString(mouse_text, draw_x, draw_y1);
         }
 
@@ -136,17 +156,20 @@ void testApp::draw() {
             placement_text = "click to set gravity range.";
         } else if (clickState == "placing player") {
             placement_text = "click to set player location";
-        } else placement_text = "";
+        } else if (clickState == "placing path") {
+            placement_text = "[c] to stop placing path";
+        }
+         else placement_text = "";
         ofDrawBitmapString(placement_text, draw_x, draw_y2);
 
         if (clickState == "edit mode") {
             int x = 50;
             int y = 100;
             string info = "";
-            info += "[p] to place gravitators\n" ;
-            info += "shift + c to clear gravitators\n";
-            info += "\n";
-            info += "[a] to place astronaut";
+            info.append("[p] to place gravitators \n");
+            info.append("[C] to clear gravitators \n\n");
+            info.append("[c] to place comet \n");
+            info.append("[a] to place astronaut \n");
             ofDrawBitmapString(info, draw_x, draw_y1);
         }
 
@@ -215,7 +238,15 @@ void testApp::keyPressed(int key) {
             levelID++;
             importLevel();
         }
-
+        break;
+    case 'c':
+        if (CAN_EDIT_LEVEL) {
+            if (clickState == "placing path") {
+                clickState = "edit mode";
+            } else {
+                clickState = "placing comet";
+            }
+        }
         break;
     case 'C':
         if (CAN_EDIT_LEVEL) {
@@ -327,7 +358,7 @@ void testApp::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button) {
-    if(clickState == "placing gravitators") {
+    if (clickState == "placing gravitators") {
         NEW_PLANET_POS.set(0,0);
         NEW_PLANET_R = 0;
         NEW_PLANET_GR = 0;
@@ -335,7 +366,7 @@ void testApp::mousePressed(int x, int y, int button) {
         NEW_PLANET_POS.set(x, y);
         clickState = "setting size";
     }
-    if(clickState == "setting grav") {
+    if (clickState == "setting grav") {
         if (NEW_PLANET_R < 1) {
             clickState = "edit mode";
             return;
@@ -345,15 +376,27 @@ void testApp::mousePressed(int x, int y, int button) {
         addGravitator();
         clickState = "edit mode";
     }
-    if(clickState == "play mode") {
+    if (clickState == "play mode") {
 
     }
-    if(clickState == "placing player") {
+    if (clickState == "placing comet") {
+        NEW_COMET_POS.set (x, y);
+        clickState = "sizing comet";
+    }
+    if (clickState == "placing path") {
+        gravitator[gravitator.size()-1]->pathPoints.push_back(ofVec2f(x, y));
+    }
+    if (clickState == "sizing comet") {
+        NEW_COMET_R = ofDist(x, y, NEW_COMET_POS.x, NEW_COMET_POS.y);
+        gravitator.push_back(new Comet(NEW_COMET_POS, NEW_COMET_R));
+        clickState = "placing path";
+    }
+    if (clickState == "placing player") {
         player.pos.set(x, y);
         player.starting_pos.set(player.pos);
         clickState = "play mode";
     }
-    if(clickState == "placing astronaut") {
+    if (clickState == "placing astronaut") {
         strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(mouseX, mouseY), &gravitator, &gui));
         clickState = "edit mode";
     }
@@ -382,6 +425,7 @@ void testApp::gotMessage(ofMessage msg) {
 void testApp::dragEvent(ofDragInfo dragInfo) {
 
 }
+/// TODO (Aaron#1#): Comet path data needs to be added to import & export
 
 void testApp::exportLevel() {
     while (true) {
@@ -425,6 +469,9 @@ void testApp::importLevel() {
             if (type == "blackhole") {
                 gravitator.push_back(new BlackHole(ofVec2f(x, y), r, m, gR));
             }
+            if (type == "comet") {
+                gravitator.push_back(new Comet(ofVec2f(x, y), r));
+            }
         }
         levelState = "loaded " + ofToString(levelID) + ".";
     } else {
@@ -453,6 +500,9 @@ void testApp::importLevel(int levelID) {
             }
             if (type == "blackhole") {
                 gravitator.push_back(new BlackHole(ofVec2f(x, y), r, m, gR));
+            }
+            if (type == "comet") {
+                gravitator.push_back(new Comet(ofVec2f(x, y), r));
             }
         }
         levelState = "loaded " + ofToString(levelID) + ".";

@@ -5,6 +5,7 @@
 #include "ofMain.h"
 #include "GameObject.h"
 #include "Gravitator.h"
+#include "Comet.h"
 #include "Planet.h"
 #include "Sun.h"
 #include "BlackHole.h"
@@ -24,7 +25,7 @@
 #define screen_width 1280
 #define screen_height 720
 
-class testApp : public ofBaseApp{
+class testApp : public ofBaseApp {
 
 	public:
 		void setup();
@@ -55,9 +56,11 @@ class testApp : public ofBaseApp{
         string levelState;
         string new_gravitator_type;
         ofVec2f NEW_PLANET_POS;
+        ofVec2f NEW_COMET_POS;
         int NEW_PLANET_R;
         int NEW_PLANET_GR;
         int NEW_PLANET_M;
+        int NEW_COMET_R;
         int levelID;
 
     private:
