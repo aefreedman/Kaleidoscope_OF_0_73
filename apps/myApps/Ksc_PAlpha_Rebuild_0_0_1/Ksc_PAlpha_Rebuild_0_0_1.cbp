@@ -72,6 +72,9 @@
 			<Add directory="..\..\..\addons\ofxVectorGraphics\src" />
 			<Add directory="..\..\..\addons\ofxXmlSettings\libs" />
 			<Add directory="..\..\..\addons\ofxXmlSettings\src" />
+			<Add directory="..\..\..\addons\ofxSpriteSheetRenderer\src" />
+			<Add directory="..\..\..\addons\ofxSpriteSheetRenderer\example" />
+			<Add directory="..\..\..\addons\ofxSpriteSheetRenderer\util" />
 		</Compiler>
 		<Linker>
 			<Add library="..\..\..\libs\FreeImage\lib\win_cb\FreeImage.lib" />
