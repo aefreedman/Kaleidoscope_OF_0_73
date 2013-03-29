@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;src\GRAVITATOR\;src\ASTRONAUT\;src\DECOR\;src\SHELL\;src\SHELL\GUI\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;src\GRAVITATOR\;src\ASTRONAUT\;src\DECOR\;src\SHELL\;src\SHELL\GUI\;addons\ofxSpriteSheetRenderer\;addons\ofxSpriteSheetRenderer\src\;addons\ofxSpriteSheetRenderer\utils\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin\$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -71,6 +71,7 @@
 			<Add directory="..\..\..\addons\ofxVectorGraphics\src" />
 			<Add directory="..\..\..\addons\ofxXmlSettings\libs" />
 			<Add directory="..\..\..\addons\ofxXmlSettings\src" />
+			<Add directory="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src" />
 		</Compiler>
 		<Linker>
 			<Add library="..\..\..\libs\FreeImage\lib\win_cb\FreeImage.lib" />
@@ -145,6 +146,30 @@
 		</Unit>
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h">
 			<Option virtualFolder="addons\ofxXmlSettings\src" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\CollageTexture.cpp">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\CollageTexture.h">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\LinearTexture.cpp">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\LinearTexture.h">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\PixelTexture.cpp">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\PixelTexture.h">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\ofxSpriteSheetRenderer.cpp">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
+		</Unit>
+		<Unit filename="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\ofxSpriteSheetRenderer.h">
+			<Option virtualFolder="addons\ofxSpriteSheetRenderer\src\" />
 		</Unit>
 		<Unit filename="src\Astronaut.cpp">
 			<Option virtualFolder="src\ASTRONAUT\" />
