@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="debug" />
+	<File name="src\Astronaut.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="1022" topLine="0" />
+	</File>
+	<File name="src\Astronaut.h" open="1" top="0" tabpos="5">
+		<Cursor position="171" topLine="0" />
+	</File>
+	<File name="src\BlackHole.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="462" topLine="0" />
+	</File>
+	<File name="src\BlackHole.h" open="0" top="0" tabpos="10">
+		<Cursor position="203" topLine="0" />
+	</File>
+	<File name="src\Comet.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="275" topLine="0" />
+	</File>
+	<File name="src\Comet.h" open="1" top="0" tabpos="6">
+		<Cursor position="221" topLine="0" />
+	</File>
+	<File name="src\GUI.h" open="0" top="0" tabpos="0">
+		<Cursor position="382" topLine="0" />
+	</File>
+	<File name="src\GUIOverlay.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="428" topLine="0" />
+	</File>
+	<File name="src\GUIOverlay.h" open="0" top="0" tabpos="6">
+		<Cursor position="171" topLine="0" />
+	</File>
+	<File name="src\Gravitator.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="428" topLine="0" />
+	</File>
+	<File name="src\Gravitator.h" open="0" top="0" tabpos="5">
+		<Cursor position="523" topLine="3" />
+	</File>
+	<File name="src\Planet.cpp" open="0" top="0" tabpos="9">
+		<Cursor position="311" topLine="0" />
+	</File>
+	<File name="src\Planet.h" open="0" top="0" tabpos="8">
+		<Cursor position="188" topLine="0" />
+	</File>
+	<File name="src\Player.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="5318" topLine="172" />
+	</File>
+	<File name="src\Player.h" open="1" top="0" tabpos="3">
+		<Cursor position="760" topLine="5" />
+	</File>
+	<File name="src\Shell.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="51" topLine="0" />
+	</File>
+	<File name="src\Shell.h" open="0" top="0" tabpos="0">
+		<Cursor position="149" topLine="0" />
+	</File>
+	<File name="src\Solid.h" open="0" top="0" tabpos="0">
+		<Cursor position="54" topLine="0" />
+	</File>
+	<File name="src\StrandedAstronaut.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="323" topLine="0" />
+	</File>
+	<File name="src\StrandedAstronaut.h" open="0" top="0" tabpos="3">
+		<Cursor position="843" topLine="2" />
+	</File>
+	<File name="src\Sun.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="224" topLine="0" />
+	</File>
+	<File name="src\Sun.h" open="0" top="0" tabpos="0">
+		<Cursor position="173" topLine="0" />
+	</File>
+	<File name="src\main.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="220" topLine="0" />
+	</File>
+	<File name="src\testApp.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="1024" topLine="11" />
+	</File>
+	<File name="src\testApp.h" open="0" top="0" tabpos="2">
+		<Cursor position="16" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

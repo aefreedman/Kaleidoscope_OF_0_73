@@ -8,27 +8,22 @@
 #include <iostream>
 #include "ofMain.h"
 #include "Gravitator.h"
-#include "Planet.h"
-#include "Sun.h"
-#include "BlackHole.h"
 #include "Astronaut.h"
-#include "Player.h"
 #include "StrandedAstronaut.h"
-#include "Decor.h"
 #include "Shell.h"
-#include "Solid.h"
-#include "Nonsolid.h"
+
 
 class Player : public Astronaut {
 public:
     Player();
-    Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut);
+    Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui);
     virtual ~Player();
 
     void setup();
     void update();
     void draw();
     void drawGUI();
+    void drawDebugGUI();
     void move();
     void jump();
     void chargeJump();
@@ -38,6 +33,9 @@ public:
     void detectGravitatorCollisions();
     void collisionData(int collision);
     bool detectCollisions();
+    bool checkOffScreen();
+    void checkPlayerState();
+    void die();
     void orientToPlanet(int collision);
     void rotateDirection(bool rotate_left);
     void traversePlanet(bool move_left);
@@ -46,9 +44,12 @@ public:
     inline ofQuaternion AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
+    void drawGUIOverlay(ofVec2f _pos, string text);
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
+    std::vector<GUI *> *gui;
+
 
     float jumpStrength;
     float maxJump;
@@ -63,8 +64,9 @@ public:
     bool ROTATIONAL_IMPULSE;
     bool CAN_LAND_ON_PLANET;
     bool OFF_SCREEN_RESET;
-    bool GUI;
+    bool DEBUG_GUI;
     bool TRAVERSING_PLANET;
+    bool OFF_SCREEN;
 protected:
 
 

@@ -6,7 +6,7 @@ Player::Player() : Astronaut() {
     //ctor
 }
 
-Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut) {
+Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut,  std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     setup();
     pos.set(500,500);
     starting_pos.set(pos);
@@ -15,7 +15,7 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
     ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
 
-    DEBUG = false;
+    DEBUG_GUI = false;
 }
 
 Player::~Player() {
@@ -31,8 +31,8 @@ void Player::setup() {
     maxJump                 = 1000000.0;
     m                       = 1.0;
     jumpStrength            = 0.0;
-    G                       = 100.0;
-    restitution             = 0.10; /// Used to calculate the amount of momentum conserved when bouncing off a planet
+    G                       = 120.0;
+    restitution             = 0.10;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 200;
     rotation_speed          = 3.0;
     speed_on_planet         = 150.0;
@@ -40,6 +40,7 @@ void Player::setup() {
     jump_multiplier         = 30.0;
     jetpack_o2_use          = 5;
     astronaut_pickup_range  = 20;
+    attractor = 0;
 
     /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
     /// if G is in player & mass is ignored; give planets individual
@@ -48,23 +49,24 @@ void Player::setup() {
     f.set(0,0);
     v.set(0,0);
     dir.set(-1, 0);
+    pos.set(starting_pos);
 
     ON_PLANET               = false;
     CAN_LAND_ON_PLANET      = true;
     USING_GRAVITY           = true;
-    ORIENT_TO_PLANET        = true;
+    ORIENT_TO_PLANET        = false;
     CAN_JETPACK             = true;
     ABSOLUTE_IMPULSE        = false;
     ROTATIONAL_IMPULSE      = true;
     OFF_SCREEN_RESET        = true;
     SIMPLE_GRAVITY          = true;
-    GUI                     = true;
     TRAVERSING_PLANET       = false;
 
     /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
 }
 
 void Player::update() {
+    checkPlayerState();
     detectGravitatorCollisions();
     display_g.set(gravity);
     detectAstronautCollisions();
@@ -84,8 +86,10 @@ void Player::draw() {
     ofLine(ofPoint(0, 0), ofPoint(50, 0));
     ofPopMatrix();
 
-    if (GUI) {
-        drawGUI();
+    drawGUI();
+
+    if (DEBUG_GUI) {
+        drawDebugGUI();
     }
 }
 
@@ -96,92 +100,125 @@ void Player::drawGUI() {
     gui += "O2: " + ofToString(oxygen, 2) + nl;
     ofSetColor(0, 50, 255);
     ofDrawBitmapString(gui, x, y);
+}
 
-    if (DEBUG) {
-        int x = 30;
-        int y = 550;
-        int column_width = 400;
-        int precision = 0;
-        string info = "";
-        info += "DEBUG MENU" + nl;
-        info += "f: " + ofToString(display_f, precision) + nl;
-        if (SIMPLE_GRAVITY) {
+void Player::drawDebugGUI() {
+    int x = 30;
+    int y = 550;
+    int column_width = 400;
+    int precision = 0;
+    string info = "";
+    info += "DEBUG MENU" + nl;
+    info += "f: " + ofToString(display_f, precision) + nl;
+    if (SIMPLE_GRAVITY) {
         info += "g: " + ofToString(display_g, precision) + " (simple)" + nl;
-        } else {
+    } else {
         info += "g: " + ofToString(display_g, precision) + " (realistic)" + nl;
-        }
-        info += "a: " + ofToString(display_a, precision) + nl;
-        info += "v: " + ofToString(v, precision) + nl;
-        info += "pos: " + ofToString(pos, precision) + nl;
-        info += "dir: " + ofToString(dir, precision + 2) + nl;
-        info += "rot: " + ofToString(rotation) + nl;
-        info += "damp: " + ofToString(damp, 2) + nl;
-        info += "jump: " + ofToString(jumpDir, 2) + nl;
-        info += "maxJump: " + ofToString(maxJump, 2) + nl;
+    }
+    info += "a: " + ofToString(display_a, precision) + nl;
+    info += "v: " + ofToString(v, precision) + nl;
+    info += "pos: " + ofToString(pos, precision) + nl;
+    info += "dir: " + ofToString(dir, precision + 2) + nl;
+    info += "rot: " + ofToString(rotation) + nl;
+    info += "damp: " + ofToString(damp, 2) + nl;
+    info += "jump: " + ofToString(jumpDir, 2) + nl;
+    info += "maxJump: " + ofToString(maxJump, 2) + nl;
 
-        ofSetColor(240, 0, 20);
-        ofDrawBitmapString(info, x, y);
+    ofSetColor(240, 0, 20);
+    ofDrawBitmapString(info, x, y);
 
-        /// FIXME (Aaron#3#): Why is this only displaying the ends of long strings?
-        string info_b = "";
-        if (ON_PLANET) {
-            info_b.append("ON THE PLANET, BRO \n");
-        }
-        if (IN_GRAVITY_WELL) {
-            info_b.append("IN THE GRAVITY WELL, BRO \n");
-        }
-        if (CAN_LAND_ON_PLANET) {
-            info_b.append("CAN LAND ON PLANET, BRO \n");
-        } else {
-            info_b.append("LANDED ON THE PLANET, BRO \n");
-        }
-        if (TRAVERSING_PLANET) {
-            info_b.append("TRAVERSING THE PLANET, BRO \n");
-        }
-        ofSetColor(240, 0, 20);
-        ofDrawBitmapString(info_b, x + column_width, y);
+    /// FIXME (Aaron#3#): Why is this only displaying the ends of long strings?
+    string info_b = "";
+    if (ON_PLANET) {
+        info_b.append("ON THE PLANET, BRO \n");
+    }
+    if (IN_GRAVITY_WELL) {
+        info_b.append("IN THE GRAVITY WELL, BRO \n");
+    }
+    if (CAN_LAND_ON_PLANET) {
+        info_b.append("CAN LAND ON PLANET, BRO \n");
+    } else {
+        info_b.append("LANDED ON THE PLANET, BRO \n");
+    }
+    if (TRAVERSING_PLANET) {
+        info_b.append("TRAVERSING THE PLANET, BRO \n");
+    }
+    ofSetColor(240, 0, 20);
+    ofDrawBitmapString(info_b, x + column_width, y);
+}
+
+void Player::checkPlayerState() {
+    if (OFF_SCREEN) {
+        die();
+    }
+    if (ON_PLANET) {
+        oxygen = 100.0;
+        collisionData(collision);
+    }
+    if (!ON_PLANET) {
+        TRAVERSING_PLANET           = false;
+        oxygen                     -= 4 * dt;
+    }
+    if (ON_PLANET && !TRAVERSING_PLANET) {
+        TRAVERSING_PLANET           = true;
+        bounce();
+        //if (v.length() < 0.05) {
+        //    v.set(0, 0);
+        //}
+    }
+    if (ON_PLANET && CAN_LAND_ON_PLANET) {
+        CAN_LAND_ON_PLANET          = false;
+
+    }
+    if (ON_PLANET && ORIENT_TO_PLANET) {
+        orientToPlanet(collision);
+    }
+    if (IN_GRAVITY_WELL && CAN_LAND_ON_PLANET && USING_GRAVITY) {
+        calculateGravity(attractor);
+    }
+    if (!IN_GRAVITY_WELL) {
+        display_g.set(0);
+        //oxygen -= dt;
     }
 }
 
 void Player::move() {
-    if (rotation >= 360 || rotation <= -360){
+    if (rotation >= 360 || rotation <= -360) {
         rotation = 0;
     }
 
-    a  = (f / m) * dt;
-    v += dir * a * dt;
-    v += gravity * dt;
-    v *= damp;
-    pos += v * dt;
-    display_f = m / a;
+    a           = (f / m) * dt;
+    v          += dir * a * dt;
+    v          += gravity * dt;
+    v          *= damp;
+    pos        += v * dt;
+    display_f   = m / a;
 
     f.set(0, 0);
     gravity.set(0, 0);
 
-    if (OFF_SCREEN_RESET){
-        if (pos.x > screen_width + off_screen_limit) {
-            pos.set(starting_pos);
-            setup();
-            releaseAllAstronauts();
-        }
-        if (pos.x < -off_screen_limit) {
-            pos.set(starting_pos);
-            setup();
-            releaseAllAstronauts();
-        }
-        if (pos.y > screen_height + off_screen_limit) {
-            pos.set(starting_pos);
-            setup();
-            releaseAllAstronauts();
-
-        }
-        if (pos.y < -off_screen_limit) {
-            pos.set(starting_pos);
-            setup();
-            releaseAllAstronauts();
-        }
+    if (OFF_SCREEN_RESET) {
+        OFF_SCREEN = checkOffScreen();
     }
+    if (DEBUG_GUI) {
+        cout << "v(" + ofToString(v.x, 3) + ", " + ofToString(v.y, 3) + ")" + "   ";
+        cout << "Pos(" + ofToString(pos.x, 3) + ", " + ofToString(pos.y, 3) + ")" << endl;
+    }
+}
 
+bool Player::checkOffScreen() {
+    if (pos.x > screen_width + off_screen_limit) {
+        return true;
+    }
+    if (pos.x < -off_screen_limit) {
+        return true;
+    }
+    if (pos.y > screen_height + off_screen_limit) {
+        return true;
+    }
+    if (pos.y < -off_screen_limit) {
+        return true;
+    } else return false;
 }
 
 void Player::detectAstronautCollisions() {
@@ -210,9 +247,9 @@ void Player::releaseAllAstronauts() {
 }
 
 void Player::detectGravitatorCollisions() {
-    ON_PLANET = false;
-    IN_GRAVITY_WELL = false;
-    EXITED_GRAVITY_WELL = false;
+    ON_PLANET                       = false;
+    IN_GRAVITY_WELL                 = false;
+    EXITED_GRAVITY_WELL             = false;
 
     for (int i = 0; i < gravitator->size(); i++) {
         float dist                  = pos.distance((*gravitator)[i]->pos);
@@ -223,8 +260,11 @@ void Player::detectGravitatorCollisions() {
         if (dist <= planet_r + r) {
             collision               = i;
             ON_PLANET               = true;
+            if (DEBUG_GUI) {
+                cout << "Collided with planet" << endl;
+            }
         }
-        if (dist >= planet_r + (r)) {
+        if (dist >= planet_r + r) {
             CAN_LAND_ON_PLANET      = true;
         }
         if (dist <= planet_gravity_range + r) {
@@ -232,30 +272,17 @@ void Player::detectGravitatorCollisions() {
             IN_GRAVITY_WELL         = true;
         }
     }
-    if (ON_PLANET) {
-        oxygen = 100.0;
-    }
-    if (!ON_PLANET) {
-        TRAVERSING_PLANET = false;
-    }
-    if (ON_PLANET && !TRAVERSING_PLANET) {
-        TRAVERSING_PLANET       = true;
-    }
-    if (ON_PLANET && CAN_LAND_ON_PLANET) {
-            CAN_LAND_ON_PLANET      = false;
-            collisionData(collision);
-        }
-    if (ON_PLANET && ORIENT_TO_PLANET) {
-            orientToPlanet(collision);
-            bounce();
-        }
-    if (IN_GRAVITY_WELL && CAN_LAND_ON_PLANET && USING_GRAVITY) {
-            calculateGravity(attractor);
-        }
-    if (!IN_GRAVITY_WELL) {
-        display_g.set(0);
-        oxygen -= dt;
-        }
+}
+
+void Player::die() {
+    setup();
+    releaseAllAstronauts();
+    drawGUIOverlay(ofVec2f(100, 100), "You died.");
+}
+
+void Player::drawGUIOverlay(ofVec2f _pos, string text) {
+    //(*gui).push_back(new GUIOverlay(_pos, text));
+    (*gui).push_back(new Message(_pos + ofVec2f(0, -15), text));
 }
 
 bool Player::detectCollisions() {  ///Not in use
@@ -279,21 +306,10 @@ void Player::collisionData(int collision) {
     if (!SIMPLE_GRAVITY) {
         maxJump= jump_multiplier * planet_m;
     }
-    //cout << ofToString(planet_m) << endl;
-}
-
-//void Player::bounce() {
-    /*
-    float a1 = v.dot(normalized_collision_normal);
-    float optimizedP = (2.0 * a1) / (m + planet_m);
-    ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
-    v_prime *= restitution;
-
-    if (!CAN_LAND_ON_PLANET){
-        v.set(v_prime);
+    if (DEBUG_GUI) {
+        //cout << ofToString(planet_m) << endl;
     }
-    */
-//}
+}
 
 void Player::calculateGravity(int attractor) {
     ofVec2f planet_pos = (*gravitator)[attractor]->pos;
@@ -309,9 +325,9 @@ void Player::calculateGravity(int attractor) {
 
     /// NOTE (Aaron#5#): Gravity with mass works, but it seems to make everything way too hard.
     if (SIMPLE_GRAVITY) {
-    gravity               += G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
+        gravity               += G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
     } else {
-    gravity               += G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
+        gravity               += G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
     }
 
 }
@@ -361,10 +377,13 @@ void Player::chargeJump() {
 }
 
 void Player::jump() {
-    if (!CAN_LAND_ON_PLANET) {
+    if (TRAVERSING_PLANET) {
         starting_pos = pos;
         f += jumpStrength;
         TRAVERSING_PLANET = false;
+        if (DEBUG_GUI) {
+            cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;
+        }
     }
     jumpStrength = 0;
 }

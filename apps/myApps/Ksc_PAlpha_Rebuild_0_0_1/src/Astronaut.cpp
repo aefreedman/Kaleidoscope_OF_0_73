@@ -11,6 +11,7 @@ Astronaut::Astronaut(ofVec2f _pos) {
 Astronaut::Astronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : gravitator(gravitator) {
     pos = _pos;
     SIMPLE_GRAVITY = true;
+
 }
 
 void Astronaut::detectGravitatorCollisions() {
@@ -30,18 +31,26 @@ void Astronaut::orientToPlanet(int collision) {
 
 }
 void Astronaut::bounce() {
+    if (v.length() < 0.05) {
+        v.set(0, 0);
+    }
     float a1 = v.dot(normalized_collision_normal);
     float optimizedP = (2.0 * a1) / (m + planet_m);
     ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
     v_prime *= restitution;
+    v.set(v_prime);
 
-    if (!CAN_LAND_ON_PLANET){
-        v.set(v_prime);
-    }
+    /// NOTE (Aaron#4#): StrandedAstronauts needs an update to their controller.
+
 }
 void Astronaut::calculateGravity(int attractor) {
 
 }
+
+//void Astronaut::drawGUIOverlay(ofVec2f _pos, string text) {
+    //(*gui).push_back(new GUIOverlay(_pos, text));
+    //(*gui).push_back(new Message(_pos + ofVec2f(0, -15), text));
+//}
 
 Astronaut::~Astronaut() {
     //dtor

@@ -14,7 +14,7 @@ void testApp::setup() {
     ofEnableAlphaBlending();
     ofBackground(0, 0, 0);
 
-    player                          = Player(ofVec2f(300,300), &gravitator, &strandedAstronaut);
+    player                          = Player(ofVec2f(300,300), &gravitator, &strandedAstronaut, &gui);
     clickState                      = "play mode";
     levelState                      = "Working from scratch.";
     new_gravitator_type             = "";
@@ -27,7 +27,7 @@ void testApp::setup() {
 
     strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &gui));
     //gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
-    //gui.push_back(new GUIOverlay(ofVec2f(ofGetWidth()/2, ofGetHeight() - 100), "Testing GUIOverlay system"));
+    gui.push_back(new GUIOverlay(ofVec2f(ofGetWidth()/2, ofGetHeight() - 100), "Testing GUIOverlay system"));  /// FIXME (Aaron#1#): I broke this somehow.
 
     ///Testing sound system
     mySound.loadSound("Jupiter.mp3");
@@ -158,8 +158,7 @@ void testApp::draw() {
             placement_text = "click to set player location";
         } else if (clickState == "placing path") {
             placement_text = "[c] to stop placing path";
-        }
-         else placement_text = "";
+        } else placement_text = "";
         ofDrawBitmapString(placement_text, draw_x, draw_y2);
 
         if (clickState == "edit mode") {

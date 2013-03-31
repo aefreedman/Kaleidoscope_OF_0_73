@@ -6,6 +6,9 @@
 #include "ofMain.h"
 #include "Gravitator.h"
 #include "GUI.h"
+#include "GUIOverlay.h"
+#include "Message.h"
+
 
 class Astronaut {
 public:
@@ -26,7 +29,10 @@ public:
     void bounce();
     virtual void calculateGravity(int attractor);
 
+    //void drawGUIOverlay(ofVec2f _pos, string text);
+
     std::vector<Gravitator *> *gravitator;
+    std::vector<GUI *> *gui;
 
     ofVec2f pos;
     ofVec2f starting_pos;
