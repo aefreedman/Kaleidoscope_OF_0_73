@@ -66,7 +66,7 @@ void Player::setup() {
 }
 
 void Player::update() {
-    checkPlayerState();
+    checkState();
     detectGravitatorCollisions();
     display_g.set(gravity);
     detectAstronautCollisions();
@@ -147,7 +147,7 @@ void Player::drawDebugGUI() {
     ofDrawBitmapString(info_b, x + column_width, y);
 }
 
-void Player::checkPlayerState() {
+void Player::checkState() {
     if (OFF_SCREEN) {
         die();
     }
@@ -161,10 +161,7 @@ void Player::checkPlayerState() {
     }
     if (ON_PLANET && !TRAVERSING_PLANET) {
         TRAVERSING_PLANET           = true;
-        bounce();
-        //if (v.length() < 0.05) {
-        //    v.set(0, 0);
-        //}
+        gravitatorBounce();
     }
     if (ON_PLANET && CAN_LAND_ON_PLANET) {
         CAN_LAND_ON_PLANET          = false;
@@ -277,11 +274,15 @@ void Player::detectGravitatorCollisions() {
 void Player::die() {
     setup();
     releaseAllAstronauts();
-    drawGUIOverlay(ofVec2f(100, 100), "You died.");
+    //drawGUIOverlay(ofVec2f(100, 100), "You died.");
+    displayMessage(starting_pos, "You died.");
 }
 
 void Player::drawGUIOverlay(ofVec2f _pos, string text) {
-    //(*gui).push_back(new GUIOverlay(_pos, text));
+    (*gui).push_back(new GUIOverlay(_pos, text));
+}
+
+void Player::displayMessage(ofVec2f _pos, string text) {
     (*gui).push_back(new Message(_pos + ofVec2f(0, -15), text));
 }
 

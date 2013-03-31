@@ -26,10 +26,13 @@ public:
 
     virtual void collisionData(int collision);
     virtual void orientToPlanet(int collision);
-    void bounce();
+    void gravitatorBounce();
     virtual void calculateGravity(int attractor);
 
-    //void drawGUIOverlay(ofVec2f _pos, string text);
+    virtual void checkState();
+
+    virtual void drawGUIOverlay(ofVec2f _pos, string text);
+    virtual void displayMessage(ofVec2f _pos, string text);
 
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;
@@ -56,6 +59,7 @@ public:
     bool USING_GRAVITY;
     bool SIMPLE_GRAVITY;
     bool CAN_LAND_ON_PLANET;
+    bool TRAVERSING_PLANET;
 
     float G;
     float m;

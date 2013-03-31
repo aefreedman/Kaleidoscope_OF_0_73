@@ -11,7 +11,7 @@ public:
     void update();
     void draw();
 
-    vector <ofVec2f> pathPoints;
+    //vector <ofVec2f> pathPoints;
 
     ofVec2f destination;
     int currentDest;

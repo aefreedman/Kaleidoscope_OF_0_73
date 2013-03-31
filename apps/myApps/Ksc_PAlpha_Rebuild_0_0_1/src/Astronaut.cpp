@@ -7,12 +7,15 @@ Astronaut::Astronaut() {
 Astronaut::Astronaut(ofVec2f _pos) {
     pos = _pos;
     SIMPLE_GRAVITY = true;
+    attractor = 0;
 }
 Astronaut::Astronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator) : gravitator(gravitator) {
     pos = _pos;
     SIMPLE_GRAVITY = true;
-
+    attractor = 0;
 }
+
+void Astronaut::checkState() {}
 
 void Astronaut::detectGravitatorCollisions() {
 
@@ -30,7 +33,7 @@ void Astronaut::collisionData(int collision) {
 void Astronaut::orientToPlanet(int collision) {
 
 }
-void Astronaut::bounce() {
+void Astronaut::gravitatorBounce() {
     if (v.length() < 0.05) {
         v.set(0, 0);
     }
@@ -47,10 +50,13 @@ void Astronaut::calculateGravity(int attractor) {
 
 }
 
-//void Astronaut::drawGUIOverlay(ofVec2f _pos, string text) {
+void Astronaut::drawGUIOverlay(ofVec2f _pos, string text) {
     //(*gui).push_back(new GUIOverlay(_pos, text));
     //(*gui).push_back(new Message(_pos + ofVec2f(0, -15), text));
-//}
+}
+void Astronaut::displayMessage(ofVec2f _pos, string text) {
+
+}
 
 Astronaut::~Astronaut() {
     //dtor

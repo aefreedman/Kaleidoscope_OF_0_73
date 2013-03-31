@@ -34,7 +34,7 @@ public:
     void collisionData(int collision);
     bool detectCollisions();
     bool checkOffScreen();
-    void checkPlayerState();
+    void checkState();
     void die();
     void orientToPlanet(int collision);
     void rotateDirection(bool rotate_left);
@@ -45,6 +45,8 @@ public:
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
     void drawGUIOverlay(ofVec2f _pos, string text);
+    void displayMessage(ofVec2f _pos, string text);
+
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;

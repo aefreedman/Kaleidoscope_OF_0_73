@@ -25,9 +25,9 @@ void testApp::setup() {
     ///Starting level
     importLevel(0);
 
-    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &gui));
+    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(screen_width / 2, screen_height / 2), &gravitator, &strandedAstronaut, &gui));
     //gravitator.push_back(new Sun(ofVec2f(300, 600), 200, 20000, 500));
-    gui.push_back(new GUIOverlay(ofVec2f(ofGetWidth()/2, ofGetHeight() - 100), "Testing GUIOverlay system"));  /// FIXME (Aaron#1#): I broke this somehow.
+    //gui.push_back(new GUIOverlay(ofVec2f(ofGetWidth()/2, ofGetHeight() - 100), "Testing GUIOverlay system"));  /// FIXME (Aaron#1#): I broke this somehow.
 
     ///Testing sound system
     mySound.loadSound("Jupiter.mp3");
@@ -42,6 +42,7 @@ void testApp::update() {
         gravitator[i]->update();
     }
     for (int i = 0; i < strandedAstronaut.size(); i++) {
+        strandedAstronaut[i]->id = i;
         strandedAstronaut[i]->update();
     }
     for (int i = 0; i < gui.size(); i++) {
@@ -55,13 +56,12 @@ void testApp::draw() {
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
-    for (int i = 0; i < strandedAstronaut.size(); i++) {
-        strandedAstronaut[i]->draw();
-    }
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->draw();
     }
-
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        strandedAstronaut[i]->draw();
+    }
     player.draw();
 
     /// TODO (Aaron#9#): Move level editor into own class
@@ -169,6 +169,7 @@ void testApp::draw() {
             info.append("[C] to clear gravitators \n\n");
             info.append("[c] to place comet \n");
             info.append("[a] to place astronaut \n");
+            info.append("[A] to clear astronauts \n");
             ofDrawBitmapString(info, draw_x, draw_y1);
         }
 
@@ -193,7 +194,7 @@ void testApp::addGravitator() {
 }
 
 void testApp::addStrandedAstronaut() {
-    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(NEW_PLANET_POS.x, NEW_PLANET_POS.y + NEW_PLANET_R), &gravitator, &gui));
+    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(NEW_PLANET_POS.x, NEW_PLANET_POS.y + NEW_PLANET_R), &gravitator, &strandedAstronaut, &gui));
 }
 
 //--------------------------------------------------------------
@@ -217,6 +218,11 @@ void testApp::keyPressed(int key) {
     case 'a':
         if (CAN_EDIT_LEVEL) {
             clickState = "placing astronaut";
+        }
+        break;
+    case 'A':
+        if (CAN_EDIT_LEVEL) {
+            strandedAstronaut.clear();
         }
         break;
     case 's':
@@ -396,7 +402,7 @@ void testApp::mousePressed(int x, int y, int button) {
         clickState = "play mode";
     }
     if (clickState == "placing astronaut") {
-        strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(mouseX, mouseY), &gravitator, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(mouseX, mouseY), &gravitator, &strandedAstronaut, &gui));
         clickState = "edit mode";
     }
 }
@@ -432,7 +438,7 @@ void testApp::exportLevel() {
         std::ifstream input(levelName.c_str());
         if  (input.good()) {
             std::ofstream output(levelName.c_str());
-            output << gravitator.size() << std::endl;
+            output << gravitator.size() + strandedAstronaut.size() << std::endl;
             for (int i = 0; i < gravitator.size(); i++) {
                 output << gravitator[i]->pos.x << ' '
                 << gravitator[i]->pos.y << ' '
@@ -442,73 +448,84 @@ void testApp::exportLevel() {
                 << gravitator[i]->type << ' '
                 << std::endl;
             }
+            for (int i = 0; i < strandedAstronaut.size(); i++) {
+                output << strandedAstronaut[i]->pos.x << ' '
+                << strandedAstronaut[i]->pos.y << ' '
+                << 0 << ' '
+                << 0 << ' '
+                << 0 << ' '
+                << strandedAstronaut[i]->type << ' '
+                << std::endl;
+            }
             levelState = ofToString(levelName) + " saved";
             break;
         }
     }
 
 }
-
+/// NOTE (Aaron#9#): Loading levels causes a small memory leak (vectors are only cleared)
 void testApp::importLevel() {
     std::ifstream input(("level_" + ofToString(levelID)).c_str());
     if (input.good()) {
         gravitator.clear();
+        strandedAstronaut.clear();
         int listSize;
         input >> listSize;
         for(int i = 0; i < listSize; i++) {
-            int x, y, r, m, gR;
+            float x, y;
+            int r, m, gR;
             string type;
             input >> x >> y >> r >> m >> gR >> type;
             if (type == "planet") {
                 gravitator.push_back(new Planet(ofVec2f(x, y), r, m, gR));
-            }
-            if (type == "sun") {
+            } else if (type == "sun") {
                 gravitator.push_back(new Sun(ofVec2f(x, y), r, m, gR));
-            }
-            if (type == "blackhole") {
+            } else if (type == "blackhole") {
                 gravitator.push_back(new BlackHole(ofVec2f(x, y), r, m, gR));
-            }
-            if (type == "comet") {
+            } else if (type == "comet") {
                 gravitator.push_back(new Comet(ofVec2f(x, y), r));
+            } else if (type == "strandedastronaut") {
+                strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), &gravitator, &strandedAstronaut, &gui));
             }
         }
         levelState = "loaded " + ofToString(levelID) + ".";
     } else {
         levelState = "That level doesn't exist.";
         gravitator.clear();
+        strandedAstronaut.clear();
         gui.clear();        /// NOTE (Aaron#9#): Don't forget to remove this later.
     }
-
 }
 
 void testApp::importLevel(int levelID) {
     std::ifstream input(("level_" + ofToString(levelID)).c_str());
     if (input.good()) {
         gravitator.clear();
+        strandedAstronaut.clear();
         int listSize;
         input >> listSize;
         for(int i = 0; i < listSize; i++) {
-            int x, y, r, m, gR;
+            float x, y;
+            int r, m, gR;
             string type;
             input >> x >> y >> r >> m >> gR >> type;
             if (type == "planet") {
                 gravitator.push_back(new Planet(ofVec2f(x, y), r, m, gR));
-            }
-            if (type == "sun") {
+            } else if (type == "sun") {
                 gravitator.push_back(new Sun(ofVec2f(x, y), r, m, gR));
-            }
-            if (type == "blackhole") {
+            } else if (type == "blackhole") {
                 gravitator.push_back(new BlackHole(ofVec2f(x, y), r, m, gR));
-            }
-            if (type == "comet") {
+            } else if (type == "comet") {
                 gravitator.push_back(new Comet(ofVec2f(x, y), r));
+            } else if (type == "strandedastronaut") {
+                strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), &gravitator, &strandedAstronaut, &gui));
             }
         }
         levelState = "loaded " + ofToString(levelID) + ".";
     } else {
         levelState = "That level doesn't exist.";
         gravitator.clear();
+        strandedAstronaut.clear();
         gui.clear();        /// NOTE (Aaron#9#): Don't forget to remove this later.
     }
-
 }

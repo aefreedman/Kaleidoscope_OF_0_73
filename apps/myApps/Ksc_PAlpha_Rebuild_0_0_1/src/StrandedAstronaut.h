@@ -8,17 +8,18 @@
 class StrandedAstronaut : public Astronaut {
 public:
     StrandedAstronaut();
-    StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<GUI *> *gui);
+    StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui);
 
     virtual ~StrandedAstronaut();
     void update();
     void draw();
     void move();
+    void checkState();
+    void bounce(int other);
 
     void detectGravitatorCollisions();
     void collisionData(int collision);
     void orientToPlanet(int collision);
-    //void bounce();
     void calculateGravity(int attractor);
     void displayMessage();
     bool displayMessageTimer();
@@ -31,8 +32,12 @@ public:
     bool FOLLOWING_PLAYER;
     bool CAN_TALK;
 
+    string type;
+    int id;
+
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;
+    std::vector<StrandedAstronaut *> *strandedAstronaut;
 
 protected:
 
@@ -44,6 +49,8 @@ private:
     ofVec2f player_pos;
 
     bool DRAW_MESSAGE;
+
+    int sa_collision;
 
 
 };
