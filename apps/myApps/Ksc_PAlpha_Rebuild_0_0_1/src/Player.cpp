@@ -41,6 +41,7 @@ void Player::setup() {
     jump_multiplier         = 30.0;
     jetpack_o2_use          = 5;
     astronaut_pickup_range  = 20;
+    astronaut_drop_range    = 120;
     attractor = 0;
 
     /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
@@ -226,7 +227,12 @@ void Player::detectAstronautCollisions() {
 
         if (dist <= r + astronaut_r + astronaut_pickup_range) {
             (*strandedAstronaut)[i]->FOLLOWING_PLAYER = true;
-            cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
+            if (DEBUG_GUI) {
+                cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
+            }
+        }
+        if (dist > r + astronaut_r + astronaut_drop_range) {
+            (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
         }
         if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER == true) {
             (*strandedAstronaut)[i]->getPlayerData(pos);

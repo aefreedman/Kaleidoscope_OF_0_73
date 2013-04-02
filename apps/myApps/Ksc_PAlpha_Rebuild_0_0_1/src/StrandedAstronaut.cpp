@@ -7,18 +7,19 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
     //ctor
 }
 
-StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut,std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
+StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     pos                         = _pos;
     r                           = 5;
     m                           = 1.0;
     G                           = 9.8;
     rotation                    = 180;
     damp                        = 1.0;
-    restitution                 = 0.01;
+    restitution                 = 0.1;
     oxygen                      = 100;
     message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
-    message_delay               = 20;        ///Minimum delay between messages
-    message_display_chance      = 7;        ///larger number makes random delay between messages higher
+    message_delay               = 20;                       ///Minimum delay between messages
+    message_display_chance      = 7;                        ///larger number makes random delay between messages higher
+    lerp_speed                  = 0.15;
 
 
     a.set(0, 0);
@@ -196,6 +197,13 @@ void StrandedAstronaut::draw() {
     ofCircle(0, 0, r);
     ofLine(ofPoint(0, 0), ofPoint(20, 0));
     ofPopMatrix();
+
+    if (FOLLOWING_PLAYER) {
+        ofPushMatrix();
+        ofSetColor(255, 0, 0, 200);
+        ofLine(pos, player_pos);
+        ofPopMatrix();
+    }
 }
 
 void StrandedAstronaut::detectGravitatorCollisions() {
@@ -261,9 +269,15 @@ void StrandedAstronaut::orientToPlanet(int collision) {
 void StrandedAstronaut::followPlayer() {
     ofVec2f temp;
     temp.set(10, 10);
-    float lerp_speed = ofRandom(0.002, 0.007);
-    pos.interpolate(player_pos, lerp_speed);  /// TODO (Aaron#1#): Update player-following behavior
-
+    float randomized_speed = ofRandom(lerp_speed * 0.95, lerp_speed * 1.05);
+    float dist = pos.squareDistance(player_pos);
+    int min = 6;
+    if (dist > (min * min)) {
+        pos.interpolate(player_pos, lerp_speed / 4);  /// TODO (Aaron#1#): Update player-following behavior
+    }
+    if (dist > (min * min * min * min)) {
+        pos.interpolate(player_pos, lerp_speed);
+    }
 }
 
 void StrandedAstronaut::getPlayerData(ofVec2f _player_pos) {

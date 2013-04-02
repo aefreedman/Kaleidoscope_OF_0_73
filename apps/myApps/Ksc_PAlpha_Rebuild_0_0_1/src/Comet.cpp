@@ -12,7 +12,6 @@ Comet::Comet(ofVec2f _pos, int _r) : Gravitator(_pos, _r) {
     vel                         = 2;
     m                           = 0.0;
     gR                          = 0;
-    pathPoints                  = _pathPoints;
     destination                 = pathPoints[currentDest];
     type                        = "comet";
     dir.set(0,0);

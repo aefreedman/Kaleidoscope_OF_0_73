@@ -290,12 +290,12 @@ void testApp::keyPressed(int key) {
         if (player.ON_PLANET) {
 
             break;
-        } else if (player.CAN_JETPACK) {
-            //player.jetpack(true);
+        } else if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
+            player.jetpack(true);
             break;
         }
     case OF_KEY_DOWN:
-        if (player.CAN_JETPACK) {
+        if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
             player.jetpack(false);
             break;
         }
@@ -439,7 +439,7 @@ void testApp::dragEvent(ofDragInfo dragInfo) {
 
 void testApp::exportLevel() {
     while (true) {
-        string levelName = "level_" + ofToString(levelID++);
+        string levelName = "level_" + ofToString(levelID);
         std::ifstream input(levelName.c_str());
         if  (input.good()) {
             std::ofstream output(levelName.c_str());
@@ -465,6 +465,7 @@ void testApp::exportLevel() {
                 << 0 << ' '
                 << 0 << ' '
                 << strandedAstronaut[i]->type << ' '
+                << 0 << ' '
                 << std::endl;
             }
             levelState = ofToString(levelName) + " saved";

@@ -51,6 +51,7 @@ private:
     bool DRAW_MESSAGE;
 
     int sa_collision;
+    float lerp_speed;
 
 
 };
