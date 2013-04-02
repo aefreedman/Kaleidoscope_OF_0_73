@@ -81,14 +81,10 @@ private:
     ofVec2f display_g;
     ofVec2f display_a;
     ofVec2f display_f;
-/*
-    ofVec2f planet_pos;
-    ofVec2f collision_normal;
-    ofVec2f normalized_collision_normal;
-    ofVec2f collision_perpendicular;
-    float planet_m;
-    float planet_r;
-*/
+
+    /// TODO (Aaron#1#): discrete jump strength levels
+    /// TODO (Aaron#1#): Release astronauts into the sun
+
 
 };
 

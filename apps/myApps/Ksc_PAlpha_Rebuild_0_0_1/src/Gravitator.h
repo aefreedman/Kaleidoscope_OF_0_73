@@ -25,6 +25,8 @@ public:
 
     vector <ofVec2f> pathPoints;
 
+    /// TODO (Aaron#1#): Discrete gravity levels
+
 protected:
 private:
 };

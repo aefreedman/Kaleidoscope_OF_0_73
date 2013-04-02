@@ -150,6 +150,9 @@ void Player::drawDebugGUI() {
 }
 
 void Player::checkState() {
+    if (oxygen < 0) {
+        die();
+    }
     if (OFF_SCREEN) {
         die();
     }
