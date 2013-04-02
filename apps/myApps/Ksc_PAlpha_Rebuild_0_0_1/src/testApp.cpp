@@ -295,7 +295,7 @@ void testApp::keyPressed(int key) {
 
             break;
         } else if (player.CAN_JETPACK) {
-            player.jetpack(true);
+            //player.jetpack(true);
             break;
         }
     case OF_KEY_DOWN:
@@ -321,7 +321,12 @@ void testApp::keyPressed(int key) {
             break;
         }
     case 32:
-        player.chargeJump();
+        if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
+            player.jetpack(true);
+            break;
+        } else {
+            player.chargeJump();
+        }
         break;
     case '=':
         player.damp += 0.01;

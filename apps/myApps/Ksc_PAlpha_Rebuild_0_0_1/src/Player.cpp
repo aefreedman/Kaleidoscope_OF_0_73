@@ -54,7 +54,7 @@ void Player::setup() {
     ON_PLANET               = false;
     CAN_LAND_ON_PLANET      = true;
     USING_GRAVITY           = true;
-    ORIENT_TO_PLANET        = false;
+    ORIENT_TO_PLANET        = true;
     CAN_JETPACK             = true;
     ABSOLUTE_IMPULSE        = false;
     ROTATIONAL_IMPULSE      = true;
@@ -167,7 +167,7 @@ void Player::checkState() {
         CAN_LAND_ON_PLANET          = false;
 
     }
-    if (ON_PLANET && ORIENT_TO_PLANET) {
+    if (TRAVERSING_PLANET && ORIENT_TO_PLANET) {
         orientToPlanet(collision);
     }
     if (IN_GRAVITY_WELL && CAN_LAND_ON_PLANET && USING_GRAVITY) {
@@ -334,7 +334,10 @@ void Player::calculateGravity(int attractor) {
 }
 
 void Player::orientToPlanet(int collision) {
-    jumpDir.set(collision_perpendicular.normalized());
+    //jumpDir.set(collision_perpendicular.normalized());
+    dir.set(normalized_collision_normal);
+    float new_rotation = ofRadToDeg(atan2(normalized_collision_normal.y, normalized_collision_normal.x));
+    rotation = ofLerp(rotation, new_rotation, 6 * dt);
 }
 
 void Player::traversePlanet(bool move_left) {
