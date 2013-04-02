@@ -19,6 +19,7 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
 }
 
 Player::~Player() {
+
 }
 
 void Player::setup() {
