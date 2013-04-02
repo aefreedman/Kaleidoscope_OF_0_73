@@ -25,6 +25,25 @@ Comet::Comet(ofVec2f _pos, int _r) : Gravitator(_pos, _r) {
 
 }
 
+Comet::Comet(ofVec2f _pos, int _r, vector <ofVec2f> pathPoints) : Gravitator(_pos, _r) {
+
+    pos = _pos;
+    dir.set(0,0);
+    currentDest = 0;
+    vel = 2;
+    m = 0.0;
+    gR = 0;
+
+    //ofVec2f pathStart;
+    //pathStart.set(pos.x,pos.y);
+    //pathPoints.push_back(pathStart);
+
+    destination = pathPoints[currentDest];
+
+    type = "comet";
+
+}
+
 void Comet::update() {
 
     if (pos.distance(destination) < vel ) {

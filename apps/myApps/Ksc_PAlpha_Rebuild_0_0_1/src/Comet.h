@@ -6,7 +6,8 @@
 class Comet : public Gravitator {
 public:
     Comet();
-    Comet(ofVec2f _pos,int _r);
+    Comet(ofVec2f _pos, int _r);
+    Comet(ofVec2f _pos, int _r, vector <ofVec2f> pathPoints);
 
     void update();
     void draw();
