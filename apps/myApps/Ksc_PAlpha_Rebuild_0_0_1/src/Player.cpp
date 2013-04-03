@@ -34,7 +34,7 @@ void Player::setup() {
     jumpStrength            = 0.0;
     G                       = 120.0;
     restitution             = 0.10;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
-    off_screen_limit        = 200;
+    off_screen_limit        = 10;
     rotation_speed          = 3.0;
     speed_on_planet         = 150.0;
     jetpack_power           = 50000.0;
@@ -63,6 +63,7 @@ void Player::setup() {
     OFF_SCREEN_RESET        = true;
     SIMPLE_GRAVITY          = true;
     TRAVERSING_PLANET       = false;
+    GOD_MODE                = true;
 
     /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
 }
@@ -154,7 +155,7 @@ void Player::checkState() {
         die();
     }
     if (OFF_SCREEN) {
-        die();
+        //die();
     }
     if (ON_PLANET) {
         oxygen = 100.0;
@@ -209,17 +210,30 @@ void Player::move() {
 }
 
 bool Player::checkOffScreen() {
-    if (pos.x > screen_width + off_screen_limit) {
-        return true;
+    if (camera_timer > 0) {
+        camera_timer -= dt;
     }
-    if (pos.x < -off_screen_limit) {
-        return true;
-    }
-    if (pos.y > screen_height + off_screen_limit) {
-        return true;
-    }
-    if (pos.y < -off_screen_limit) {
-        return true;
+    if (camera_timer <= 0) {
+        if (pos.x > camera_target.x + screen_width - off_screen_limit) {
+            camera_move_direction = "right";
+            camera_timer = 1.0;
+            return true;
+        }
+        if (pos.x < camera_target.x + off_screen_limit) {
+            camera_move_direction = "left";
+            camera_timer = 1.0;
+            return true;
+        }
+        if (pos.y > camera_target.y + screen_height - off_screen_limit) {
+            camera_move_direction = "down";
+            camera_timer = 1.0;
+            return true;
+        }
+        if (pos.y < camera_target.y + off_screen_limit) {
+            camera_move_direction = "up";
+            camera_timer = 1.0;
+            return true;
+        } else return false;
     } else return false;
 }
 
@@ -282,10 +296,11 @@ void Player::detectGravitatorCollisions() {
 }
 
 void Player::die() {
-    setup();
-    releaseAllAstronauts();
-    //drawGUIOverlay(ofVec2f(100, 100), "You died.");
-    displayMessage(starting_pos, "You died.");
+    if (!GOD_MODE) {
+        setup();
+        releaseAllAstronauts();
+        displayMessage(starting_pos, "You died.");
+    }
 }
 
 void Player::drawGUIOverlay(ofVec2f _pos, string text) {

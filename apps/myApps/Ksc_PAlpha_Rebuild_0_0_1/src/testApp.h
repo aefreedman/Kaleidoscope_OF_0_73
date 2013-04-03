@@ -32,7 +32,7 @@ class testApp : public ofBaseApp {
 		void update();
 		void draw();
 		void addGravitator();
-		void addStrandedAstronaut();
+		void addStrandedAstronaut(ofVec2f _pos);
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -42,6 +42,7 @@ class testApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		void moveCamera(string direction);
 
         void exportLevel();
         void importLevel();
@@ -63,10 +64,16 @@ class testApp : public ofBaseApp {
         int NEW_COMET_R;
         int levelID;
 
+        ofVec3f camera_pos;
+        ofVec3f camera_target;
+
     private:
         int planet_base_m;
         int planet_mass_multiplier;
         bool CAN_EDIT_LEVEL;
         ofSoundPlayer mySound;
+        bool MOVE_CAMERA;
+
+        float camera_lerp_speed;
 
 };

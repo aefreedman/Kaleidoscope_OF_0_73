@@ -21,6 +21,8 @@ void testApp::setup() {
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
     CAN_EDIT_LEVEL                  = false;
+    camera_lerp_speed               = 2;
+    camera_pos.set(0, 0, .5);
 
     ///Starting level
     importLevel(0);
@@ -44,11 +46,38 @@ void testApp::update() {
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->update();
     }
+    camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
+    player.camera_pos = camera_pos;
+    player.camera_target = camera_target;
 
+    if (player.OFF_SCREEN == true && clickState == "play mode") {
+        moveCamera(player.camera_move_direction);
+        player.OFF_SCREEN = false;
+    }
+}
+
+void testApp::moveCamera(string direction) {
+    ofVec2f target;
+    if (direction == "up") {
+        target.set(0, -screen_height);
+    } else if (direction == "down") {
+        target.set(0, screen_height);
+    } else if (direction == "left") {
+        target.set(-screen_width, 0);
+    } else if (direction == "right") {
+        target.set(screen_width, 0);
+    }
+
+    target += camera_target;
+    camera_target.x = target.x;
+    camera_target.y = target.y;
+    camera_target.z = 0;
 }
 
 //--------------------------------------------------------------
 void testApp::draw() {
+    ofPushMatrix();
+    ofTranslate(-camera_pos);
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
@@ -59,6 +88,7 @@ void testApp::draw() {
         strandedAstronaut[i]->draw();
     }
     player.draw();
+    ofPopMatrix();
 
     /// TODO (Aaron#9#): Move level editor into own class
     ///LEVEL EDITOR---------------------------------------------
@@ -109,6 +139,10 @@ void testApp::draw() {
         top_text.append("[F1] to edit level");
         top_text.append(bar);
         top_text.append("[s] to place player");
+        top_text.append(gap);
+        top_text.append(ofToString(camera_pos, 2));
+        top_text.append(gap);
+        top_text.append(ofToString(camera_target));
     } else if (clickState == "edit mode") {
         top_text.append(levelState);
         top_text.append(gap);
@@ -174,23 +208,19 @@ void testApp::draw() {
 
 void testApp::addGravitator() {
     if (new_gravitator_type == "planet") {
-        gravitator.push_back(new Planet(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
-        int chance = ofRandom(3);
-        if (chance == 0) {
-            addStrandedAstronaut();
-        }
+        gravitator.push_back(new Planet(NEW_PLANET_POS + camera_pos, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
     }
     if (new_gravitator_type == "sun") {
-        gravitator.push_back(new Sun(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+        gravitator.push_back(new Sun(NEW_PLANET_POS + camera_pos, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
     }
     if (new_gravitator_type == "black hole") {
-        gravitator.push_back(new BlackHole(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+        gravitator.push_back(new BlackHole(NEW_PLANET_POS + camera_pos, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
     }
     new_gravitator_type = "";
 }
 
-void testApp::addStrandedAstronaut() {
-    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(NEW_PLANET_POS.x, NEW_PLANET_POS.y + NEW_PLANET_R), &gravitator, &strandedAstronaut, &gui));
+void testApp::addStrandedAstronaut(ofVec2f _pos) {
+    strandedAstronaut.push_back(new StrandedAstronaut(_pos + camera_pos, &gravitator, &strandedAstronaut, &gui));
 }
 
 //--------------------------------------------------------------
@@ -261,10 +291,10 @@ void testApp::keyPressed(int key) {
         player.SIMPLE_GRAVITY = !player.SIMPLE_GRAVITY;
         break;
     case 'z':
-        player.rotateDirection(true);
+        //player.rotateDirection(true);
         break;
     case 'x':
-        player.rotateDirection(false);
+        //player.rotateDirection(false);
         break;
     case OF_KEY_UP:
         if (clickState == "placing gravitators") {
@@ -291,7 +321,7 @@ void testApp::keyPressed(int key) {
 
             break;
         } else if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
-            player.jetpack(true);
+            //player.jetpack(true);
             break;
         }
     case OF_KEY_DOWN:
@@ -316,8 +346,20 @@ void testApp::keyPressed(int key) {
             player.rotateDirection(false);
             break;
         }
+    case OF_KEY_F8:
+        moveCamera("up");
+        break;
+    case '9':
+        moveCamera("right");
+        break;
+    case '7':
+        moveCamera("left");
+        break;
+    case '8':
+        moveCamera("down");
+        break;
     case 32:
-        if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
+        if (player.CAN_JETPACK && !player.ON_PLANET) {
             player.jetpack(true);
             break;
         } else {
@@ -352,18 +394,37 @@ void testApp::keyReleased(int key) {
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ) {
     if (clickState == "placing player") {
-        player.pos.set(x, y);
+        player.pos.set(x + camera_pos.x, y + camera_pos.y);
     }
 
 }
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button) {
+    if (clickState == "edit mode") {
+        ofVec2f mouse_pos;
+        mouse_pos.set(x, y);
+        mouse_pos += camera_pos;
+        for (int i = 0; i < gravitator.size(); i++) {
+            ofVec2f g_pos;
+            g_pos.set(gravitator[i]->pos);
+            if (g_pos.x > camera_pos.x && g_pos.x < camera_pos.x + screen_width && g_pos.y > camera_pos.y && g_pos.y < camera_pos.y + screen_height) {
+                float dist = mouse_pos.squareDistance(gravitator[i]->pos);
+                if (dist <= gravitator[i]->r * gravitator[i]->r && button == 0 && clickState == "edit mode") {
+                    gravitator[i]->pos = mouse_pos;
+                }
+            }
 
+        }
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button) {
+    if (clickState == "edit mode" && button == 2) {
+
+    }
+
     if (clickState == "placing gravitators") {
         NEW_PLANET_POS.set(0,0);
         NEW_PLANET_R = 0;
@@ -393,21 +454,21 @@ void testApp::mousePressed(int x, int y, int button) {
         NEW_COMET_R = ofDist(x, y, NEW_COMET_POS.x, NEW_COMET_POS.y);
         vector <ofVec2f> temp;
         ofVec2f start;
-        start.set(NEW_COMET_POS);
+        start.set(NEW_COMET_POS + camera_pos);
         temp.push_back(start);
         gravitator.push_back(new Comet(NEW_COMET_POS, NEW_COMET_R, temp));
         clickState = "placing path";
     }
     if (clickState == "placing path") {
-        gravitator[gravitator.size()-1]->pathPoints.push_back(ofVec2f(x, y));
+        gravitator[gravitator.size()-1]->pathPoints.push_back(ofVec2f(x + camera_pos.x, y + camera_pos.y));
     }
     if (clickState == "placing player") {
-        player.pos.set(x, y);
+        player.pos.set(ofVec2f(mouseX + camera_pos.x, mouseY + camera_pos.y));
         player.starting_pos.set(player.pos);
         clickState = "play mode";
     }
     if (clickState == "placing astronaut") {
-        strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(mouseX, mouseY), &gravitator, &strandedAstronaut, &gui));
+        addStrandedAstronaut(ofVec2f(mouseX, mouseY));
         clickState = "edit mode";
     }
 }
@@ -435,7 +496,6 @@ void testApp::gotMessage(ofMessage msg) {
 void testApp::dragEvent(ofDragInfo dragInfo) {
 
 }
-/// TODO (Aaron#1#): Comet path data needs to be added to import & export
 
 void testApp::exportLevel() {
     while (true) {

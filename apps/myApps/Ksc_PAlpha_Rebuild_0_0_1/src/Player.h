@@ -52,6 +52,10 @@ public:
     std::vector<StrandedAstronaut *> *strandedAstronaut;
     std::vector<GUI *> *gui;
 
+    ofVec3f camera_pos;
+    ofVec3f camera_target;
+    string camera_move_direction;
+    float camera_timer;
 
     float jumpStrength;
     float maxJump;
@@ -69,6 +73,7 @@ public:
     bool DEBUG_GUI;
     bool TRAVERSING_PLANET;
     bool OFF_SCREEN;
+    bool GOD_MODE;
 protected:
 
 
@@ -81,6 +86,8 @@ private:
     ofVec2f display_g;
     ofVec2f display_a;
     ofVec2f display_f;
+
+
 
     /// TODO (Aaron#1#): discrete jump strength levels
     /// TODO (Aaron#1#): Release astronauts into the sun
