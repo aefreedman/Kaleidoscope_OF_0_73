@@ -8,7 +8,7 @@ BlackHole::BlackHole() : Gravitator()
 BlackHole::BlackHole(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) {
     habitable = false;
     type = "blackhole";
-    G = 500;
+    G = 750;
 
 }
 

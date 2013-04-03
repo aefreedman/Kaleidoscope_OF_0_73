@@ -22,8 +22,10 @@ public:
     void orientToPlanet(int collision);
     void calculateGravity(int attractor);
     void displayMessage();
+    void displayMessage(int messageNumber);
     bool displayMessageTimer();
-    string pickMessage();
+    string pickMessage(int messageNumber);
+    string pickMessageRandom();
 
     void detectPlayerCollisions();
     void followPlayer();

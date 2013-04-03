@@ -23,36 +23,57 @@ void testApp::setup() {
     CAN_EDIT_LEVEL                  = false;
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     camera_pos.set(0, 0, .5);
+    view_scale_target               = .25;
+    view_scale                      = 1;
+    default_view_scale              = 1;
+    view_lerp_speed                 = 4;
+    map_view_scale_target           = .25;
 
     ///Starting level
     importLevel(0);
+    gui.push_back(new GUI());
 
     ///Testing sound system
-    //mySound.loadSound("Jupiter.mp3");
-    //mySound.setLoop(true);
-    //mySound.play();
+    jupiterSound.loadSound("Jupiter.mp3");
+    jupiterSound.setLoop(true);
+    jupiterSound.play();
+    background.loadSound("background.wav");
+    background.setLoop(true);
+    background.setVolume(0.25);
+    background.play();
 }
 
 //--------------------------------------------------------------
 void testApp::update() {
-    player.update();
-    for (int i = 0; i < gravitator.size(); i++) {
-        gravitator[i]->update();
+    if (clickState != "play mode") {
+        PAUSE = true;
     }
-    for (int i = 0; i < strandedAstronaut.size(); i++) {
-        strandedAstronaut[i]->id = i;
-        strandedAstronaut[i]->update();
+    if (!PAUSE) {
+        player.update();
+        for (int i = 0; i < gravitator.size(); i++) {
+            gravitator[i]->update();
+        }
+        for (int i = 0; i < strandedAstronaut.size(); i++) {
+            strandedAstronaut[i]->id = i;
+            strandedAstronaut[i]->update();
+        }
+        for (int i = 0; i < gui.size(); i++) {
+            gui[i]->update();
+        }
     }
-    for (int i = 0; i < gui.size(); i++) {
-        gui[i]->update();
-    }
+
+    /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
     player.camera_pos = camera_pos;
     player.camera_target = camera_target;
-
     if (player.OFF_SCREEN == true && clickState == "play mode") {
         moveCamera(player.camera_move_direction);
         player.OFF_SCREEN = false;
+    }
+    if (MAP_VIEW) {
+        view_scale = ofLerp(view_scale, map_view_scale_target, view_lerp_speed * dt);
+    } else {
+        view_scale = ofLerp(view_scale, default_view_scale, view_lerp_speed * dt);
     }
 }
 
@@ -78,6 +99,8 @@ void testApp::moveCamera(string direction) {
 void testApp::draw() {
     ofPushMatrix();
     ofTranslate(-camera_pos);
+    //ofRotate(50, 0, 0, 1);
+    ofScale(view_scale, view_scale, 1);
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
@@ -149,6 +172,11 @@ void testApp::draw() {
         top_text.append(gap);
         top_text.append("[F2] (previous level) || [F3] (next level) || [F5] save level");
     }
+    if (PAUSE) {
+        top_text.append("\n");
+        top_text.append("\n");
+        top_text.append("PAUSED");
+    }
 
     ofDrawBitmapString(top_text, 1, 10);
     ///FLOATING MOUSE TEXT ----------------------------------
@@ -208,19 +236,19 @@ void testApp::draw() {
 
 void testApp::addGravitator() {
     if (new_gravitator_type == "planet") {
-        gravitator.push_back(new Planet(NEW_PLANET_POS + camera_pos, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+        gravitator.push_back(new Planet((1 / view_scale) * (NEW_PLANET_POS + camera_pos), (1 / view_scale) * NEW_PLANET_R, NEW_PLANET_M, (1 / view_scale) * NEW_PLANET_GR));
     }
     if (new_gravitator_type == "sun") {
-        gravitator.push_back(new Sun(NEW_PLANET_POS + camera_pos, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+        gravitator.push_back(new Sun((1 / view_scale) * (NEW_PLANET_POS + camera_pos), (1 / view_scale) * NEW_PLANET_R, NEW_PLANET_M, (1 / view_scale) * NEW_PLANET_GR));
     }
     if (new_gravitator_type == "black hole") {
-        gravitator.push_back(new BlackHole(NEW_PLANET_POS + camera_pos, NEW_PLANET_R, NEW_PLANET_M, NEW_PLANET_GR));
+        gravitator.push_back(new BlackHole((1 / view_scale) * (NEW_PLANET_POS + camera_pos), (1 / view_scale) * NEW_PLANET_R, NEW_PLANET_M, (1 / view_scale) * NEW_PLANET_GR));
     }
     new_gravitator_type = "";
 }
 
 void testApp::addStrandedAstronaut(ofVec2f _pos) {
-    strandedAstronaut.push_back(new StrandedAstronaut(_pos + camera_pos, &gravitator, &strandedAstronaut, &gui));
+    strandedAstronaut.push_back(new StrandedAstronaut((1 / view_scale) * (_pos + camera_pos), &gravitator, &strandedAstronaut, &gui));
 }
 
 //--------------------------------------------------------------
@@ -252,6 +280,7 @@ void testApp::keyPressed(int key) {
             clickState = "edit mode";
         } else {
             clickState = "play mode";
+            PAUSE = false;
         }
         break;
     case 'p':
@@ -379,6 +408,10 @@ void testApp::keyPressed(int key) {
     case '-':
         player.damp -= 0.01;
         break;
+    case 'm':
+        MAP_VIEW = !MAP_VIEW;
+        PAUSE = !PAUSE;
+        break;
     }
 }
 
@@ -420,13 +453,13 @@ void testApp::mouseDragged(int x, int y, int button) {
         for (int i = 0; i < gravitator.size(); i++) {
             ofVec2f g_pos;
             g_pos.set(gravitator[i]->pos);
+            /// NOTE (Aaron#1#): This needs to be updated to account for view_scale
             if (g_pos.x > camera_pos.x && g_pos.x < camera_pos.x + screen_width && g_pos.y > camera_pos.y && g_pos.y < camera_pos.y + screen_height) {
                 float dist = mouse_pos.squareDistance(gravitator[i]->pos);
                 if (dist <= gravitator[i]->r * gravitator[i]->r && button == 0 && clickState == "edit mode") {
                     gravitator[i]->pos = mouse_pos;
                 }
             }
-
         }
     }
 }

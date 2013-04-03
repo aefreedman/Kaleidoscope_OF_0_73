@@ -46,7 +46,7 @@ public:
     void keyReleased(ofKeyEventArgs& args);
     void drawGUIOverlay(ofVec2f _pos, string text);
     void displayMessage(ofVec2f _pos, string text);
-
+    void displayMessage(ofVec2f _pos, string text, ofColor background_color, ofColor foreground_color);
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
@@ -66,7 +66,7 @@ public:
 
     bool CAN_JETPACK;
     bool CAN_LAND_ON_PLANET;
-    bool OFF_SCREEN_RESET;
+    bool OFF_SCREEN_CHECK;
     bool DEBUG_GUI;
     bool TRAVERSING_PLANET;
     bool OFF_SCREEN;

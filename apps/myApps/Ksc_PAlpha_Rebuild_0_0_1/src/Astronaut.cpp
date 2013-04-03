@@ -29,6 +29,8 @@ void Astronaut::collisionData(int collision) {
     collision_perpendicular             = collision_normal.getPerpendicular();
     left                                = collision_perpendicular;
     right                               = -collision_perpendicular;
+    gravitator_type                     = (*gravitator)[collision]->type;
+
 }
 void Astronaut::orientToPlanet(int collision) {
 

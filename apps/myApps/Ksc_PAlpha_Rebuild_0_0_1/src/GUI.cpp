@@ -2,6 +2,7 @@
 
 GUI::GUI() : Shell() {
     //ctor
+    setupColors();
 }
 
 GUI::GUI(ofVec2f _pos) : Shell() {
@@ -11,6 +12,9 @@ GUI::GUI(ofVec2f _pos) : Shell() {
 GUI::~GUI() {
     //dtor
 }
+
+void GUI::update() {}
+void GUI::draw() {}
 
 void GUI::setupColors() {
     ///OfColor blank template

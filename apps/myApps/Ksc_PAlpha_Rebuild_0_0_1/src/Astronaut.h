@@ -75,13 +75,13 @@ public:
     int attractor;
 protected:
 
-
     ofVec2f planet_pos;
     ofVec2f collision_normal;
     ofVec2f normalized_collision_normal;
     ofVec2f collision_perpendicular;
     float planet_m;
     float planet_r;
+    string gravitator_type;
 private:
 
 

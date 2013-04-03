@@ -115,7 +115,13 @@ void StrandedAstronaut::checkState() {
 }
 
 void StrandedAstronaut::displayMessage() {
-    string message = pickMessage();
+    string message = pickMessageRandom();
+    (*gui).push_back(new Message(pos + ofVec2f(0, -15), message));
+    DRAW_MESSAGE = false;
+}
+
+void StrandedAstronaut::displayMessage(int messageNumber) {
+    string message = pickMessage(messageNumber);
     (*gui).push_back(new Message(pos + ofVec2f(0, -15), message));
     DRAW_MESSAGE = false;
 }
@@ -132,11 +138,15 @@ bool StrandedAstronaut::displayMessageTimer() {
     } else return false;
 }
 
-string StrandedAstronaut::pickMessage() {
-    int which_message = ofRandom(13);
-    string message = "";
+string StrandedAstronaut::pickMessageRandom() {
+    int messageNumber = ofRandom(13);
+    string message = pickMessage(messageNumber);
+    return message;
+}
 
-    switch (which_message) {
+string StrandedAstronaut::pickMessage(int messageNumber) {
+    string message = "";
+    switch (messageNumber) {
     case 0:
         message = "Hello there!";
         break;

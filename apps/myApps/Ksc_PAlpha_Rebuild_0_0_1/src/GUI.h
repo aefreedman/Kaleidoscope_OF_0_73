@@ -8,14 +8,13 @@ public:
     GUI();
     GUI(ofVec2f _pos);
     virtual ~GUI();
-    virtual void update() = 0;
-    virtual void draw() = 0;
+    virtual void update();
+    virtual void draw();
     void setupColors();
 
     ofVec2f pos;
     bool ACTIVE;
 
-protected:
     ofColor white;
     ofColor black;
     ofColor red;
@@ -23,6 +22,8 @@ protected:
     ofColor green;
     ofColor dark_grey;
     ofColor light_blue;
+protected:
+
 private:
 };
 

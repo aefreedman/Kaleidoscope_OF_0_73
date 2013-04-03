@@ -71,11 +71,19 @@ class testApp : public ofBaseApp {
         int planet_base_m;
         int planet_mass_multiplier;
         bool CAN_EDIT_LEVEL;
-        ofSoundPlayer mySound;
+        ofSoundPlayer jupiterSound;
+        ofSoundPlayer   background;
         bool MOVE_CAMERA;
 
         float camera_lerp_speed;
 
         int iddqd;
+        bool PAUSE;
+        float view_scale;
+        float view_scale_target;
+        float default_view_scale;
+        float view_lerp_speed;
+        float map_view_scale_target;
+        bool MAP_VIEW;
 
 };

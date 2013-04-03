@@ -10,6 +10,17 @@ Message::Message(ofVec2f _pos, string _message) : GUI(_pos) {
     message                 = _message;
     message_life            = 5;
     ACTIVE                  = true;
+    background              = dark_grey;
+    foreground              = light_blue;
+}
+
+Message::Message(ofVec2f _pos, string _message, ofColor _background, ofColor _foreground) : GUI(_pos) {
+    pos                     = _pos;
+    message                 = _message;
+    message_life            = 5;
+    ACTIVE                  = true;
+    background              = _background;
+    foreground              = _foreground;
 }
 
 Message::~Message() {
@@ -29,7 +40,7 @@ void Message::update() {
 void Message::draw() {
     if (ACTIVE) {
         ofPushMatrix();
-        ofDrawBitmapStringHighlight(message, pos, dark_grey, light_blue);
+        ofDrawBitmapStringHighlight(message, pos, background, foreground);
         ofPopMatrix();
     }
 }

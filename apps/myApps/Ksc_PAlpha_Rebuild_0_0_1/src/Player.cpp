@@ -6,6 +6,10 @@ Player::Player() : Astronaut() {
     //ctor
 }
 
+Player::~Player() {
+
+}
+
 Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut,  std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     setup();
     pos.set(500,500);
@@ -18,25 +22,36 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     DEBUG_GUI = false;
 }
 
-Player::~Player() {
-
-}
-
 void Player::setup() {
+    ///------------------------------
+    /// DON'T CHANGE THESE
+    ///------------------------------
+
+    rotation                = 180;
+    camera_timer            = 0;
+    attractor               = 0;
+    f.set(0,0);
+    v.set(0,0);
+    dir.set(-1, 0);
+    pos.set(starting_pos);
+
+    ///------------------------------
+    /// YOU CAN CHANGE THESE
+    ///------------------------------
+
     w                       = 10;
     h                       = 10;
     r                       = 5;
     oxygen                  = 100.0;        /// TODO (Aaron#1#): Add lose condition to running out of o2
     max_oxygen              = oxygen;
     damp                    = 1.00;
-    rotation                = 180;
     m                       = 1.0;
     jumpStrength            = 0.0;
     jump_strength_1         = 50000.0;
     jump_strength_2         = 100000.0;
     jump_strength_3         = 1000000.0;
     restitution             = 0.10;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
-    off_screen_limit        = 10;
+    off_screen_limit        = 10;           /// If this is too large & camera moves by whole screens, camera will freak out
     rotation_speed          = 6.0;
     speed_on_planet         = 150.0;
     jetpack_power           = 500000.0;
@@ -44,26 +59,19 @@ void Player::setup() {
     jetpack_o2_use          = 5;
     astronaut_pickup_range  = 20;
     astronaut_drop_range    = 120;
-    attractor               = 0;
     jetpack_count           = 5;
     max_jetpack_count       = jetpack_count;
-
-    f.set(0,0);
-    v.set(0,0);
-    dir.set(-1, 0);
-    pos.set(starting_pos);
 
     ON_PLANET               = false;
     CAN_LAND_ON_PLANET      = true;
     USING_GRAVITY           = true;
     ORIENT_TO_PLANET        = true;
     CAN_JETPACK             = true;
-    OFF_SCREEN_RESET        = true;
+    OFF_SCREEN_CHECK        = true;
     SIMPLE_GRAVITY          = true;
     TRAVERSING_PLANET       = false;
-    GOD_MODE                = true;
+    GOD_MODE                = false;
     LEAVING_PLANET          = false;
-
 }
 
 void Player::update() {
@@ -72,6 +80,9 @@ void Player::update() {
     display_g.set(gravity);
     detectAstronautCollisions();
     move();
+    if (OFF_SCREEN_CHECK) {
+        OFF_SCREEN = checkOffScreen();
+    }
 }
 
 void Player::draw() {
@@ -100,7 +111,7 @@ void Player::drawGUI() {
     string gui = "";
     gui += "O2: " + ofToString(oxygen, 2) + nl;
     ofSetColor(0, 50, 255);
-    ofDrawBitmapString(gui, x, y);
+    ofDrawBitmapString(gui, x + camera_pos.x, y + camera_pos.y);
 }
 
 void Player::drawDebugGUI() {
@@ -170,6 +181,9 @@ void Player::checkState() {
         jetpack_count   = max_jetpack_count;
         collisionData(collision);
     }
+    if (ON_PLANET && gravitator_type != "planet") {
+        die();
+    }
     if (ON_PLANET && !LEAVING_PLANET){
         gravitatorBounce();
     }
@@ -210,9 +224,6 @@ void Player::move() {
     f.set(0, 0);
     gravity.set(0, 0);
 
-    if (OFF_SCREEN_RESET) {
-        OFF_SCREEN = checkOffScreen();
-    }
     if (DEBUG_GUI) {
         cout << "v(" + ofToString(v.x, 3) + ", " + ofToString(v.y, 3) + ")" + "   ";
         cout << "Pos(" + ofToString(pos.x, 3) + ", " + ofToString(pos.y, 3) + ")" << endl;
@@ -310,7 +321,7 @@ void Player::die() {
     if (!GOD_MODE) {
         setup();
         releaseAllAstronauts();
-        displayMessage(starting_pos, "You died.");
+        displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
     }
 }
 
@@ -320,6 +331,10 @@ void Player::drawGUIOverlay(ofVec2f _pos, string text) {
 
 void Player::displayMessage(ofVec2f _pos, string text) {
     (*gui).push_back(new Message(_pos + ofVec2f(0, -15), text));
+}
+
+void Player::displayMessage(ofVec2f _pos, string text, ofColor background_color, ofColor foreground_color) {
+    (*gui).push_back(new Message(_pos + ofVec2f(0, -15), text, background_color, foreground_color));
 }
 
 bool Player::detectCollisions() {  ///Not in use
@@ -339,6 +354,7 @@ void Player::collisionData(int collision) {
     collision_perpendicular             = collision_normal.getPerpendicular();
     left                                = collision_perpendicular;
     right                               = -collision_perpendicular;
+    gravitator_type                     = (*gravitator)[collision]->type;
 
     if (!SIMPLE_GRAVITY) {
         jump_strength_3 = jump_multiplier * planet_m;
