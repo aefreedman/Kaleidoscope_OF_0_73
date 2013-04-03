@@ -27,26 +27,26 @@ void Player::setup() {
     h                       = 10;
     r                       = 5;
     oxygen                  = 100.0;        /// TODO (Aaron#1#): Add lose condition to running out of o2
+    max_oxygen              = oxygen;
     damp                    = 1.00;
     rotation                = 180;
-    maxJump                 = 1000000.0;
     m                       = 1.0;
     jumpStrength            = 0.0;
-    G                       = 120.0;
+    jump_strength_1         = 50000.0;
+    jump_strength_2         = 100000.0;
+    jump_strength_3         = 1000000.0;
     restitution             = 0.10;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 10;
-    rotation_speed          = 3.0;
+    rotation_speed          = 6.0;
     speed_on_planet         = 150.0;
-    jetpack_power           = 50000.0;
+    jetpack_power           = 500000.0;
     jump_multiplier         = 30.0;
     jetpack_o2_use          = 5;
     astronaut_pickup_range  = 20;
     astronaut_drop_range    = 120;
-    attractor = 0;
-
-    /// NOTE (Aaron#2#): Gravity strength is flat for all gravitators
-    /// if G is in player & mass is ignored; give planets individual
-    /// G or use newtownian forces
+    attractor               = 0;
+    jetpack_count           = 5;
+    max_jetpack_count       = jetpack_count;
 
     f.set(0,0);
     v.set(0,0);
@@ -58,14 +58,12 @@ void Player::setup() {
     USING_GRAVITY           = true;
     ORIENT_TO_PLANET        = true;
     CAN_JETPACK             = true;
-    ABSOLUTE_IMPULSE        = false;
-    ROTATIONAL_IMPULSE      = true;
     OFF_SCREEN_RESET        = true;
     SIMPLE_GRAVITY          = true;
     TRAVERSING_PLANET       = false;
     GOD_MODE                = true;
+    LEAVING_PLANET          = false;
 
-    /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
 }
 
 void Player::update() {
@@ -79,7 +77,7 @@ void Player::update() {
 void Player::draw() {
     ofSetColor(255, 0, 0);
     ofNoFill();
-    ofCircle(pos, (20 * (jumpStrength / maxJump)) + r - 1) ;
+    ofCircle(pos, (20 * (jumpStrength / jump_strength_3)) + r - 1) ;
     ofSetColor(0, 255, 240);
     ofFill();
     ofPushMatrix();
@@ -125,7 +123,7 @@ void Player::drawDebugGUI() {
     info += "rot: " + ofToString(rotation) + nl;
     info += "damp: " + ofToString(damp, 2) + nl;
     info += "jump: " + ofToString(jumpDir, 2) + nl;
-    info += "maxJump: " + ofToString(maxJump, 2) + nl;
+    info += "maxJump: " + ofToString(jump_strength_3, 2) + nl;
 
     ofSetColor(240, 0, 20);
     ofDrawBitmapString(info, x, y);
@@ -151,15 +149,29 @@ void Player::drawDebugGUI() {
 }
 
 void Player::checkState() {
+    if (GOD_MODE) {
+        oxygen = max_oxygen;
+        jetpack_count = max_jetpack_count;
+    }
     if (oxygen < 0) {
         die();
+    }
+    if (LEAVING_PLANET) {
+        jump_timer -= dt;
+        if (jump_timer < 0) {
+            LEAVING_PLANET = false;
+        }
     }
     if (OFF_SCREEN) {
         //die();
     }
     if (ON_PLANET) {
-        oxygen = 100.0;
+        oxygen          = max_oxygen;
+        jetpack_count   = max_jetpack_count;
         collisionData(collision);
+    }
+    if (ON_PLANET && !LEAVING_PLANET){
+        gravitatorBounce();
     }
     if (!ON_PLANET) {
         TRAVERSING_PLANET           = false;
@@ -167,11 +179,9 @@ void Player::checkState() {
     }
     if (ON_PLANET && !TRAVERSING_PLANET) {
         TRAVERSING_PLANET           = true;
-        gravitatorBounce();
     }
     if (ON_PLANET && CAN_LAND_ON_PLANET) {
         CAN_LAND_ON_PLANET          = false;
-
     }
     if (TRAVERSING_PLANET && ORIENT_TO_PLANET) {
         orientToPlanet(collision);
@@ -214,24 +224,25 @@ bool Player::checkOffScreen() {
         camera_timer -= dt;
     }
     if (camera_timer <= 0) {
+        float delay = 0.5;
         if (pos.x > camera_target.x + screen_width - off_screen_limit) {
             camera_move_direction = "right";
-            camera_timer = 1.0;
+            camera_timer = delay;
             return true;
         }
         if (pos.x < camera_target.x + off_screen_limit) {
             camera_move_direction = "left";
-            camera_timer = 1.0;
+            camera_timer = delay;
             return true;
         }
         if (pos.y > camera_target.y + screen_height - off_screen_limit) {
             camera_move_direction = "down";
-            camera_timer = 1.0;
+            camera_timer = delay;
             return true;
         }
         if (pos.y < camera_target.y + off_screen_limit) {
             camera_move_direction = "up";
-            camera_timer = 1.0;
+            camera_timer = delay;
             return true;
         } else return false;
     } else return false;
@@ -330,7 +341,7 @@ void Player::collisionData(int collision) {
     right                               = -collision_perpendicular;
 
     if (!SIMPLE_GRAVITY) {
-        maxJump= jump_multiplier * planet_m;
+        jump_strength_3 = jump_multiplier * planet_m;
     }
     if (DEBUG_GUI) {
         //cout << ofToString(planet_m) << endl;
@@ -342,18 +353,18 @@ void Player::calculateGravity(int attractor) {
     int planet_gravity_range = (*gravitator)[attractor]->gR;
     int planet_size =  (*gravitator)[attractor]->r;
     int planet_mass = (*gravitator)[attractor]->m;
+    float planet_G = (*gravitator)[attractor]->G;
 
     ofVec2f planet_to_player_normal;
     planet_to_player_normal.set(planet_pos - pos);
     ofVec2f sqrDist;
-    //sqrDist.set(pos.squareDistance(planet_pos) - (planet_to_player_normal * planet_to_player_normal));
     sqrDist.set(pos.squareDistance(planet_pos));
 
     /// NOTE (Aaron#5#): Gravity with mass works, but it seems to make everything way too hard.
     if (SIMPLE_GRAVITY) {
-        gravity               += G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
+        gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
     } else {
-        gravity               += G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
+        gravity               += planet_G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
     }
 
 }
@@ -400,16 +411,27 @@ inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVe
 
 
 void Player::chargeJump() {
-    if (jumpStrength < maxJump) {
-        jumpStrength += 0.10 * maxJump;
+    if (jumpStrength <= jump_strength_3 + 1) {
+        jumpStrength += 0.10 * jump_strength_3;
     }
 }
 
 void Player::jump() {
+    if (jumpStrength < jump_strength_1) {
+        jumpStrength = 0;
+    } else if (jumpStrength <= jump_strength_2) {
+        jumpStrength = jump_strength_1;
+    } else if (jumpStrength <= jump_strength_3) {
+        jumpStrength = jump_strength_2;
+    } else if (jumpStrength > jump_strength_3) {
+        jumpStrength = jump_strength_3;
+    }
     if (TRAVERSING_PLANET) {
         starting_pos = pos;
         f += jumpStrength;
         TRAVERSING_PLANET = false;
+        LEAVING_PLANET = true;
+        jump_timer = 0.1;
         if (DEBUG_GUI) {
             cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;
         }
@@ -418,16 +440,22 @@ void Player::jump() {
 }
 
 void Player::jetpack(bool JETPACK_FORWARD) {
-    if (JETPACK_FORWARD) {
-        ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
-        f += VEC_MAGNITUDE;
-        oxygen -= jetpack_o2_use;
-    } else {
-        ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
-        f -= VEC_MAGNITUDE;
-        oxygen -= jetpack_o2_use;
+    if (jetpack_count > 0 && CAN_JETPACK) {
+        if (JETPACK_FORWARD) {
+            ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
+            f += VEC_MAGNITUDE;
+            oxygen -= jetpack_o2_use;
+            jetpack_count--;
+            CAN_JETPACK = false;
+        } else {
+            ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
+            f -= VEC_MAGNITUDE;
+            oxygen -= jetpack_o2_use;
+            jetpack_count--;
+            CAN_JETPACK = false;
+        }
+        cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
     }
-    cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
 }
 
 void Player::keyPressed(ofKeyEventArgs& args) {
@@ -441,6 +469,7 @@ void Player::keyPressed(ofKeyEventArgs& args) {
     if (!ON_PLANET) {
         switch (args.key) {
         case OF_KEY_UP:
+            chargeJump();
 
             break;
         case OF_KEY_LEFT:
@@ -455,7 +484,6 @@ void Player::keyPressed(ofKeyEventArgs& args) {
 
             break;
         case 32:
-            chargeJump();
             break;
         }
     }

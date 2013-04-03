@@ -58,7 +58,6 @@ public:
     float camera_timer;
 
     float jumpStrength;
-    float maxJump;
     float rotation_speed;
     float speed_on_planet;
     float jetpack_power;
@@ -66,14 +65,13 @@ public:
     float jetpack_o2_use;
 
     bool CAN_JETPACK;
-    bool ABSOLUTE_IMPULSE;
-    bool ROTATIONAL_IMPULSE;
     bool CAN_LAND_ON_PLANET;
     bool OFF_SCREEN_RESET;
     bool DEBUG_GUI;
     bool TRAVERSING_PLANET;
     bool OFF_SCREEN;
     bool GOD_MODE;
+    bool LEAVING_PLANET;
 protected:
 
 
@@ -87,7 +85,13 @@ private:
     ofVec2f display_a;
     ofVec2f display_f;
 
-
+    float jump_strength_1;
+    float jump_strength_2;
+    float jump_strength_3;
+    float jump_timer;
+    int jetpack_count;
+    int max_jetpack_count;
+    float max_oxygen;
 
     /// TODO (Aaron#1#): discrete jump strength levels
     /// TODO (Aaron#1#): Release astronauts into the sun

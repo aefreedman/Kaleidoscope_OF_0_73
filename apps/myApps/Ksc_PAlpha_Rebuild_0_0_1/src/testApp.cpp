@@ -21,7 +21,7 @@ void testApp::setup() {
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
     CAN_EDIT_LEVEL                  = false;
-    camera_lerp_speed               = 2;
+    camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     camera_pos.set(0, 0, .5);
 
     ///Starting level
@@ -227,6 +227,25 @@ void testApp::addStrandedAstronaut(ofVec2f _pos) {
 void testApp::keyPressed(int key) {
 
     switch (key) {
+    case 'i':
+        if (iddqd == 0) {
+            iddqd = 1;
+        }
+        break;
+    case 'd':
+        if (iddqd == 1 || iddqd == 2) {
+            iddqd++;
+        }
+        if (iddqd == 4) {
+            player.GOD_MODE = !player.GOD_MODE;
+            iddqd = 0;
+        }
+        break;
+    case 'q':
+        if (iddqd == 3) {
+            iddqd = 4;
+        }
+        break;
     case OF_KEY_F1:
         CAN_EDIT_LEVEL = !CAN_EDIT_LEVEL;
         if (clickState == "play mode") {
@@ -290,12 +309,6 @@ void testApp::keyPressed(int key) {
     case 'G':
         player.SIMPLE_GRAVITY = !player.SIMPLE_GRAVITY;
         break;
-    case 'z':
-        //player.rotateDirection(true);
-        break;
-    case 'x':
-        //player.rotateDirection(false);
-        break;
     case OF_KEY_UP:
         if (clickState == "placing gravitators") {
             if (new_gravitator_type == "") {
@@ -315,18 +328,17 @@ void testApp::keyPressed(int key) {
                 break;
             }
         }
-        /// TODO (Aaron#2#): Implement ROTATIONAL & ABSOLUTE impulse controls
-        /// NOTE (Aaron#5#): Do we need jump *and* ABSOLUTE/ROTATIONAL controls?
-        if (player.ON_PLANET) {
-
+        if (player.CAN_JETPACK && !player.TRAVERSING_PLANET) {
+            player.jetpack(true);
             break;
-        } else if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
-            //player.jetpack(true);
+        } else if (player.TRAVERSING_PLANET) {
+            player.chargeJump();
+            player.TRAVERSING_PLANET = true;
             break;
         }
     case OF_KEY_DOWN:
         if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
-            player.jetpack(false);
+            //player.jetpack(false);
             break;
         }
         break;
@@ -359,12 +371,7 @@ void testApp::keyPressed(int key) {
         moveCamera("down");
         break;
     case 32:
-        if (player.CAN_JETPACK && !player.ON_PLANET) {
-            player.jetpack(true);
-            break;
-        } else {
-            player.chargeJump();
-        }
+        player.releaseAllAstronauts();
         break;
     case '=':
         player.damp += 0.01;
@@ -383,9 +390,14 @@ void testApp::keyReleased(int key) {
     case 'd':
         break;
     case OF_KEY_UP:
-        break;
+        if (player.IN_GRAVITY_WELL) {
+            player.jump();
+            break;
+        } else {
+            player.CAN_JETPACK = true;
+            break;
+        }
     case 32:
-        player.jump();
         break;
     }
 

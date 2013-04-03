@@ -246,18 +246,18 @@ void StrandedAstronaut::calculateGravity(int attractor) {
     int planet_gravity_range = (*gravitator)[attractor]->gR;
     int planet_size =  (*gravitator)[attractor]->r;
     int planet_mass = (*gravitator)[attractor]->m;
+    float planet_G = (*gravitator)[attractor]->G;
 
     ofVec2f planet_to_player_normal;
     planet_to_player_normal.set(planet_pos - pos);
     ofVec2f sqrDist;
-    //sqrDist.set(pos.squareDistance(planet_pos) - (planet_to_player_normal * planet_to_player_normal));
     sqrDist.set(pos.squareDistance(planet_pos));
 
     /// NOTE (Aaron#5#): Gravity with mass works, but it seems to make everything way too hard.
     if (SIMPLE_GRAVITY) {
-        gravity               += G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
+        gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
     } else {
-        gravity               += G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
+        gravity               += planet_G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
     }
     //display_g.set(gravity);
 }

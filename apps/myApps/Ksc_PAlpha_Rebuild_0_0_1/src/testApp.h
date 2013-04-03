@@ -76,4 +76,6 @@ class testApp : public ofBaseApp {
 
         float camera_lerp_speed;
 
+        int iddqd;
+
 };
