@@ -8,6 +8,7 @@
 #include "GUI.h"
 #include "GUIOverlay.h"
 #include "Message.h"
+#include "ofxSpriteSheetRenderer.h"
 
 
 class Astronaut {
@@ -73,6 +74,8 @@ public:
     int r;
     int collision;
     int attractor;
+
+    animation_t anim;
 protected:
 
     ofVec2f planet_pos;

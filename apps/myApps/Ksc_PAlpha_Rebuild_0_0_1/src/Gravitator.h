@@ -2,6 +2,7 @@
 #define GRAVITATOR_H
 
 #include "GameObject.h"
+#include "ofxSpriteSheetRenderer.h"
 
 class Gravitator : public GameObject {
 public:
@@ -22,6 +23,7 @@ public:
     float p;
     bool habitable;
     string type;
+    animation_t anim;
 
     vector <ofVec2f> pathPoints;
 

@@ -12,7 +12,8 @@
 void testApp::setup() {
     ofSetFrameRate(60);
     ofEnableAlphaBlending();
-    ofBackground(0, 0, 0);
+
+
 
     player                          = Player(ofVec2f(300,300), &gravitator, &strandedAstronaut, &gui);
     clickState                      = "play mode";
@@ -41,6 +42,8 @@ void testApp::setup() {
     background.setLoop(true);
     background.setVolume(0.25);
     background.play();
+
+    background.loadImage("bg.png");
 }
 
 //--------------------------------------------------------------
@@ -101,6 +104,9 @@ void testApp::draw() {
     ofTranslate(-camera_pos);
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
+    ofSetColor(255,255,255);
+    background.draw(ofPoint(0,0));
+
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
@@ -232,6 +238,7 @@ void testApp::draw() {
         }
 
     }
+
 }
 
 void testApp::addGravitator() {
