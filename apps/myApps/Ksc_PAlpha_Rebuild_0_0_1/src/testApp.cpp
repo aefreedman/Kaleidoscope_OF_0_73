@@ -38,10 +38,10 @@ void testApp::setup() {
     jupiterSound.loadSound("Jupiter.mp3");
     jupiterSound.setLoop(true);
     jupiterSound.play();
-    background.loadSound("background.wav");
-    background.setLoop(true);
-    background.setVolume(0.25);
-    background.play();
+    backgroundSound.loadSound("background.wav");
+    backgroundSound.setLoop(true);
+    backgroundSound.setVolume(0.25);
+    backgroundSound.play();
 
     background.loadImage("bg.png");
 }
@@ -105,7 +105,12 @@ void testApp::draw() {
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255);
-    background.draw(ofPoint(0,0));
+    if (MAP_VIEW) {
+        ofBackground(0, 0, 0);
+    } else {
+
+        background.draw(camera_pos);
+    }
 
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();

@@ -74,7 +74,7 @@ class testApp : public ofBaseApp {
         int planet_mass_multiplier;
         bool CAN_EDIT_LEVEL;
         ofSoundPlayer jupiterSound;
-        ofSoundPlayer   background;
+        ofSoundPlayer   backgroundSound;
         bool MOVE_CAMERA;
 
         float camera_lerp_speed;
