@@ -16,6 +16,8 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
 
     DEBUG_GUI = false;
+
+
 }
 
 Player::~Player() {
@@ -63,7 +65,15 @@ void Player::setup() {
     TRAVERSING_PLANET       = false;
 
     /// TODO (Aaron#2#): Create failsafe to prevent ABSOLUTE & ROTATIONAL from both being true
+
+    p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
+	p1Renderer->loadTexture("playerSheet2.png", 768, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+
+    anim = walking;
+
+	ofEnableAlphaBlending();
 }
+
 
 void Player::update() {
     checkState();
@@ -71,6 +81,11 @@ void Player::update() {
     display_g.set(gravity);
     detectAstronautCollisions();
     move();
+
+    p1Renderer->clear(); // clear the sheet
+	p1Renderer->update(ofGetElapsedTimeMillis());
+
+	p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
 }
 
 void Player::draw() {
@@ -91,6 +106,8 @@ void Player::draw() {
     if (DEBUG_GUI) {
         drawDebugGUI();
     }
+
+    p1Renderer->draw();
 }
 
 void Player::drawGUI() {

@@ -52,6 +52,8 @@ class testApp : public ofBaseApp {
         std::vector<GUI *> gui;
         Player player;
 
+        ofImage background;
+
         string clickState;
         string levelState;
         string new_gravitator_type;

@@ -12,7 +12,8 @@
 void testApp::setup() {
     ofSetFrameRate(60);
     ofEnableAlphaBlending();
-    ofBackground(0, 0, 0);
+
+
 
     player                          = Player(ofVec2f(300,300), &gravitator, &strandedAstronaut, &gui);
     clickState                      = "play mode";
@@ -33,6 +34,8 @@ void testApp::setup() {
     mySound.loadSound("Jupiter.mp3");
     mySound.setLoop(true);
     mySound.play();
+
+    background.loadImage("bg.png");
 }
 
 //--------------------------------------------------------------
@@ -53,6 +56,9 @@ void testApp::update() {
 
 //--------------------------------------------------------------
 void testApp::draw() {
+    ofSetColor(255,255,255);
+    background.draw(ofPoint(0,0));
+
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
@@ -174,6 +180,7 @@ void testApp::draw() {
         }
 
     }
+
 }
 
 void testApp::addGravitator() {
