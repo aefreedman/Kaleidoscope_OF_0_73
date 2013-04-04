@@ -1,0 +1,32 @@
+Basic Controls
+
+In space:
+Left/Right				rotate
+Up						jetpack (5 charges)
+
+On Planet:
+Left/Right				move clockwise/counterclockwise
+Up (press)				charge jump (3 levels)
+Up (release)			jump
+
+At all times:
+Space					release all astronauts
+m						zoom out (currently broken; only works from first area)
+F1						enter edit mode
+
+In edit mode:
+F2						load previous level
+F3						load next level
+F5						save level
+p						place gravitators (up to cycle type)
+a						place astronauts
+C						delete all gravitators
+A						delete all astronauts
+c						place comet
+
+click & drag to move gravitators
+
+F8/7/8/9				move camera
+
+cheat codes:
+iddqd					god mode
