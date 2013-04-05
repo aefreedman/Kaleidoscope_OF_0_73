@@ -76,6 +76,7 @@ public:
     int attractor;
 
     animation_t anim;
+
 protected:
 
     ofVec2f planet_pos;
