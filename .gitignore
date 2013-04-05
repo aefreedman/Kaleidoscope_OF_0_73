@@ -8,6 +8,8 @@ openFrameworks.a
 openFrameworksDebug.a
 openFrameworksUniversal.a
 examples/
+bin/*.dll
+bin/*.exe
 
 #rule to avoid non-official addons going into git
 #see addons/.gitignore
