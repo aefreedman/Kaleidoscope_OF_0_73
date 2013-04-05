@@ -20,8 +20,6 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
 
     DEBUG_GUI = false;
-
-
 }
 
 void Player::setup() {
@@ -53,16 +51,19 @@ void Player::setup() {
     jump_strength_2         = 100000.0;
     jump_strength_3         = 1000000.0;
     restitution             = 0.10;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
-    off_screen_limit        = 10;           /// If this is too large & camera moves by whole screens, camera will freak out
-    rotation_speed          = 6.0;
+    off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
+    rotation_speed          = 6.0;          /// This is the speed of your rotation in space
     speed_on_planet         = 150.0;
     jetpack_power           = 500000.0;
     jump_multiplier         = 30.0;
-    jetpack_o2_use          = 5;
+    jetpack_o2_use          = 5.0;
     astronaut_pickup_range  = 20;
     astronaut_drop_range    = 120;
     jetpack_count           = 5;
     max_jetpack_count       = jetpack_count;
+    planet_orientation_speed= 20.0;
+    oxygen_depletion_speed  = 5.0;
+    camera_move_delay       = 0.25;
 
     ON_PLANET               = false;
     CAN_LAND_ON_PLANET      = true;
@@ -75,8 +76,8 @@ void Player::setup() {
     GOD_MODE                = false;
     LEAVING_PLANET          = false;
 
-    p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
-	p1Renderer->loadTexture("playerSheet2.png", 768, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
+	p1Renderer->loadTexture("playerSheet2.png", 768, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = walking;
 
@@ -87,8 +88,8 @@ void Player::setup() {
 void Player::update() {
     checkState();
     detectGravitatorCollisions();
-    display_g.set(gravity);
     detectAstronautCollisions();
+    display_g.set(gravity);
     move();
     if (OFF_SCREEN_CHECK) {
         OFF_SCREEN = checkOffScreen();
@@ -97,7 +98,7 @@ void Player::update() {
     p1Renderer->clear(); // clear the sheet
 	p1Renderer->update(ofGetElapsedTimeMillis());
 
-	p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
+	p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0, rotation + 90, NULL, 255, 255, 255, 255);
 }
 
 void Player::draw() {
@@ -132,8 +133,8 @@ void Player::drawGUI() {
 }
 
 void Player::drawDebugGUI() {
-    int x = 30;
-    int y = 550;
+    int x = (30 + camera_pos.x);
+    int y = (550 + camera_pos.y);
     int column_width = 400;
     int precision = 0;
     string info = "";
@@ -198,15 +199,11 @@ void Player::checkState() {
         jetpack_count   = max_jetpack_count;
         collisionData(collision);
     }
-    if (ON_PLANET && gravitator_type != "planet") {
-        die();
-    }
     if (ON_PLANET && !LEAVING_PLANET){
-        gravitatorBounce();
     }
     if (!ON_PLANET) {
         TRAVERSING_PLANET           = false;
-        oxygen                     -= 4 * dt;
+        oxygen                     -= oxygen_depletion_speed * dt;
     }
     if (ON_PLANET && !TRAVERSING_PLANET) {
         TRAVERSING_PLANET           = true;
@@ -252,25 +249,24 @@ bool Player::checkOffScreen() {
         camera_timer -= dt;
     }
     if (camera_timer <= 0) {
-        float delay = 0.5;
         if (pos.x > camera_target.x + screen_width - off_screen_limit) {
             camera_move_direction = "right";
-            camera_timer = delay;
+            camera_timer = camera_move_delay;
             return true;
         }
         if (pos.x < camera_target.x + off_screen_limit) {
             camera_move_direction = "left";
-            camera_timer = delay;
+            camera_timer = camera_move_delay;
             return true;
         }
         if (pos.y > camera_target.y + screen_height - off_screen_limit) {
             camera_move_direction = "down";
-            camera_timer = delay;
+            camera_timer = camera_move_delay;
             return true;
         }
         if (pos.y < camera_target.y + off_screen_limit) {
             camera_move_direction = "up";
-            camera_timer = delay;
+            camera_timer = camera_move_delay;
             return true;
         } else return false;
     } else return false;
@@ -302,7 +298,7 @@ void Player::releaseAstronaut(int i) {
 
 void Player::releaseAllAstronauts() {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
-        (*strandedAstronaut)[i]->FOLLOWING_PLAYER =  false;
+        (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
     }
 }
 
@@ -318,10 +314,15 @@ void Player::detectGravitatorCollisions() {
         int planet_gravity_range    = (*gravitator)[i]->gR;
 
         if (dist <= planet_r + r) {
-            collision               = i;
-            ON_PLANET               = true;
-            if (DEBUG_GUI) {
-                cout << "Collided with planet" << endl;
+            gravitatorBounce();
+            if (gravitator_type != "planet") {
+                die();
+            } else {
+                collision               = i;
+                ON_PLANET               = true;
+                if (DEBUG_GUI) {
+                    cout << "Collided with planet" << endl;
+                }
             }
         }
         if (dist >= planet_r + r) {
@@ -406,7 +407,7 @@ void Player::orientToPlanet(int collision) {
     //jumpDir.set(collision_perpendicular.normalized());
     dir.set(normalized_collision_normal);
     float new_rotation = ofRadToDeg(atan2(normalized_collision_normal.y, normalized_collision_normal.x));
-    rotation = ofLerp(rotation, new_rotation, 6 * dt);
+    rotation = ofLerp(rotation, new_rotation, planet_orientation_speed * dt);
 }
 
 void Player::traversePlanet(bool move_left) {

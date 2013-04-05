@@ -39,8 +39,8 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
 
     type = "strandedastronaut";
 
-    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	nautRenderer->loadTexture("nauts.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
+	nautRenderer->loadTexture("nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = floating;
 
@@ -65,12 +65,11 @@ void StrandedAstronaut::update() {
 
     nautRenderer->clear(); // clear the sheet
 	nautRenderer->update(ofGetElapsedTimeMillis());
-
 	nautRenderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
 }
 
 void StrandedAstronaut::move() {
-    if (FOLLOWING_PLAYER && !TRAVERSING_PLANET) {
+    if (FOLLOWING_PLAYER) {
         followPlayer();
     }
 
@@ -291,8 +290,6 @@ void StrandedAstronaut::orientToPlanet(int collision) {
 }
 
 void StrandedAstronaut::followPlayer() {
-    ofVec2f temp;
-    temp.set(10, 10);
     float randomized_speed = ofRandom(lerp_speed * 0.95, lerp_speed * 1.05);
     float dist = pos.squareDistance(player_pos);
     int min = 6;

@@ -91,6 +91,9 @@ public:
     float jetpack_power;
     float jump_multiplier;
     float jetpack_o2_use;
+    float planet_orientation_speed;
+    float oxygen_depletion_speed;
+    float camera_move_delay;
 
     bool CAN_JETPACK;
     bool CAN_LAND_ON_PLANET;

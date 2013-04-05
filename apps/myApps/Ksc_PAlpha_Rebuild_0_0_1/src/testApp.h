@@ -43,6 +43,7 @@ class testApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		void moveCamera(string direction);
+		void reset();
 
         void exportLevel();
         void importLevel();
@@ -68,6 +69,7 @@ class testApp : public ofBaseApp {
 
         ofVec3f camera_pos;
         ofVec3f camera_target;
+        ofVec3f camera_target_save;
 
     private:
         int planet_base_m;
@@ -76,6 +78,8 @@ class testApp : public ofBaseApp {
         ofSoundPlayer jupiterSound;
         ofSoundPlayer   backgroundSound;
         bool MOVE_CAMERA;
+        bool CAMERA_SCALING;
+        ofVec2f player_start_pos;
 
         float camera_lerp_speed;
 
