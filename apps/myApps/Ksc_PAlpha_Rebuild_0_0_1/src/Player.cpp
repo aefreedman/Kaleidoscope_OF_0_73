@@ -41,7 +41,7 @@ void Player::setup() {
 
     w                       = 10;
     h                       = 10;
-    r                       = 5;
+    r                       = 10;
     oxygen                  = 100.0;        /// TODO (Aaron#1#): Add lose condition to running out of o2
     max_oxygen              = oxygen;
     damp                    = 1.00;
@@ -128,14 +128,14 @@ void Player::update() {
 void Player::draw() {
     ofSetColor(255, 0, 0);
     ofNoFill();
-    ofCircle(pos, (20 * (jumpStrength / jump_strength_3)) + r - 1) ;
+    ofCircle(pos, (20 * (jumpStrength / jump_strength_3))) ;
     ofSetColor(0, 255, 240);
     ofFill();
     ofPushMatrix();
     glTranslatef(pos.x, pos.y, 0);
     glRotatef(rotation,0, 0, 1);
     ofCircle(0, 0, r);
-    ofLine(ofPoint(0, 0), ofPoint(50, 0));
+    //ofLine(ofPoint(0, 0), ofPoint(50, 0));
     ofPopMatrix();
 
     drawGUI();

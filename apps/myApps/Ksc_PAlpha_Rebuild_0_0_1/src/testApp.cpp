@@ -48,7 +48,7 @@ void testApp::setup() {
         loadSound();
         player.loadSound();
     }
-    importLevel(0);
+    importLevel(1);
     gui.push_back(new GUI());
 }
 
@@ -212,10 +212,14 @@ void testApp::draw() {
         top_text.append("\n");
         top_text.append("PAUSED");
     }
-    ofPushMatrix();
-    ofSetColor(0, 255, 0);
-    ofDrawBitmapString(top_text, 1, 10);
-    ofPopMatrix();
+
+    if (clickState != "play mode") {
+        ofPushMatrix();
+        ofSetColor(0, 255, 0);
+        ofDrawBitmapString(top_text, 1, 10);
+        ofPopMatrix();
+    }
+
 
     ///FLOATING MOUSE TEXT ----------------------------------
     if (clickState != "play mode") {
