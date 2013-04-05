@@ -78,7 +78,7 @@ void Player::setup() {
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("playerSheet2.png", 768, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
-    anim = walking;
+    anim = idle;
 
 	ofEnableAlphaBlending();
 }
@@ -97,7 +97,7 @@ void Player::update() {
     p1Renderer->clear(); // clear the sheet
 	p1Renderer->update(ofGetElapsedTimeMillis());
 
-	p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
+	p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation + 90, NULL, 255, 255, 255, 255);
 }
 
 void Player::draw() {
@@ -337,6 +337,7 @@ void Player::detectGravitatorCollisions() {
 void Player::die() {
     if (!GOD_MODE) {
         setup();
+        anim = death;
         releaseAllAstronauts();
         displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
     }
@@ -415,8 +416,10 @@ void Player::traversePlanet(bool move_left) {
 
     if (move_left) {
         theta -= speed_on_planet / planet_r * dt;
+        if(anim.index!=0) anim = walking;
     } else {
         theta += speed_on_planet / planet_r * dt;
+        if(anim.index!=0) anim = walking;
     }
     pos.x = (cos(theta) * (planet_r + r)) + planet_pos.x;
     pos.y = (sin(theta) * (planet_r + r)) + planet_pos.y;
@@ -444,6 +447,9 @@ inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVe
 
 
 void Player::chargeJump() {
+    if (jumpStrength == 0){
+        anim = charge;
+    }
     if (jumpStrength <= jump_strength_3 + 1) {
         jumpStrength += 0.10 * jump_strength_3;
     }
@@ -464,6 +470,7 @@ void Player::jump() {
         f += jumpStrength;
         TRAVERSING_PLANET = false;
         LEAVING_PLANET = true;
+        anim = lift;
         jump_timer = 0.1;
         if (DEBUG_GUI) {
             cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;
@@ -488,6 +495,9 @@ void Player::jetpack(bool JETPACK_FORWARD) {
             CAN_JETPACK = false;
         }
         cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
+        anim = jetpackFull;
+    } else {
+        anim = jetpackEmpty;
     }
 }
 
