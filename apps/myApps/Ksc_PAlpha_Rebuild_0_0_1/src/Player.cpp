@@ -19,7 +19,7 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
     ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
 
-    DEBUG_GUI = true;
+    DEBUG_GUI = false;
 }
 
 void Player::setup() {
@@ -361,8 +361,10 @@ void Player::detectGravitatorCollisions() {
         int planet_gravity_range    = (*gravitator)[i]->gR;
 
         if (dist <= planet_r + r) {
-            gravitatorBounce();
-            if (gravitator_type != "planet") {
+            if (gravitator_type != "blackhole") {
+                gravitatorBounce();
+            }
+            if (gravitator_type == "sun" || gravitator_type == "comet") {
                 DEATH_ANIMATION = die();
             } else {
                 collision               = i;
@@ -541,6 +543,7 @@ void Player::jump() {
 
 void Player::jetpack(bool JETPACK_FORWARD) {
     if (jetpack_count > 0 && CAN_JETPACK) {
+        v.set(0, 0);
         if (JETPACK_FORWARD) {
             ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
             f += VEC_MAGNITUDE;
