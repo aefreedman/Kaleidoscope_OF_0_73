@@ -90,3 +90,7 @@ Thumbs.db
 
 # Folder config file
 Desktop.ini
+*.dll
+apps/myApps/KaliedoscopeTest/bin/KaliedoscopeTest_DEBUG.exe
+apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/Ksc_PAlpha_Rebuild_0_0_1.exe
+apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/Ksc_PAlpha_Rebuild_0_0_1_DEBUG.exe
