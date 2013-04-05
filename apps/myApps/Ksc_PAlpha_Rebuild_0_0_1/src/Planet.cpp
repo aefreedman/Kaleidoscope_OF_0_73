@@ -7,7 +7,7 @@ Planet::Planet(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m,
     type = "planet";
     G = 100;
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 120); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	planetRenderer->loadTexture("rockPlanet.png", 120, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+	planetRenderer->loadTexture("ART/rockPlanet.png", 120, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = planet1;
 
@@ -19,7 +19,7 @@ Planet::Planet(ofVec2f _pos, int _r, int _gR) : Gravitator(_pos, _r, _gR) {
     type = "planet";
 
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 120); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	planetRenderer->loadTexture("rockPlanet.png", 120, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+	planetRenderer->loadTexture("ART/rockPlanet.png", 120, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = planet1;
 

@@ -19,7 +19,7 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
     ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
 
-    DEBUG_GUI = false;
+    DEBUG_GUI = true;
 }
 
 void Player::setup() {
@@ -59,11 +59,12 @@ void Player::setup() {
     jetpack_o2_use          = 5.0;
     astronaut_pickup_range  = 20;
     astronaut_drop_range    = 120;
-    jetpack_count           = 5;
+    jetpack_count           = 3;
     max_jetpack_count       = jetpack_count;
     planet_orientation_speed= 20.0;
-    oxygen_depletion_speed  = 5.0;
+    oxygen_depletion_speed  = 7.0;
     camera_move_delay       = 0.25;
+    death_timer             = 0.5;
 
     ON_PLANET               = false;
     CAN_LAND_ON_PLANET      = true;
@@ -75,15 +76,29 @@ void Player::setup() {
     TRAVERSING_PLANET       = false;
     GOD_MODE                = false;
     LEAVING_PLANET          = false;
+    DEATH_ANIMATION         = false;
+    JETPACK_EMPTY           = false;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
-	p1Renderer->loadTexture("playerSheet2.png", 768, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+	p1Renderer->loadTexture("ART/playerSheet2.png", 768, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = idle;
 
 	ofEnableAlphaBlending();
 }
 
+void Player::loadSound() {
+    fxDeath.loadSound("AUDIO/ksc_AUDIO_astronaut_death_002.wav");
+    fxJetpackEmpty.loadSound("AUDIO/ksc_AUDIO_player_jetout_001.wav");
+    fxJetpackUse.loadSound("AUDIO/ksc_AUDIO_player_usejet_001.wav");
+    fxAstronautCollect.loadSound("AUDIO/ksc_AUDIO_astro_pickup_001.wav");
+    fxAstronautRelease.loadSound("AUDIO/ksc_AUDIO_astronaut_death_001.wav");
+
+    fxDeath.setVolume(0.75);
+    fxJetpackUse.setVolume(.75);
+    fxAstronautCollect.setVolume(.5);
+    fxAstronautRelease.setVolume(.5);
+}
 
 void Player::update() {
     checkState();
@@ -98,7 +113,16 @@ void Player::update() {
     p1Renderer->clear(); // clear the sheet
 	p1Renderer->update(ofGetElapsedTimeMillis());
 
-	p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation + 90, NULL, 255, 255, 255, 255);
+    float player_rotation = rotation + 90;
+    if (player_rotation >= 360) {
+        //player_rotation = rotation - 270;
+        player_rotation -= 360;
+    }
+    if (player_rotation <= 0) {
+        player_rotation += 360;
+        //player_rotation = 270 - rotation;
+    }
+        p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0, player_rotation, NULL, 255, 255, 255, 255);
 }
 
 void Player::draw() {
@@ -124,12 +148,17 @@ void Player::draw() {
 }
 
 void Player::drawGUI() {
-    int x = 1000;
-    int y = 600;
+    int x = 1000 + camera_pos.x;
+    int y = 600 + camera_pos.y;
     string gui = "";
     gui += "O2: " + ofToString(oxygen, 2) + nl;
     ofSetColor(0, 50, 255);
-    ofDrawBitmapString(gui, x + camera_pos.x, y + camera_pos.y);
+    //ofDrawBitmapString(gui, x + camera_pos.x, y + camera_pos.y);
+    ofPushMatrix();
+    float o2_percent = oxygen / max_oxygen;
+    ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
+    ofRect(ofPoint(x, y), 20, -oxygen / 2);
+    ofPopMatrix();
 }
 
 void Player::drawDebugGUI() {
@@ -178,12 +207,18 @@ void Player::drawDebugGUI() {
 }
 
 void Player::checkState() {
+    if (JETPACK_EMPTY) {
+
+    }
+    if (DEATH_ANIMATION) {
+
+    }
     if (GOD_MODE) {
         oxygen = max_oxygen;
         jetpack_count = max_jetpack_count;
     }
     if (oxygen < 0) {
-        die();
+        DEATH_ANIMATION = die();
     }
     if (LEAVING_PLANET) {
         jump_timer -= dt;
@@ -272,19 +307,27 @@ bool Player::checkOffScreen() {
     } else return false;
 }
 
+void Player::soundPlayer(string sound) {
+    if (sound == "death") {
+
+    }
+}
+
 void Player::detectAstronautCollisions() {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
         float dist                  = pos.distance((*strandedAstronaut)[i]->pos);
         float astronaut_r           = (*strandedAstronaut)[i]->r;
 
-        if (dist <= r + astronaut_r + astronaut_pickup_range) {
+        if (dist <= r + astronaut_r + astronaut_pickup_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER == false ) {
             (*strandedAstronaut)[i]->FOLLOWING_PLAYER = true;
+            fxAstronautCollect.play();
             if (DEBUG_GUI) {
                 cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
             }
         }
-        if (dist > r + astronaut_r + astronaut_drop_range) {
+        if (dist > r + astronaut_r + astronaut_drop_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER == true) {
             (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
+            fxAstronautRelease.play();
         }
         if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER == true) {
             (*strandedAstronaut)[i]->getPlayerData(pos);
@@ -294,11 +337,15 @@ void Player::detectAstronautCollisions() {
 
 void Player::releaseAstronaut(int i) {
     (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
+    fxAstronautRelease.play();
 }
 
-void Player::releaseAllAstronauts() {
+void Player::releaseAllAstronauts(bool SOUND) {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
         (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
+    }
+    if (SOUND) {
+        fxAstronautRelease.play();
     }
 }
 
@@ -316,7 +363,7 @@ void Player::detectGravitatorCollisions() {
         if (dist <= planet_r + r) {
             gravitatorBounce();
             if (gravitator_type != "planet") {
-                die();
+                DEATH_ANIMATION = die();
             } else {
                 collision               = i;
                 ON_PLANET               = true;
@@ -335,13 +382,25 @@ void Player::detectGravitatorCollisions() {
     }
 }
 
-void Player::die() {
+bool Player::die() {
     if (!GOD_MODE) {
-        setup();
-        anim = death;
-        releaseAllAstronauts();
-        displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
-    }
+        if (!DEATH_ANIMATION) {
+            anim = death;
+            fxDeath.play();
+        }
+        if (death_timer > 0) {
+            death_timer -= dt;
+            v.set(0, 0);
+            gravity.set(0, 0);
+            return true;
+        }
+        if (death_timer <= 0) {
+            setup();
+            releaseAllAstronauts(false);
+            displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
+            return false;
+        }
+    } else return false;
 }
 
 void Player::drawGUIOverlay(ofVec2f _pos, string text) {
@@ -497,8 +556,10 @@ void Player::jetpack(bool JETPACK_FORWARD) {
         }
         cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
         anim = jetpackFull;
+        fxJetpackUse.play();
     } else {
         anim = jetpackEmpty;
+        fxJetpackEmpty.play();
     }
 }
 

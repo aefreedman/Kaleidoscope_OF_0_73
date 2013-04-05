@@ -22,7 +22,7 @@ void testApp::setup() {
     default_view_scale              = 1;
     view_scale                      = 1;
     view_scale_target               = 1;
-    background.loadImage("bg.png");
+    background.loadImage("ART/bg.png");
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -35,14 +35,7 @@ void testApp::setup() {
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
 
-    ///sound system
-    jupiterSound.loadSound("Jupiter.mp3");
-    jupiterSound.setLoop(true);
-    jupiterSound.play();
-    backgroundSound.loadSound("background.wav");
-    backgroundSound.setLoop(true);
-    backgroundSound.setVolume(0.35);
-    backgroundSound.play();
+    LOAD_WITH_SOUND                 = true;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -51,8 +44,22 @@ void testApp::setup() {
     clickState                      = "play mode";
     levelState                      = "Working from scratch.";
     new_gravitator_type             = "";
+    if (LOAD_WITH_SOUND) {
+        loadSound();
+        player.loadSound();
+    }
     importLevel(0);
     gui.push_back(new GUI());
+}
+
+void testApp::loadSound() {
+    jupiterSound.loadSound("AUDIO/ksc_AUDIO_background_music_001.mp3");
+    jupiterSound.setLoop(true);
+    jupiterSound.play();
+    backgroundSound.loadSound("AUDIO/background.wav");
+    backgroundSound.setLoop(true);
+    backgroundSound.setVolume(0.35);
+    backgroundSound.play();
 }
 
 //--------------------------------------------------------------
@@ -117,6 +124,7 @@ void testApp::moveCamera(string direction) {
 void testApp::draw() {
     ///Draw events that go behind the camera, but are not affected by zoom go below
     ofPushMatrix();
+    ofSetColor(255);
     ofTranslate(-camera_pos);
     background.draw(camera_pos);
     ofPopMatrix();
@@ -444,7 +452,7 @@ void testApp::keyPressed(int key) {
         }
         break;
     case 32:
-        player.releaseAllAstronauts();
+        player.releaseAllAstronauts(true);
         break;
     case '=':
         player.damp += 0.01;

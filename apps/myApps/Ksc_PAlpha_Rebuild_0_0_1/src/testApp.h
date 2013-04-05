@@ -44,6 +44,7 @@ class testApp : public ofBaseApp {
 		void gotMessage(ofMessage msg);
 		void moveCamera(string direction);
 		void reset();
+		void loadSound();
 
         void exportLevel();
         void importLevel();
@@ -91,5 +92,6 @@ class testApp : public ofBaseApp {
         float view_lerp_speed;
         float map_view_scale_target;
         bool MAP_VIEW;
+        bool LOAD_WITH_SOUND;
 
 };

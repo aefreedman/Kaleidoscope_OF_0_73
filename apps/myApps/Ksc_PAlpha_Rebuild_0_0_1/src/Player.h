@@ -134,13 +134,13 @@ public:
     void chargeJump();
     void detectAstronautCollisions();
     void releaseAstronaut(int i);
-    void releaseAllAstronauts();
+    void releaseAllAstronauts(bool SOUND);
     void detectGravitatorCollisions();
     void collisionData(int collision);
     bool detectCollisions();
     bool checkOffScreen();
     void checkState();
-    void die();
+    bool die();
     void orientToPlanet(int collision);
     void rotateDirection(bool rotate_left);
     void traversePlanet(bool move_left);
@@ -152,6 +152,8 @@ public:
     void drawGUIOverlay(ofVec2f _pos, string text);
     void displayMessage(ofVec2f _pos, string text);
     void displayMessage(ofVec2f _pos, string text, ofColor background_color, ofColor foreground_color);
+    void soundPlayer(string sound);
+    void loadSound();
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
@@ -182,6 +184,15 @@ public:
     bool OFF_SCREEN;
     bool GOD_MODE;
     bool LEAVING_PLANET;
+    bool DEATH_ANIMATION;
+    bool JETPACK_EMPTY;
+
+    ofSoundPlayer fxDeath;
+    ofSoundPlayer fxJetpackEmpty;
+    ofSoundPlayer fxJetpackUse;
+    ofSoundPlayer fxAstronautCollect;
+    ofSoundPlayer fxAstronautRelease;
+
 protected:
 
 
@@ -199,6 +210,7 @@ private:
     float jump_strength_2;
     float jump_strength_3;
     float jump_timer;
+    float death_timer;
     int jetpack_count;
     int max_jetpack_count;
     float max_oxygen;
