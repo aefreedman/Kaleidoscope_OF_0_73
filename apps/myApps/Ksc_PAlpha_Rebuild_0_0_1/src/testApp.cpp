@@ -429,7 +429,7 @@ void testApp::keyPressed(int key) {
                 break;
             }
         }
-        if (player.CAN_JETPACK && !player.TRAVERSING_PLANET) {
+        if (player.CAN_JETPACK && !player.TRAVERSING_PLANET && !player.DEATH_ANIMATION) {
             player.jetpack(true);
             break;
         } else if (player.TRAVERSING_PLANET) {
@@ -447,6 +447,7 @@ void testApp::keyPressed(int key) {
     case OF_KEY_LEFT:
         if (player.TRAVERSING_PLANET) {
             player.traversePlanet(true);
+            //player.ROTATE_LEFT = true;
             break;
         } else {
             player.rotateDirection(true);
@@ -455,6 +456,7 @@ void testApp::keyPressed(int key) {
     case OF_KEY_RIGHT:
         if (player.TRAVERSING_PLANET) {
             player.traversePlanet(false);
+            //player.ROTATE_RIGHT = true;
             break;
         } else {
             player.rotateDirection(false);
@@ -500,7 +502,7 @@ void testApp::keyReleased(int key) {
     case 'd':
         break;
     case OF_KEY_UP:
-        if (player.IN_GRAVITY_WELL) {
+        if (player.TRAVERSING_PLANET) {
             player.jump();
             break;
         } else {
@@ -508,6 +510,12 @@ void testApp::keyReleased(int key) {
             break;
         }
     case 32:
+        break;
+    case OF_KEY_LEFT:
+        player.ROTATE_LEFT = false;
+        break;
+    case OF_KEY_RIGHT:
+        player.ROTATE_RIGHT = true;
         break;
     }
 

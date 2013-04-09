@@ -175,6 +175,7 @@ public:
     float planet_orientation_speed;
     float oxygen_depletion_speed;
     float camera_move_delay;
+    float v_limit;
 
     bool CAN_JETPACK;
     bool CAN_LAND_ON_PLANET;
@@ -186,6 +187,8 @@ public:
     bool LEAVING_PLANET;
     bool DEATH_ANIMATION;
     bool JETPACK_EMPTY;
+    bool ROTATE_LEFT;
+    bool ROTATE_RIGHT;
 
     ofSoundPlayer fxDeath;
     ofSoundPlayer fxJetpackEmpty;

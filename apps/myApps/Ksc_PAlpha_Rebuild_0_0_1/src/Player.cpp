@@ -65,6 +65,7 @@ void Player::setup() {
     oxygen_depletion_speed  = 7.0;
     camera_move_delay       = 0.25;
     death_timer             = 0.5;
+    v_limit                 = 1000.0;
 
     ON_PLANET               = false;
     CAN_LAND_ON_PLANET      = true;
@@ -78,6 +79,8 @@ void Player::setup() {
     LEAVING_PLANET          = false;
     DEATH_ANIMATION         = false;
     JETPACK_EMPTY           = false;
+    ROTATE_LEFT             = false;
+    ROTATE_RIGHT            = false;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 768, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -123,6 +126,37 @@ void Player::update() {
         //player_rotation = 270 - rotation;
     }
         p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0, player_rotation, NULL, 255, 255, 255, 255);
+}
+
+void Player::move() {
+    if (rotation >= 360 || rotation <= -360) {
+        rotation = 0;
+    }
+    if (ROTATE_LEFT) {
+        //traversePlanet(true);
+    }
+    if (ROTATE_RIGHT) {
+        //traversePlanet(false);
+    }
+
+    a           = (f / m) * dt;
+    v          += dir * a * dt;
+    v          += gravity * dt;
+    v          *= damp;
+
+    if (v.length() > v_limit) {
+        v.set(v.getScaled(v_limit));
+    }
+    pos        += v * dt;
+    display_f   = m / a;
+
+    f.set(0, 0);
+    gravity.set(0, 0);
+
+    if (DEBUG_GUI) {
+        cout << "v(" + ofToString(v.x, 3) + ", " + ofToString(v.y, 3) + ")" + "   ";
+        cout << "Pos(" + ofToString(pos.x, 3) + ", " + ofToString(pos.y, 3) + ")" << endl;
+    }
 }
 
 void Player::draw() {
@@ -186,7 +220,6 @@ void Player::drawDebugGUI() {
     ofSetColor(240, 0, 20);
     ofDrawBitmapString(info, x, y);
 
-    /// FIXME (Aaron#3#): Why is this only displaying the ends of long strings?
     string info_b = "";
     if (ON_PLANET) {
         info_b.append("ON THE PLANET, BRO \n");
@@ -258,26 +291,7 @@ void Player::checkState() {
     }
 }
 
-void Player::move() {
-    if (rotation >= 360 || rotation <= -360) {
-        rotation = 0;
-    }
 
-    a           = (f / m) * dt;
-    v          += dir * a * dt;
-    v          += gravity * dt;
-    v          *= damp;
-    pos        += v * dt;
-    display_f   = m / a;
-
-    f.set(0, 0);
-    gravity.set(0, 0);
-
-    if (DEBUG_GUI) {
-        cout << "v(" + ofToString(v.x, 3) + ", " + ofToString(v.y, 3) + ")" + "   ";
-        cout << "Pos(" + ofToString(pos.x, 3) + ", " + ofToString(pos.y, 3) + ")" << endl;
-    }
-}
 
 bool Player::checkOffScreen() {
     if (camera_timer > 0) {
@@ -543,7 +557,10 @@ void Player::jump() {
 
 void Player::jetpack(bool JETPACK_FORWARD) {
     if (jetpack_count > 0 && CAN_JETPACK) {
-        v.set(0, 0);
+        float angle = dir.angle(v);
+        if (abs(angle) > 10) {
+            v.set(0, 0);
+        }
         if (JETPACK_FORWARD) {
             ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
             f += VEC_MAGNITUDE;
