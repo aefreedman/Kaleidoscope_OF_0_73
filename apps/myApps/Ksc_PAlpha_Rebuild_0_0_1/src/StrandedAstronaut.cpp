@@ -53,6 +53,7 @@ StrandedAstronaut::~StrandedAstronaut() {
 
 /// TODO (Aaron#1#): Astronauts should sit and wait for the player, then follow the player when the player gets close enough to it
 void StrandedAstronaut::update() {
+    if (gravitator_type != "sun") {
     checkState();
     detectPlayerCollisions();
     detectGravitatorCollisions();
@@ -62,10 +63,11 @@ void StrandedAstronaut::update() {
         displayMessage();
     }
 
-
     nautRenderer->clear(); // clear the sheet
 	nautRenderer->update(ofGetElapsedTimeMillis());
 	nautRenderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
+    }
+
 }
 
 void StrandedAstronaut::move() {
@@ -203,23 +205,24 @@ string StrandedAstronaut::pickMessage(int messageNumber) {
     case 13:
         message = "Hey.";
         break;
-
-
     }
     return message;
 }
 
 void StrandedAstronaut::draw() {
-    ofNoFill();
-    ofSetColor(255, 255, 255);
-    ofFill();
-    ofPushMatrix();
-    glTranslatef(pos.x, pos.y, 0);
-    glRotatef(rotation,0, 0, 1);
-    //ofCircle(0, 0, r);
-    //ofLine(ofPoint(0, 0), ofPoint(20, 0));
-    ofPopMatrix();
-    nautRenderer->draw();
+    if (gravitator_type != "sun") {
+        ofNoFill();
+        ofSetColor(255, 255, 255);
+        ofFill();
+        ofPushMatrix();
+        glTranslatef(pos.x, pos.y, 0);
+        glRotatef(rotation,0, 0, 1);
+        //ofCircle(0, 0, r);
+        //ofLine(ofPoint(0, 0), ofPoint(20, 0));
+        ofPopMatrix();
+        nautRenderer->draw();
+    }
+
 
     if (FOLLOWING_PLAYER) {
         ofPushMatrix();
@@ -242,6 +245,9 @@ void StrandedAstronaut::detectGravitatorCollisions() {
         if (dist <= planet_r + r) {
             collision = i;
             ON_PLANET = true;
+            if (gravitator_type == "sun") {
+
+            }
         }
         if (dist >= planet_r + (r * 2)) {
             CAN_LAND_ON_PLANET = true;
@@ -262,6 +268,7 @@ void StrandedAstronaut::collisionData(int collision) {
     collision_perpendicular             = collision_normal.getPerpendicular();
     left                                = collision_perpendicular;
     right                               = -collision_perpendicular;
+    gravitator_type                     = (*gravitator)[collision]->type;
 }
 
 void StrandedAstronaut::calculateGravity(int attractor) {
@@ -276,13 +283,11 @@ void StrandedAstronaut::calculateGravity(int attractor) {
     ofVec2f sqrDist;
     sqrDist.set(pos.squareDistance(planet_pos));
 
-    /// NOTE (Aaron#5#): Gravity with mass works, but it seems to make everything way too hard.
     if (SIMPLE_GRAVITY) {
         gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
     } else {
         gravity               += planet_G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
     }
-    //display_g.set(gravity);
 }
 
 void StrandedAstronaut::orientToPlanet(int collision) {
@@ -308,9 +313,9 @@ void StrandedAstronaut::getPlayerData(ofVec2f _player_pos) {
 void StrandedAstronaut::detectPlayerCollisions() {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
         if (id != i) {
-            float dist = pos.distance((*strandedAstronaut)[i]->pos);
+            float dist = pos.squareDistance((*strandedAstronaut)[i]->pos);
             float other_r = (*strandedAstronaut)[i]->r;
-            if (dist < r + other_r) {
+            if (dist < (r + other_r) * (r + other_r)) {
                 bounce(i);
             }
         }

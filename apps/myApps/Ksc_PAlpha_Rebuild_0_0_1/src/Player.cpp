@@ -56,10 +56,10 @@ void Player::setup() {
     speed_on_planet         = 250.0;
     jetpack_power           = 1000000.0;
     jump_multiplier         = 30.0;
-    jetpack_o2_use          = 20.0;
+    jetpack_o2_use          = (max_oxygen / 6) - 1;
     astronaut_pickup_range  = 20;
     astronaut_drop_range    = 120;
-    jetpack_count           = 3;
+    jetpack_count           = 99999;
     max_jetpack_count       = jetpack_count;
     planet_orientation_speed= 50.0;
     oxygen_depletion_speed  = 7.0;
@@ -578,6 +578,9 @@ void Player::jump() {
 }
 
 void Player::jetpack(bool JETPACK_FORWARD) {
+    if (oxygen - jetpack_o2_use <= 0) {
+        CAN_JETPACK = false;
+    }
     if (jetpack_count > 0 && CAN_JETPACK) {
         float angle = dir.angle(v);
         if (abs(angle) > 10) {

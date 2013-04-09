@@ -102,7 +102,7 @@ void testApp::update() {
     }   else {
         CAMERA_SCALING = true;
     }
-
+    camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
     // key handling: specifically adding justpressed keys to waspressed.
 
 
@@ -134,15 +134,11 @@ void testApp::moveCamera(string direction) {
     camera_target.x = target.x;
     camera_target.y = target.y;
     camera_target.z = 0;
-
-    camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
-
 }
 
 void testApp::moveCamera() {
     camera_target.x = player.pos.x - screen_width/2;
     camera_target.y = player.pos.y - screen_height/2;
-    camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
 }
 
 //--------------------------------------------------------------
@@ -489,8 +485,36 @@ void testApp::keyPressed(int key) {
             moveCamera("up");
         }
         break;
-    case 32:
+    case 'x':
         player.releaseAllAstronauts(true);
+        break;
+    case 32:
+        if (clickState == "placing gravitators") {
+            if (new_gravitator_type == "") {
+                new_gravitator_type = "planet";
+                break;
+            }
+            if (new_gravitator_type == "planet") {
+                new_gravitator_type = "sun";
+                break;
+            }
+            if (new_gravitator_type == "sun") {
+                new_gravitator_type = "black hole";
+                break;
+            }
+            if (new_gravitator_type == "black hole") {
+                new_gravitator_type = "planet";
+                break;
+            }
+        }
+        if (player.CAN_JETPACK && !player.TRAVERSING_PLANET && !player.DEATH_ANIMATION) {
+            player.jetpack(true);
+            break;
+        } else if (player.TRAVERSING_PLANET) {
+            player.chargeJump();
+            player.TRAVERSING_PLANET = true;
+            break;
+        }
         break;
     case '=':
         player.damp += 0.01;
@@ -539,6 +563,13 @@ void testApp::keyReleased(int key) {
             break;
         }
     case 32:
+        if (player.TRAVERSING_PLANET) {
+            player.jump();
+            break;
+        } else {
+            player.CAN_JETPACK = true;
+            break;
+        }
         break;
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = false;
