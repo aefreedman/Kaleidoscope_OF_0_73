@@ -98,6 +98,18 @@ void testApp::update() {
     }   else {
         CAMERA_SCALING = true;
     }
+
+    // key handling: specifically adding justpressed keys to waspressed.
+
+
+   /* for (int i = 0; i < justPressed.size(); i++){
+        wasPressed[i] = justPressed[i];
+    }
+    justPressed.clear();
+
+    for (int i = 0; i < wasPressed.size();i++){
+    cout << wasPressed[]
+    }*/
 }
 
 void testApp::moveCamera(string direction) {
@@ -300,6 +312,8 @@ void testApp::addStrandedAstronaut(ofVec2f _pos) {
 //--------------------------------------------------------------
 void testApp::keyPressed(int key) {
 
+    //justPressed.push_back(key);
+
     switch (key) {
     case 'i':
         if (iddqd == 0) {
@@ -435,6 +449,9 @@ void testApp::keyPressed(int key) {
         }
         break;
     case OF_KEY_LEFT:
+       // justPressed.push_back(OF_KEY_LEFT);
+
+
         if (player.TRAVERSING_PLANET) {
             player.traversePlanet(true);
             break;
@@ -442,6 +459,7 @@ void testApp::keyPressed(int key) {
             player.rotateDirection(true);
             break;
         }
+
     case OF_KEY_RIGHT:
         if (player.TRAVERSING_PLANET) {
             player.traversePlanet(false);
@@ -484,6 +502,13 @@ void testApp::keyPressed(int key) {
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key) {
+
+    /*for (int i = 0; i < justPressed.size(); i++){
+        if (justPressed[i] == key){
+            justPressed[i]erase();
+        }
+    }*/
+
     switch (key) {
     case 'a':
         break;
