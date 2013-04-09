@@ -79,9 +79,12 @@ void Player::setup() {
     GOD_MODE                = false;
     LEAVING_PLANET          = false;
     DEATH_ANIMATION         = false;
-    JETPACK_EMPTY           = false;    FACING_RIGHT            = true;
+    JETPACK_EMPTY           = false;
+    FACING_RIGHT            = true;
     ROTATE_LEFT             = false;
     ROTATE_RIGHT            = false;
+
+    gravitator_type         = "null";
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 768, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -119,24 +122,22 @@ void Player::update() {
 
     float player_rotation = rotation + 90;
     if (player_rotation >= 360) {
-        //player_rotation = rotation - 270;
         player_rotation -= 360;
     }
     if (player_rotation <= 0) {
         player_rotation += 360;
-        //player_rotation = 270 - rotation;
     }
-        if(DEATH_ANIMATION){
+    if(DEATH_ANIMATION){
         //flame_rotation = (-1*v).angle(ofVec2f(0,-1));
-        cout << ofToString(flame_rotation) + "/n";
+        //cout << ofToString(flame_rotation) + "/n";
         p1Renderer->addCenterRotatedTile(&flame, pos.x, pos.y,-1, F_NONE, 1.0, flame_rotation, NULL, 255, 255, 255, 255);
-        }
+    }
 
-        if(FACING_RIGHT){
+    if(FACING_RIGHT){
         p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_HORIZ, 1.0, player_rotation, NULL, 255, 255, 255, 255);
-        } else {
+    } else {
         p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0, player_rotation, NULL, 255, 255, 255, 255);
-        }
+    }
 }
 
 void Player::move() {
@@ -254,6 +255,9 @@ void Player::checkState() {
     if (DEATH_ANIMATION) {
 
     }
+    if (gravitator_type == "sun" || gravitator_type == "comet") {
+        DEATH_ANIMATION = die();
+    }
     if (GOD_MODE) {
         oxygen = max_oxygen;
         jetpack_count = max_jetpack_count;
@@ -271,9 +275,11 @@ void Player::checkState() {
         //die();
     }
     if (ON_PLANET) {
+        collisionData(collision);
+        if (gravitator_type != "blackhole") {
         oxygen          = max_oxygen;
         jetpack_count   = max_jetpack_count;
-        collisionData(collision);
+        }
     }
     if (ON_PLANET && !LEAVING_PLANET){
     }
@@ -281,7 +287,7 @@ void Player::checkState() {
         TRAVERSING_PLANET           = false;
         oxygen                     -= oxygen_depletion_speed * dt;
     }
-    if (ON_PLANET && !TRAVERSING_PLANET) {
+    if (ON_PLANET && !TRAVERSING_PLANET && gravitator_type == "planet") {
         TRAVERSING_PLANET           = true;
     }
     if (ON_PLANET && CAN_LAND_ON_PLANET) {
@@ -377,29 +383,25 @@ void Player::detectGravitatorCollisions() {
     EXITED_GRAVITY_WELL             = false;
 
     for (int i = 0; i < gravitator->size(); i++) {
-        float dist                  = pos.distance((*gravitator)[i]->pos);
+        float dist                  = pos.squareDistance((*gravitator)[i]->pos);
         string gravitator_type      = (*gravitator)[i]->type;
         int planet_r                = (*gravitator)[i]->r;
         int planet_gravity_range    = (*gravitator)[i]->gR;
 
-        if (dist <= planet_r + r) {
-            if (gravitator_type != "blackhole") {
+        if (dist <= (planet_r + r) * (planet_r + r)) {
+            collision               = i;
+            ON_PLANET               = true;
+            if (DEBUG_GUI) {
+                cout << "Collided with planet" << endl;
+            }
+            if (gravitator_type == "planet") {
                 gravitatorBounce();
             }
-            if (gravitator_type == "sun" || gravitator_type == "comet") {
-                DEATH_ANIMATION = die();
-            } else {
-                collision               = i;
-                ON_PLANET               = true;
-                if (DEBUG_GUI) {
-                    cout << "Collided with planet" << endl;
-                }
-            }
         }
-        if (dist >= planet_r + r) {
+        if (dist >= (planet_r + r) * (planet_r + r)) {
             CAN_LAND_ON_PLANET      = true;
         }
-        if (dist <= planet_gravity_range + r) {
+        if (dist <= (planet_gravity_range + r) * (planet_gravity_range + r)) {
             attractor               = i;
             IN_GRAVITY_WELL         = true;
         }
