@@ -214,6 +214,7 @@ private:
     int jetpack_count;
     int max_jetpack_count;
     float max_oxygen;
+    float rotation_timer;
 
     /// TODO (Aaron#1#): discrete jump strength levels
     /// TODO (Aaron#1#): Release astronauts into the sun

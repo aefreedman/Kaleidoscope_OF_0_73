@@ -15,9 +15,9 @@ Player::Player(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<
     pos.set(500,500);
     starting_pos.set(pos);
 
-    ofRegisterKeyEvents(this);
-    ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
-    ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
+    //ofRegisterKeyEvents(this);
+    //ofAddListener(ofEvents().keyPressed, this, &Player::keyPressed);
+    //ofAddListener(ofEvents().keyPressed, this, &Player::keyReleased);
 
     DEBUG_GUI = false;
 }
@@ -52,9 +52,9 @@ void Player::setup() {
     jump_strength_3         = 1000000.0;
     restitution             = 0.10;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
-    rotation_speed          = 6.0;          /// This is the speed of your rotation in space
-    speed_on_planet         = 150.0;
-    jetpack_power           = 500000.0;
+    rotation_speed          = 8.0;          /// This is the speed of your rotation in space
+    speed_on_planet         = 250.0;
+    jetpack_power           = 1000000.0;
     jump_multiplier         = 30.0;
     jetpack_o2_use          = 5.0;
     astronaut_pickup_range  = 20;
@@ -134,7 +134,7 @@ void Player::draw() {
     ofPushMatrix();
     glTranslatef(pos.x, pos.y, 0);
     glRotatef(rotation,0, 0, 1);
-    ofCircle(0, 0, r);
+    //ofCircle(0, 0, r);
     ofLine(ofPoint(0, 0), ofPoint(50, 0));
     ofPopMatrix();
 

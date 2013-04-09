@@ -43,6 +43,7 @@ class testApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		void moveCamera(string direction);
+		void moveCamera();
 		void reset();
 		void loadSound();
 
@@ -93,5 +94,6 @@ class testApp : public ofBaseApp {
         float map_view_scale_target;
         bool MAP_VIEW;
         bool LOAD_WITH_SOUND;
+        bool CONTINUOUS_CAMERA;
 
 };

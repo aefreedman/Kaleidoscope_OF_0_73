@@ -36,6 +36,7 @@ void testApp::setup() {
     map_view_scale_target           = .25;
 
     LOAD_WITH_SOUND                 = true;
+    CONTINUOUS_CAMERA               = true;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -84,15 +85,18 @@ void testApp::update() {
     }
 
     /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
-    camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
-    player.camera_pos = camera_pos;
-    player.camera_target = camera_target;
 
-    if (player.OFF_SCREEN == true && clickState == "play mode") {
+    if (CONTINUOUS_CAMERA && clickState == "play mode" && !PAUSE && !MAP_VIEW) {
+        moveCamera();
+    }
+    if (!CONTINUOUS_CAMERA && player.OFF_SCREEN == true && clickState == "play mode") {
         moveCamera(player.camera_move_direction);
         player.OFF_SCREEN = false;
     }
-        view_scale = ofLerp(view_scale, view_scale_target, view_lerp_speed * dt);
+    player.camera_pos = camera_pos;
+    player.camera_target = camera_target;
+
+    view_scale = ofLerp(view_scale, view_scale_target, view_lerp_speed * dt);
     if (view_scale >= view_scale_target * 0.95 && view_scale <= view_scale_target * 1.05) {
         CAMERA_SCALING = false;
     }   else {
@@ -118,6 +122,15 @@ void testApp::moveCamera(string direction) {
     camera_target.x = target.x;
     camera_target.y = target.y;
     camera_target.z = 0;
+
+    camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
+
+}
+
+void testApp::moveCamera() {
+    camera_target.x = player.pos.x - screen_width/2;
+    camera_target.y = player.pos.y - screen_height/2;
+    camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
 }
 
 //--------------------------------------------------------------
@@ -429,6 +442,7 @@ void testApp::keyPressed(int key) {
             //player.jetpack(false);
             break;
         }
+        cout << "d";
         break;
     case OF_KEY_LEFT:
         if (player.TRAVERSING_PLANET) {
