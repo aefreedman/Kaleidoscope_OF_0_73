@@ -49,7 +49,7 @@ void testApp::setup() {
         loadSound();
         player.loadSound();
     }
-    importLevel(0);
+    importLevel(1);
     gui.push_back(new GUI());
 }
 
@@ -102,6 +102,18 @@ void testApp::update() {
     }   else {
         CAMERA_SCALING = true;
     }
+
+    // key handling: specifically adding justpressed keys to waspressed.
+
+
+   /* for (int i = 0; i < justPressed.size(); i++){
+        wasPressed[i] = justPressed[i];
+    }
+    justPressed.clear();
+
+    for (int i = 0; i < wasPressed.size();i++){
+    cout << wasPressed[]
+    }*/
 }
 
 void testApp::moveCamera(string direction) {
@@ -225,10 +237,14 @@ void testApp::draw() {
         top_text.append("\n");
         top_text.append("PAUSED");
     }
-    ofPushMatrix();
-    ofSetColor(0, 255, 0);
-    ofDrawBitmapString(top_text, 1, 10);
-    ofPopMatrix();
+
+    if (clickState != "play mode") {
+        ofPushMatrix();
+        ofSetColor(0, 255, 0);
+        ofDrawBitmapString(top_text, 1, 10);
+        ofPopMatrix();
+    }
+
 
     ///FLOATING MOUSE TEXT ----------------------------------
     if (clickState != "play mode") {
@@ -308,6 +324,8 @@ void testApp::addStrandedAstronaut(ofVec2f _pos) {
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key) {
+
+    //justPressed.push_back(key);
 
     switch (key) {
     case 'i':
@@ -445,6 +463,9 @@ void testApp::keyPressed(int key) {
         cout << "d";
         break;
     case OF_KEY_LEFT:
+       // justPressed.push_back(OF_KEY_LEFT);
+
+
         if (player.TRAVERSING_PLANET) {
             player.traversePlanet(true);
             //player.ROTATE_LEFT = true;
@@ -453,6 +474,7 @@ void testApp::keyPressed(int key) {
             player.rotateDirection(true);
             break;
         }
+
     case OF_KEY_RIGHT:
         if (player.TRAVERSING_PLANET) {
             player.traversePlanet(false);
@@ -496,6 +518,13 @@ void testApp::keyPressed(int key) {
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key) {
+
+    /*for (int i = 0; i < justPressed.size(); i++){
+        if (justPressed[i] == key){
+            justPressed[i]erase();
+        }
+    }*/
+
     switch (key) {
     case 'a':
         break;

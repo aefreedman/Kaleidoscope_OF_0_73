@@ -41,14 +41,14 @@ void Player::setup() {
 
     w                       = 10;
     h                       = 10;
-    r                       = 5;
+    r                       = 10;
     oxygen                  = 100.0;        /// TODO (Aaron#1#): Add lose condition to running out of o2
     max_oxygen              = oxygen;
     damp                    = 1.00;
     m                       = 1.0;
     jumpStrength            = 0.0;
-    jump_strength_1         = 50000.0;
-    jump_strength_2         = 100000.0;
+    jump_strength_1         = 250000.0;
+    jump_strength_2         = 500000.0;
     jump_strength_3         = 1000000.0;
     restitution             = 0.10;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
@@ -56,15 +56,16 @@ void Player::setup() {
     speed_on_planet         = 250.0;
     jetpack_power           = 1000000.0;
     jump_multiplier         = 30.0;
-    jetpack_o2_use          = 5.0;
+    jetpack_o2_use          = 20.0;
     astronaut_pickup_range  = 20;
     astronaut_drop_range    = 120;
     jetpack_count           = 3;
     max_jetpack_count       = jetpack_count;
-    planet_orientation_speed= 20.0;
+    planet_orientation_speed= 50.0;
     oxygen_depletion_speed  = 7.0;
     camera_move_delay       = 0.25;
     death_timer             = 0.5;
+    flame_rotation          = 0;
     v_limit                 = 1000.0;
 
     ON_PLANET               = false;
@@ -78,7 +79,7 @@ void Player::setup() {
     GOD_MODE                = false;
     LEAVING_PLANET          = false;
     DEATH_ANIMATION         = false;
-    JETPACK_EMPTY           = false;
+    JETPACK_EMPTY           = false;    FACING_RIGHT            = true;
     ROTATE_LEFT             = false;
     ROTATE_RIGHT            = false;
 
@@ -125,7 +126,17 @@ void Player::update() {
         player_rotation += 360;
         //player_rotation = 270 - rotation;
     }
+        if(DEATH_ANIMATION){
+        //flame_rotation = (-1*v).angle(ofVec2f(0,-1));
+        cout << ofToString(flame_rotation) + "/n";
+        p1Renderer->addCenterRotatedTile(&flame, pos.x, pos.y,-1, F_NONE, 1.0, flame_rotation, NULL, 255, 255, 255, 255);
+        }
+
+        if(FACING_RIGHT){
+        p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_HORIZ, 1.0, player_rotation, NULL, 255, 255, 255, 255);
+        } else {
         p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0, player_rotation, NULL, 255, 255, 255, 255);
+        }
 }
 
 void Player::move() {
@@ -160,16 +171,13 @@ void Player::move() {
 }
 
 void Player::draw() {
-    ofSetColor(255, 0, 0);
-    ofNoFill();
-    ofCircle(pos, (20 * (jumpStrength / jump_strength_3)) + r - 1) ;
     ofSetColor(0, 255, 240);
     ofFill();
     ofPushMatrix();
     glTranslatef(pos.x, pos.y, 0);
     glRotatef(rotation,0, 0, 1);
     //ofCircle(0, 0, r);
-    ofLine(ofPoint(0, 0), ofPoint(50, 0));
+    //ofLine(ofPoint(0, 0), ofPoint(50, 0));
     ofPopMatrix();
 
     drawGUI();
@@ -484,6 +492,7 @@ void Player::orientToPlanet(int collision) {
     dir.set(normalized_collision_normal);
     float new_rotation = ofRadToDeg(atan2(normalized_collision_normal.y, normalized_collision_normal.x));
     rotation = ofLerp(rotation, new_rotation, planet_orientation_speed * dt);
+    //rotation = new_rotation;
 }
 
 void Player::traversePlanet(bool move_left) {
@@ -493,9 +502,11 @@ void Player::traversePlanet(bool move_left) {
     if (move_left) {
         theta -= speed_on_planet / planet_r * dt;
         if(anim.index!=0) anim = walking;
+        FACING_RIGHT = false;
     } else {
         theta += speed_on_planet / planet_r * dt;
         if(anim.index!=0) anim = walking;
+        FACING_RIGHT = true;
     }
     pos.x = (cos(theta) * (planet_r + r)) + planet_pos.x;
     pos.y = (sin(theta) * (planet_r + r)) + planet_pos.y;
@@ -532,7 +543,7 @@ void Player::chargeJump() {
 }
 
 void Player::jump() {
-    if (jumpStrength < jump_strength_1) {
+    /*if (jumpStrength < jump_strength_1) {
         jumpStrength = 0;
     } else if (jumpStrength <= jump_strength_2) {
         jumpStrength = jump_strength_1;
@@ -540,7 +551,16 @@ void Player::jump() {
         jumpStrength = jump_strength_2;
     } else if (jumpStrength > jump_strength_3) {
         jumpStrength = jump_strength_3;
+    }*/
+
+    if (anim.frame == 1) {
+        jumpStrength = jump_strength_1;
+    } else if (anim.frame == 2) {
+        jumpStrength = jump_strength_2;
+    } else if (anim.frame == 3) {
+        jumpStrength = jump_strength_3;
     }
+
     if (TRAVERSING_PLANET) {
         starting_pos = pos;
         f += jumpStrength;

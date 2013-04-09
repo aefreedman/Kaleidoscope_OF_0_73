@@ -54,14 +54,14 @@ void Comet::draw() {
     ///draw path with points
     ofPolyline line;
     for (int p = 1; p < pathPoints.size(); p++) {
-        ofSetColor(255, 255, 255);
-        ofNoFill();
-        ofCircle(pathPoints[p], 3);
+        //ofSetColor(255, 255, 255);
+        //ofNoFill();
+        //ofCircle(pathPoints[p], 3);
         line.addVertex(pathPoints[p]);
-        ofDrawBitmapString(ofToString(p), pathPoints[p].x + 5, pathPoints[p].y + 5);
+        //ofDrawBitmapString(ofToString(p), pathPoints[p].x + 5, pathPoints[p].y + 5);
     }
     line.close();
-    line.draw();
+   // line.draw();
 
     ///draw comet
     ofFill();

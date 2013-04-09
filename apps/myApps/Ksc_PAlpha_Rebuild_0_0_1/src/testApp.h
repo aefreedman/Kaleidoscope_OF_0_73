@@ -73,6 +73,9 @@ class testApp : public ofBaseApp {
         ofVec3f camera_target;
         ofVec3f camera_target_save;
 
+        int justPressed[100];
+        int wasPressed[];
+
     private:
         int planet_base_m;
         int planet_mass_multiplier;
