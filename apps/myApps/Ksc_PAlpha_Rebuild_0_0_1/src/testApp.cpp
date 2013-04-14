@@ -34,6 +34,7 @@ void testApp::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
+    levelID                         = 4;
 
     LOAD_WITH_SOUND                 = true;
     CONTINUOUS_CAMERA               = true;
@@ -49,8 +50,8 @@ void testApp::setup() {
         loadSound();
         player.loadSound();
     }
-    importLevel(1);
-    gui.push_back(new GUI());
+    importLevel(levelID);
+    //gui.push_back(new GUI());
 }
 
 void testApp::loadSound() {
@@ -729,6 +730,11 @@ void testApp::exportLevel() {
 void testApp::importLevel(int levelID) {
     std::ifstream input(("level_" + ofToString(levelID)).c_str());
     if (input.good()) {
+        vector<Gravitator *>::iterator a = gravitator.begin();
+        for (; a != gravitator.end(); a++) {
+            delete *a;
+            a = gravitator.erase(a);
+        }
         gravitator.clear();
         strandedAstronaut.clear();
         int listSize;
