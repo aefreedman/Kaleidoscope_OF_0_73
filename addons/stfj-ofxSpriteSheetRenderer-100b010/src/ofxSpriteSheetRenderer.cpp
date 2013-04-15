@@ -57,9 +57,11 @@ ofxSpriteSheetRenderer::ofxSpriteSheetRenderer(int _numLayers, int _tilesPerLaye
 
 ofxSpriteSheetRenderer::~ofxSpriteSheetRenderer()
 {
-	if(texture != NULL && textureIsExternal)
+	//if(texture != NULL && textureIsExternal)
+	/// NOTE (Aaron#1#): TEMPORARY. REVERT THIS TO ABOVE.
+    if(texture != NULL)
 		texture->clear();
-	
+
 	if(verts != NULL)
 		delete[] verts;
 	if(coords != NULL)

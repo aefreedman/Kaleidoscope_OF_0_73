@@ -694,6 +694,7 @@ void testApp::exportLevel() {
         if  (input.good()) {
             std::ofstream output(levelName.c_str());
             output << gravitator.size() + strandedAstronaut.size() << std::endl;
+            output << player.starting_pos.x << ' ' << player.starting_pos.y << std::endl;
             for (int i = 0; i < gravitator.size(); i++) {
                 output << gravitator[i]->pos.x << ' '
                 << gravitator[i]->pos.y << ' '
@@ -738,10 +739,11 @@ void testApp::importLevel(int levelID) {
             delete *b;
             b = strandedAstronaut.erase(b);
         }
-        //gravitator.clear();
-        //strandedAstronaut.clear();
         int listSize;
+        float player_start_x, player_start_y;
         input >> listSize;
+        input >> player_start_x >> player_start_y;
+        player.pos.set(player_start_x, player_start_y);
         for(int i = 0; i < listSize; i++) {
             float x, y;
             int r, m, gR, size;
@@ -770,9 +772,9 @@ void testApp::importLevel(int levelID) {
             delete *c;
             c = gui.erase(c);
         }
-        //gui.clear();
         gui.push_back(new GUI());
         levelState = "loaded " + ofToString(levelID) + ".";
+        input.close();
     } else {
         levelState = "That level doesn't exist.";
         gravitator.clear();
