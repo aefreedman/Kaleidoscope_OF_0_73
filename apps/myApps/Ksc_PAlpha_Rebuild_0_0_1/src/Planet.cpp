@@ -11,13 +11,15 @@ Planet::Planet(ofVec2f _pos, int _r, int _gR) : Gravitator(_pos, _r, _gR) {
 }
 
 Planet::~Planet() {
-    //dtor
+    /// NOTE (Aaron#1#): It seems like the planet textures are not leaving memory?
+    delete planetRenderer;
 }
 
 void Planet::setup() {
     habitable = true;
     type = "planet";
     G = 200;
+
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 120); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
 	planetRenderer->loadTexture("ART/rockPlanet.png", 120, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 

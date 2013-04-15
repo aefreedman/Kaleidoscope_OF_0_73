@@ -48,7 +48,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
 }
 
 StrandedAstronaut::~StrandedAstronaut() {
-    //dtor
+    delete nautRenderer;
 }
 
 /// TODO (Aaron#1#): Astronauts should sit and wait for the player, then follow the player when the player gets close enough to it

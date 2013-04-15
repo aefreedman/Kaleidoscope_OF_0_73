@@ -34,9 +34,9 @@ void testApp::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 4;
+    levelID                         = 18;
 
-    LOAD_WITH_SOUND                 = true;
+    LOAD_WITH_SOUND                 = false;
     CONTINUOUS_CAMERA               = true;
 
     ///------------------------------
@@ -51,7 +51,6 @@ void testApp::setup() {
         player.loadSound();
     }
     importLevel(levelID);
-    //gui.push_back(new GUI());
 }
 
 void testApp::loadSound() {
@@ -725,18 +724,22 @@ void testApp::exportLevel() {
     }
 
 }
-/// NOTE (Aaron#9#): Loading levels causes a small memory leak (vectors are only cleared)
 
 void testApp::importLevel(int levelID) {
     std::ifstream input(("level_" + ofToString(levelID)).c_str());
     if (input.good()) {
         vector<Gravitator *>::iterator a = gravitator.begin();
-        for (; a != gravitator.end(); a++) {
+        while (a != gravitator.end()) {
             delete *a;
             a = gravitator.erase(a);
         }
-        gravitator.clear();
-        strandedAstronaut.clear();
+        vector<StrandedAstronaut *>::iterator b = strandedAstronaut.begin();
+        while (b != strandedAstronaut.end()) {
+            delete *b;
+            b = strandedAstronaut.erase(b);
+        }
+        //gravitator.clear();
+        //strandedAstronaut.clear();
         int listSize;
         input >> listSize;
         for(int i = 0; i < listSize; i++) {
@@ -762,7 +765,12 @@ void testApp::importLevel(int levelID) {
                 strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), &gravitator, &strandedAstronaut, &gui));
             }
         }
-        gui.clear();
+        vector<GUI *>::iterator c = gui.begin();
+        while (c != gui.end()) {
+            delete *c;
+            c = gui.erase(c);
+        }
+        //gui.clear();
         gui.push_back(new GUI());
         levelState = "loaded " + ofToString(levelID) + ".";
     } else {
