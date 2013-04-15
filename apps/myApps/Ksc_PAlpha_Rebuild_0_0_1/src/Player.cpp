@@ -299,7 +299,7 @@ void Player::checkState() {
         orientToPlanet(collision);
     }
     if (IN_GRAVITY_WELL && CAN_LAND_ON_PLANET && USING_GRAVITY) {
-        calculateGravity(attractor);
+        //calculateGravity(attractor);
     }
     if (!IN_GRAVITY_WELL) {
         display_g.set(0);
@@ -404,8 +404,25 @@ void Player::detectGravitatorCollisions() {
             CAN_LAND_ON_PLANET      = true;
         }
         if (dist <= (planet_gravity_range + r) * (planet_gravity_range + r)) {
-            attractor               = i;
+            //attractor               = i;
             IN_GRAVITY_WELL         = true;
+            if (USING_GRAVITY && CAN_LAND_ON_PLANET && !TRAVERSING_PLANET) {  /// FIXME (Aaron#1#): Buggy gravity. Pulls you off planets.
+                ofVec2f planet_pos = (*gravitator)[i]->pos;
+                //int planet_size =  (*gravitator)[attractor]->r;
+                int planet_mass = (*gravitator)[i]->m;
+                float planet_G = (*gravitator)[i]->G;
+
+                ofVec2f planet_to_player_normal;
+                planet_to_player_normal.set(planet_pos - pos);
+                ofVec2f sqrDist;
+                sqrDist.set(pos.squareDistance(planet_pos));
+
+                if (SIMPLE_GRAVITY) {
+                    gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
+                } else {
+                    gravity               += planet_G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
+                }
+            }
         }
     }
 }
@@ -482,13 +499,11 @@ void Player::calculateGravity(int attractor) {
     ofVec2f sqrDist;
     sqrDist.set(pos.squareDistance(planet_pos));
 
-    /// NOTE (Aaron#5#): Gravity with mass works, but it seems to make everything way too hard.
     if (SIMPLE_GRAVITY) {
         gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
     } else {
         gravity               += planet_G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
     }
-
 }
 
 void Player::orientToPlanet(int collision) {
@@ -590,7 +605,9 @@ void Player::jetpack(bool JETPACK_FORWARD) {
         }
         if (JETPACK_FORWARD) {
             ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
-            f += VEC_MAGNITUDE;
+            for (int i = 0; i < 5000; i++) {
+                f += VEC_MAGNITUDE / 5000;
+            }
             oxygen -= jetpack_o2_use;
             jetpack_count--;
             CAN_JETPACK = false;
@@ -601,7 +618,9 @@ void Player::jetpack(bool JETPACK_FORWARD) {
             jetpack_count--;
             CAN_JETPACK = false;
         }
+        if (DEBUG_GUI) {
         cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
+        }
         anim = jetpackFull;
         fxJetpackUse.play();
     } else {
