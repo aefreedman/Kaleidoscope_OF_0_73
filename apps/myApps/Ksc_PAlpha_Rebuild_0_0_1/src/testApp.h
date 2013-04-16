@@ -101,5 +101,7 @@ class testApp : public ofBaseApp {
         bool MAP_VIEW;
         bool LOAD_WITH_SOUND;
         bool CONTINUOUS_CAMERA;
+        bool WON_LEVEL;
+        bool LEVEL_HAS_ASTRONAUTS;
 
 };

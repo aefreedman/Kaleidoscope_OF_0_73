@@ -52,7 +52,7 @@ public:
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
-
+    bool IS_DEAD;
     //ofxSpriteSheetRenderer * nautRenderer;
 
 protected:
@@ -68,6 +68,7 @@ private:
 
     int sa_collision;
     float lerp_speed;
+
 
 
 };

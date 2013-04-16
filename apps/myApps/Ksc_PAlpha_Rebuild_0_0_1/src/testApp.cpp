@@ -19,6 +19,7 @@ void testApp::setup() {
     camera_target.set(0, 0, 0);
     CAN_EDIT_LEVEL                  = false;
     CAMERA_SCALING                  = false;
+    WON_LEVEL                       = false;
     default_view_scale              = 1;
     view_scale                      = 1;
     view_scale_target               = 1;
@@ -58,9 +59,7 @@ void testApp::setup() {
     nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
 	nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
-
     ofEnableAlphaBlending(); // turn on alpha blending. important!
-
 
 }
 
@@ -89,9 +88,20 @@ void testApp::update() {
         for (int i = 0; i < strandedAstronaut.size(); i++) {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
+            if (strandedAstronaut[i]->IS_DEAD) {
+                delete strandedAstronaut[i];
+                strandedAstronaut.erase(strandedAstronaut.begin()+i);
+            }
         }
         for (int i = 0; i < gui.size(); i++) {
             gui[i]->update();
+        }
+        if (LEVEL_HAS_ASTRONAUTS && strandedAstronaut.size() == 0) {
+            WON_LEVEL = true;
+        }
+        if (WON_LEVEL) {
+            levelID++;
+            importLevel(levelID);
         }
     }
 
@@ -189,10 +199,18 @@ void testApp::draw() {
         gui[i]->draw();
     }
     for (int i = 0; i < strandedAstronaut.size(); i++) {
-        //strandedAstronaut[i]->draw();
     }
     player.draw();
 
+    ofSetColor(100, 100, 100);
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        ofCircle(50+(25*i) + camera_pos.x, 50 + camera_pos.y, 10);
+    }
+    int x = 1000 + camera_pos.x;
+    int y = 600 + camera_pos.y;
+    float o2_percent = player.oxygen / player.max_oxygen;
+    ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
+    ofRect(ofPoint(x, y), 20, -player.oxygen / 2);
     ofPopMatrix();
 
     ///Draw events that go on top of camera but are not subject to camera go below
@@ -325,7 +343,6 @@ void testApp::draw() {
 
 void testApp::reset() {
     importLevel(levelID);
-    setup();
 }
 
 void testApp::addGravitator() {
@@ -766,6 +783,12 @@ void testApp::importLevel(int levelID) {
         }
         gui.push_back(new GUI());
         levelState = "loaded " + ofToString(levelID) + ".";
+        WON_LEVEL = false;
+        if (strandedAstronaut.size() > 0) {
+            LEVEL_HAS_ASTRONAUTS    = true;
+        } else {
+            LEVEL_HAS_ASTRONAUTS    = false;
+        }
         input.close();
     } else {
         levelState = "That level doesn't exist.";

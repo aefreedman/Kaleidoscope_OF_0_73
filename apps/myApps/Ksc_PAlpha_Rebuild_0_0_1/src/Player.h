@@ -210,7 +210,7 @@ public:
     ofSoundPlayer fxJetpackUse;
     ofSoundPlayer fxAstronautCollect;
     ofSoundPlayer fxAstronautRelease;
-
+    float max_oxygen;
 protected:
 
 
@@ -231,7 +231,7 @@ private:
     float death_timer;
     int jetpack_count;
     int max_jetpack_count;
-    float max_oxygen;
+
     float rotation_timer;
 
     /// TODO (Aaron#1#): discrete jump strength levels

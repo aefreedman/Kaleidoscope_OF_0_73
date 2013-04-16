@@ -36,6 +36,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     //CAN_LAND_ON_PLANET          = true;
     CAN_TALK                    = true;
     DRAW_MESSAGE                = false;
+    IS_DEAD                     = false;
 
     type = "strandedastronaut";
 
@@ -241,7 +242,7 @@ void StrandedAstronaut::detectGravitatorCollisions() {
             collision = i;
             HIT_GRAVITATOR = true;
             if (gravitator_type == "sun") {
-
+                IS_DEAD = true;
             }
         }
         if (dist >= planet_r + (r * 2)) {

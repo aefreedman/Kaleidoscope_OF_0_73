@@ -192,17 +192,7 @@ void Player::draw() {
 }
 
 void Player::drawGUI() {
-    int x = 1000 + camera_pos.x;
-    int y = 600 + camera_pos.y;
-    string gui = "";
-    gui += "O2: " + ofToString(oxygen, 2) + nl;
-    ofSetColor(0, 50, 255);
-    //ofDrawBitmapString(gui, x + camera_pos.x, y + camera_pos.y);
-    ofPushMatrix();
-    float o2_percent = oxygen / max_oxygen;
-    ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
-    ofRect(ofPoint(x, y), 20, -oxygen / 2);
-    ofPopMatrix();
+
 }
 
 void Player::drawDebugGUI() {
