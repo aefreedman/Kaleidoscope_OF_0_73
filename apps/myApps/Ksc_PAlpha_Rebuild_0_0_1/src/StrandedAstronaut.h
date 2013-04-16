@@ -53,7 +53,7 @@ public:
     std::vector<GUI *> *gui;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
 
-    ofxSpriteSheetRenderer * nautRenderer;
+    //ofxSpriteSheetRenderer * nautRenderer;
 
 protected:
 

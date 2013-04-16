@@ -39,8 +39,6 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
 
     type = "strandedastronaut";
 
-    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = floating;
 
@@ -48,7 +46,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
 }
 
 StrandedAstronaut::~StrandedAstronaut() {
-    delete nautRenderer;
+    //delete nautRenderer;
 }
 
 /// TODO (Aaron#1#): Astronauts should sit and wait for the player, then follow the player when the player gets close enough to it
@@ -63,9 +61,8 @@ void StrandedAstronaut::update() {
         displayMessage();
     }
 
-    nautRenderer->clear(); // clear the sheet
-	nautRenderer->update(ofGetElapsedTimeMillis());
-	nautRenderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
+
+	//nautRenderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
     }
 
 }
@@ -210,18 +207,16 @@ string StrandedAstronaut::pickMessage(int messageNumber) {
 }
 
 void StrandedAstronaut::draw() {
-    if (gravitator_type != "sun") {
-        ofNoFill();
-        ofSetColor(255, 255, 255);
-        ofFill();
-        ofPushMatrix();
-        glTranslatef(pos.x, pos.y, 0);
-        glRotatef(rotation,0, 0, 1);
-        //ofCircle(0, 0, r);
-        //ofLine(ofPoint(0, 0), ofPoint(20, 0));
-        ofPopMatrix();
-        nautRenderer->draw();
-    }
+    ofNoFill();
+    ofSetColor(255, 255, 255);
+    ofFill();
+    ofPushMatrix();
+    glTranslatef(pos.x, pos.y, 0);
+    glRotatef(rotation,0, 0, 1);
+    //ofCircle(0, 0, r);
+    //ofLine(ofPoint(0, 0), ofPoint(20, 0));
+    ofPopMatrix();
+
 
 
     if (FOLLOWING_PLAYER) {
