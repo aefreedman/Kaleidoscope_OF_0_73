@@ -9,8 +9,11 @@ public:
     Comet(ofVec2f _pos, int _r);
     Comet(ofVec2f _pos, int _r, vector <ofVec2f> _pathPoints);
 
+    void setup();
     void update();
     void draw();
+
+    void spawnParticle();
 
     //vector <ofVec2f> pathPoints;
 
@@ -18,6 +21,11 @@ public:
     int currentDest;
     ofVec2f dir;
     float vel;
+
+    vector <ofVec3f> ptclPosSize;
+    vector <ofColor> ptclColor;
+    vector <ofVec2f> ptclDir;
+    int spawnTimer;
 
     virtual ~Comet();
 protected:

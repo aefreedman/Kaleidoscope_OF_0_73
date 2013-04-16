@@ -39,8 +39,6 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
 
     type = "strandedastronaut";
 
-    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = floating;
 
@@ -63,9 +61,8 @@ void StrandedAstronaut::update() {
     }
 
 
-    nautRenderer->clear(); // clear the sheet
-	nautRenderer->update(ofGetElapsedTimeMillis());
-	nautRenderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
+
+	//nautRenderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0,rotation, NULL, 255, 255, 255, 255);
 }
 
 void StrandedAstronaut::move() {
@@ -219,7 +216,7 @@ void StrandedAstronaut::draw() {
     //ofCircle(0, 0, r);
     //ofLine(ofPoint(0, 0), ofPoint(20, 0));
     ofPopMatrix();
-    nautRenderer->draw();
+//    nautRenderer->draw();
 
     if (FOLLOWING_PLAYER) {
         ofPushMatrix();

@@ -57,6 +57,9 @@ class testApp : public ofBaseApp {
 
         ofImage background;
 
+        ofxSpriteSheetRenderer * planetRenderer;
+        ofxSpriteSheetRenderer * nautRenderer;
+
         string clickState;
         string levelState;
         string new_gravitator_type;

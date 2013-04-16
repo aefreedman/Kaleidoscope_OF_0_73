@@ -1,34 +1,38 @@
 #include "Comet.h"
 
 Comet::Comet() : Gravitator() {
-    dir.set(0,0);
-    currentDest = 0;
-    vel = 2;
+    setup();
 }
 
 Comet::Comet(ofVec2f _pos, int _r) : Gravitator(_pos, _r) {
     pos                         = _pos;
-    currentDest                 = 0;
-    vel                         = 2;
-    m                           = 0.0;
-    gR                          = 0;
     destination                 = pathPoints[currentDest];
     type                        = "comet";
     pos                         = pathPoints[0];
-    dir.set(0,0);
+
+    setup();
 }
 
 Comet::Comet(ofVec2f _pos, int _r, vector <ofVec2f> _pathPoints) : Gravitator(_pos, _r) {
     pos                         = _pos;
+    pathPoints                  = _pathPoints;
+    destination                 = pathPoints[currentDest];
+    pos                         = pathPoints[0];
+
+    setup();
+}
+
+void Comet::setup(){
+
+    dir.set(0,0);
     currentDest                 = 0;
     vel                         = 2;
     m                           = 0.0;
     gR                          = 0;
-    pathPoints                  = _pathPoints;
-    destination                 = pathPoints[currentDest];
     type                        = "comet";
-    pos                         = pathPoints[0];
-    dir.set(0,0);
+    anim                        = comet;
+    spawnTimer                  = 2;
+
 }
 
 void Comet::update() {
@@ -47,6 +51,27 @@ void Comet::update() {
     dir.normalize();
     pos += dir * vel;
 
+    /*if (spawnTimer > 0){
+        spawnTimer --;
+    } else {
+        spawnParticle();
+        spawnTimer = 2;
+    }
+    if (ptclColor.size() > 1){
+        for (int i = 0;i<ptclColor.size();){
+            ptclPosSize[i].x += ptclDir[i].x;
+            ptclPosSize[i].y += ptclDir[i].y;
+            ptclPosSize[i].z -=.1;
+            if (ptclPosSize[i].z < 0){
+                ptclPosSize.erase(ptclPosSize.begin()+i);
+                ptclColor.erase(ptclColor.begin()+i);
+                ptclDir.erase(ptclDir.begin()+i);
+            } else {
+                i++;
+            }
+        }
+    }*/
+
 }
 
 void Comet::draw() {
@@ -62,11 +87,24 @@ void Comet::draw() {
     }
     line.close();
    // line.draw();
-
     ///draw comet
-    ofFill();
+    /*ofFill();
     ofSetColor(255,20,141);
-    ofCircle(pos,10);
+    ofCircle(pos,10);*/
+
+    /*if (ptclColor.size() > 1){
+        for (int i = 0;i<ptclColor.size();i++){
+            ofSetColor(ptclColor[i]);
+            ofFill();
+            ofRect(ptclPosSize[i].x,ptclPosSize[i].y,ptclPosSize[i].z,ptclPosSize[i].z);
+        }
+    }*/
+}
+
+void Comet::spawnParticle() {
+   /* ptclPosSize.push_back(ofVec3f(ofRandom(pos.x-20,pos.x+20),ofRandom(pos.y-20,pos.y+20),ofRandom(4,10)));
+    ptclColor.push_back(ofColor(169,241,231,ofRandom(150,255)));
+    ptclDir.push_back(dir * .5);*/
 }
 
 Comet::~Comet() {

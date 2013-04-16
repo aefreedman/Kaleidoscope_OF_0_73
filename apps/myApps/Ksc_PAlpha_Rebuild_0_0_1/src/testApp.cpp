@@ -50,6 +50,19 @@ void testApp::setup() {
     }
     importLevel(1);
     gui.push_back(new GUI());
+
+
+
+    planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 256); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
+	planetRenderer->loadTexture("ART/planets.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+
+    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
+	nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+
+
+    ofEnableAlphaBlending(); // turn on alpha blending. important!
+
+
 }
 
 void testApp::loadSound() {
@@ -99,17 +112,28 @@ void testApp::update() {
         CAMERA_SCALING = true;
     }
 
-    // key handling: specifically adding justpressed keys to waspressed.
+    planetRenderer->clear(); // clear the sheet
+	planetRenderer->update(ofGetElapsedTimeMillis());
 
+    nautRenderer->clear(); // clear the sheet
+	nautRenderer->update(ofGetElapsedTimeMillis());
 
-   /* for (int i = 0; i < justPressed.size(); i++){
-        wasPressed[i] = justPressed[i];
+    for(int i = 0;i<gravitator.size();i++){
+    float scaleFactor;
+    if (gravitator[i]->type == "comet"){
+        scaleFactor = 1;
+    } else if (gravitator[i]-> type == "planet"){
+        scaleFactor = 2.0*gravitator[i]->r/120.0;
     }
-    justPressed.clear();
+	planetRenderer->addCenteredTile(&gravitator[i]->anim, gravitator[i]->pos.x, gravitator[i]->pos.y, -1, F_NONE, scaleFactor, 255, 255, 255, 255);
+    }
 
-    for (int i = 0; i < wasPressed.size();i++){
-    cout << wasPressed[]
-    }*/
+    for (int i=0;i<strandedAstronaut.size();i++){
+        float scaleFactor = 1;
+        nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
+    }
+
+
 }
 
 void testApp::moveCamera(string direction) {
@@ -147,6 +171,10 @@ void testApp::draw() {
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255);
+
+    planetRenderer -> draw();
+    nautRenderer -> draw();
+
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
@@ -154,9 +182,10 @@ void testApp::draw() {
         gui[i]->draw();
     }
     for (int i = 0; i < strandedAstronaut.size(); i++) {
-        strandedAstronaut[i]->draw();
+        //strandedAstronaut[i]->draw();
     }
     player.draw();
+
     ofPopMatrix();
 
     ///Draw events that go on top of camera but are not subject to camera go below
@@ -676,8 +705,8 @@ void testApp::exportLevel() {
 void testApp::importLevel(int levelID) {
     std::ifstream input(("level_" + ofToString(levelID)).c_str());
     if (input.good()) {
-        gravitator.clear();
         strandedAstronaut.clear();
+        gravitator.clear();
         int listSize;
         input >> listSize;
         for(int i = 0; i < listSize; i++) {

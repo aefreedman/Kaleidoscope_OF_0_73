@@ -81,8 +81,8 @@ void Player::setup() {
     JETPACK_EMPTY           = false;
     FACING_RIGHT            = true;
 
-    p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
-	p1Renderer->loadTexture("ART/playerSheet2.png", 768, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
+	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     anim = idle;
 
@@ -127,13 +127,13 @@ void Player::update() {
         if(DEATH_ANIMATION){
         //flame_rotation = (-1*v).angle(ofVec2f(0,-1));
         cout << ofToString(flame_rotation) + "/n";
-        p1Renderer->addCenterRotatedTile(&flame, pos.x, pos.y,-1, F_NONE, 1.0, flame_rotation, NULL, 255, 255, 255, 255);
+        p1Renderer->addCenterRotatedTile(&flame, pos.x, pos.y,-1, F_NONE, 2.0, flame_rotation, NULL, 255, 255, 255, 255);
         }
 
         if(FACING_RIGHT){
-        p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_HORIZ, 1.0, player_rotation, NULL, 255, 255, 255, 255);
+        p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_HORIZ, 2.0, player_rotation, NULL, 255, 255, 255, 255);
         } else {
-        p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 1.0, player_rotation, NULL, 255, 255, 255, 255);
+        p1Renderer->addCenterRotatedTile(&anim, pos.x, pos.y,-1, F_NONE, 2.0, player_rotation, NULL, 255, 255, 255, 255);
         }
 }
 
