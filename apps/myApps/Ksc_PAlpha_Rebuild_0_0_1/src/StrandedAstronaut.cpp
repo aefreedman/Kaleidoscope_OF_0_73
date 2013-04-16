@@ -27,13 +27,13 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     dir.set(-1, 0);
 
     FOLLOWING_PLAYER            = false;
-    ON_PLANET                   = false;
+    HIT_GRAVITATOR                   = false;
     IN_GRAVITY_WELL             = false;
     EXITED_GRAVITY_WELL         = false;
     ORIENT_TO_PLANET            = true;
     USING_GRAVITY               = true;
     SIMPLE_GRAVITY              = true;
-    CAN_LAND_ON_PLANET          = true;
+    //CAN_LAND_ON_PLANET          = true;
     CAN_TALK                    = true;
     DRAW_MESSAGE                = false;
 
@@ -102,25 +102,25 @@ void StrandedAstronaut::bounce(int other) {
 }
 
 void StrandedAstronaut::checkState() {
-    if (ON_PLANET) {
+    if (HIT_GRAVITATOR) {
         oxygen = 100.0;
         collisionData(collision);
-    }
-    if (!ON_PLANET) {
-        TRAVERSING_PLANET           = false;
-        oxygen                     -= 4 * dt;
-    }
-    if (ON_PLANET && !TRAVERSING_PLANET) {
-        TRAVERSING_PLANET           = true;
         gravitatorBounce();
     }
-    if (ON_PLANET && CAN_LAND_ON_PLANET) {
-        CAN_LAND_ON_PLANET          = false;
+    if (!HIT_GRAVITATOR) {
+        //TRAVERSING_PLANET           = false;
+        oxygen                     -= 4 * dt;
     }
-    if (ON_PLANET && ORIENT_TO_PLANET) {
+    //if (HIT_GRAVITATOR && !TRAVERSING_PLANET) {
+    //    TRAVERSING_PLANET           = true;
+    //}
+    //if (HIT_GRAVITATOR && CAN_LAND_ON_PLANET) {
+    //    CAN_LAND_ON_PLANET          = false;
+    //}
+    if (HIT_GRAVITATOR && ORIENT_TO_PLANET) {
         orientToPlanet(collision);
     }
-    if (IN_GRAVITY_WELL && CAN_LAND_ON_PLANET && USING_GRAVITY) {
+    if (IN_GRAVITY_WELL && USING_GRAVITY) {
         calculateGravity(attractor);
     }
     if (!IN_GRAVITY_WELL) {
@@ -233,7 +233,7 @@ void StrandedAstronaut::draw() {
 }
 
 void StrandedAstronaut::detectGravitatorCollisions() {
-    ON_PLANET = false;
+    HIT_GRAVITATOR = false;
     IN_GRAVITY_WELL = false;
     EXITED_GRAVITY_WELL = false;
 
@@ -244,13 +244,13 @@ void StrandedAstronaut::detectGravitatorCollisions() {
 
         if (dist <= planet_r + r) {
             collision = i;
-            ON_PLANET = true;
+            HIT_GRAVITATOR = true;
             if (gravitator_type == "sun") {
 
             }
         }
         if (dist >= planet_r + (r * 2)) {
-            CAN_LAND_ON_PLANET = true;
+            //CAN_LAND_ON_PLANET = true;
         }
         if (dist <= planet_gravity_range + r) {
             attractor = i;

@@ -34,10 +34,10 @@ void testApp::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 0;
+    levelID                         = 1;
 
     LOAD_WITH_SOUND                 = true;
-    CONTINUOUS_CAMERA               = true;
+    CONTINUOUS_CAMERA               = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -443,43 +443,25 @@ void testApp::keyPressed(int key) {
                 break;
             }
         }
-        if (player.CAN_JETPACK && !player.TRAVERSING_PLANET && !player.DEATH_ANIMATION) {
+        if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
             player.jetpack(true);
             break;
-        } else if (player.TRAVERSING_PLANET) {
+        } else if (player.TRAVERSE_MODE) {
             player.chargeJump();
-            player.TRAVERSING_PLANET = true;
             break;
         }
     case OF_KEY_DOWN:
         if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
-            //player.jetpack(false);
             break;
         }
         cout << "d";
         break;
     case OF_KEY_LEFT:
-       // justPressed.push_back(OF_KEY_LEFT);
-
-
-        if (player.TRAVERSING_PLANET) {
-            player.traversePlanet(true);
-            //player.ROTATE_LEFT = true;
-            break;
-        } else {
-            player.rotateDirection(true);
-            break;
-        }
-
+        player.ROTATE_LEFT = true;
+        break;
     case OF_KEY_RIGHT:
-        if (player.TRAVERSING_PLANET) {
-            player.traversePlanet(false);
-            //player.ROTATE_RIGHT = true;
-            break;
-        } else {
-            player.rotateDirection(false);
-            break;
-        }
+        player.ROTATE_RIGHT = true;
+        break;
     case 'w':
         if (MAP_VIEW || clickState != "play mode") {
             moveCamera("up");
@@ -489,30 +471,11 @@ void testApp::keyPressed(int key) {
         player.releaseAllAstronauts(true);
         break;
     case 32:
-        if (clickState == "placing gravitators") {
-            if (new_gravitator_type == "") {
-                new_gravitator_type = "planet";
-                break;
-            }
-            if (new_gravitator_type == "planet") {
-                new_gravitator_type = "sun";
-                break;
-            }
-            if (new_gravitator_type == "sun") {
-                new_gravitator_type = "black hole";
-                break;
-            }
-            if (new_gravitator_type == "black hole") {
-                new_gravitator_type = "planet";
-                break;
-            }
-        }
-        if (player.CAN_JETPACK && !player.TRAVERSING_PLANET && !player.DEATH_ANIMATION) {
+        if (player.CAN_JETPACK && !player.HIT_GRAVITATOR && !player.DEATH_ANIMATION) {
             player.jetpack(true);
             break;
-        } else if (player.TRAVERSING_PLANET) {
+        } else if (player.HIT_GRAVITATOR) {
             player.chargeJump();
-            player.TRAVERSING_PLANET = true;
             break;
         }
         break;
@@ -555,7 +518,7 @@ void testApp::keyReleased(int key) {
     case 'd':
         break;
     case OF_KEY_UP:
-        if (player.TRAVERSING_PLANET) {
+        if (player.HIT_GRAVITATOR) {
             player.jump();
             break;
         } else {
@@ -563,7 +526,7 @@ void testApp::keyReleased(int key) {
             break;
         }
     case 32:
-        if (player.TRAVERSING_PLANET) {
+        if (player.TRAVERSE_MODE) {
             player.jump();
             break;
         } else {
@@ -573,9 +536,11 @@ void testApp::keyReleased(int key) {
         break;
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = false;
+        player.anim = idle;
         break;
     case OF_KEY_RIGHT:
-        player.ROTATE_RIGHT = true;
+        player.ROTATE_RIGHT = false;
+        player.anim = idle;
         break;
     }
 

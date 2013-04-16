@@ -53,14 +53,14 @@ public:
     ofVec2f angular_v;
     ofQuaternion orientation;
 
-    bool ON_PLANET;
+    bool HIT_GRAVITATOR;
     bool IN_GRAVITY_WELL;
     bool EXITED_GRAVITY_WELL;
     bool ORIENT_TO_PLANET;
     bool USING_GRAVITY;
     bool SIMPLE_GRAVITY;
-    bool CAN_LAND_ON_PLANET;
-    bool TRAVERSING_PLANET;
+    //bool CAN_LAND_ON_PLANET;
+    //bool TRAVERSING_PLANET;
 
     float G;
     float m;

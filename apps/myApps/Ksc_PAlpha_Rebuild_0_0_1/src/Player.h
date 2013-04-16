@@ -157,7 +157,6 @@ public:
     void orientToPlanet(int collision);
     void rotateDirection(bool rotate_left);
     void traversePlanet(bool move_left);
-    void calculateGravity(int attractor);
     void jetpack(bool JETPACK_FORWARD);
     inline ofQuaternion AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
     void keyPressed(ofKeyEventArgs& args);
@@ -192,10 +191,11 @@ public:
     float v_limit;
 
     bool CAN_JETPACK;
-    bool CAN_LAND_ON_PLANET;
+    bool TRAVERSE_MODE;
+    bool USING_GRAVITY;
+    bool HIT_GRAVITATOR;
     bool OFF_SCREEN_CHECK;
     bool DEBUG_GUI;
-    bool TRAVERSING_PLANET;
     bool OFF_SCREEN;
     bool GOD_MODE;
     bool LEAVING_PLANET;
