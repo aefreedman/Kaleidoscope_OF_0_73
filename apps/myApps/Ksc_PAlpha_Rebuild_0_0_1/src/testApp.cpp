@@ -199,6 +199,7 @@ void testApp::draw() {
         gui[i]->draw();
     }
     for (int i = 0; i < strandedAstronaut.size(); i++) {
+        strandedAstronaut[i]->draw();
     }
     player.draw();
 

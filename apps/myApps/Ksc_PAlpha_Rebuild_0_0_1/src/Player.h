@@ -215,7 +215,6 @@ protected:
 
 
 private:
-    int astronaut_pickup_range;
     int astronaut_drop_range;
     //float G;
     bool DEBUG;

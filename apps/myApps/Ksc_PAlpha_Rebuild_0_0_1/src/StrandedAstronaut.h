@@ -41,19 +41,20 @@ public:
 
     void detectPlayerCollisions();
     void followPlayer();
-    void getPlayerData(ofVec2f _player_pos);
+    void followPlayer(ofVec2f _player_pos);
+    void getPlayerData(ofVec2f _other_pos);
 
     bool FOLLOWING_PLAYER;
     bool CAN_TALK;
 
     string type;
     int id;
+    ofVec2f k;
 
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
     bool IS_DEAD;
-    //ofxSpriteSheetRenderer * nautRenderer;
 
 protected:
 
@@ -63,14 +64,13 @@ private:
     float message_timer;
     int message_delay;
     ofVec2f player_pos;
+    ofVec2f player_v;
 
     bool DRAW_MESSAGE;
 
     int sa_collision;
     float lerp_speed;
-
-
-
+    int astronaut;
 };
 
 #endif // STRANDEDASTRONAUT_H
