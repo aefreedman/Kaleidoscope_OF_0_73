@@ -52,8 +52,8 @@ void testApp::setup() {
     }
     importLevel(levelID);
 
-    planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 256); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	planetRenderer->loadTexture("ART/planets.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 128); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
+	planetRenderer->loadTexture("ART/planets.png", 256, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
 	nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -123,9 +123,11 @@ void testApp::update() {
     for(int i = 0;i<gravitator.size();i++){
     float scaleFactor;
     if (gravitator[i]->type == "comet"){
-        scaleFactor = 1;
+        scaleFactor = 2;
     } else if (gravitator[i]-> type == "planet"){
-        scaleFactor = 2.0*gravitator[i]->r/120.0;
+        scaleFactor = 4.0*gravitator[i]->r/120.0;
+    } else if (gravitator[i]->type == "sun"){
+        scaleFactor = 2 * gravitator[i]->r/128.0;
     }
 	planetRenderer->addCenteredTile(&gravitator[i]->anim, gravitator[i]->pos.x, gravitator[i]->pos.y, -1, F_NONE, scaleFactor, 255, 255, 255, 255);
     }
@@ -172,15 +174,42 @@ void testApp::draw() {
     background.draw(camera_pos);
     ofPopMatrix();
 
+    ofPushMatrix();
+    ofTranslate(camera_target);
+    //ofRotate(50, 0, 0, 1);
+    ofScale(view_scale, view_scale, 1);
+    ofSetColor(255,255,255,50);
+    for (int i = 0; i < 30; i++){
+        ofPolyline line;
+        line.addVertex(1280*i,0);
+        line.addVertex(1280*i,8000);
+        line.draw();
+    }
+    for (int i = 0; i< 30;i++){
+        ofPolyline line;
+        line.addVertex(0,720*i);
+        line.addVertex(8000,720*i);
+        line.draw();
+    }
+    ofPopMatrix();
+
+
+
     ///Draw events that should be subject to camera go below
     ofPushMatrix();
     ofTranslate(-camera_pos);
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
+
+
+
     ofSetColor(255,255,255);
 
     planetRenderer -> draw();
     nautRenderer -> draw();
+
+
+
 
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
@@ -189,7 +218,6 @@ void testApp::draw() {
         gui[i]->draw();
     }
     for (int i = 0; i < strandedAstronaut.size(); i++) {
-        //strandedAstronaut[i]->draw();
     }
     player.draw();
 
@@ -267,6 +295,7 @@ void testApp::draw() {
         ofDrawBitmapString(top_text, 1, 10);
         ofPopMatrix();
     }
+
 
 
     ///FLOATING MOUSE TEXT ----------------------------------

@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;src\GRAVITATOR\;src\ASTRONAUT\;src\DECOR\;src\SHELL\;src\SHELL\GUI\;addons\ofxSpriteSheetRenderer\;addons\ofxSpriteSheetRenderer\src\;addons\ofxSpriteSheetRenderer\utils\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxVectorGraphics\libs\;addons\ofxVectorGraphics\src\;addons\ofxXmlSettings\libs\;addons\ofxXmlSettings\src\;src\GRAVITATOR\;src\ASTRONAUT\;src\DECOR\;src\SHELL\;src\SHELL\GUI\;addons\ofxSpriteSheetRenderer\;addons\ofxSpriteSheetRenderer\src\;addons\ofxSpriteSheetRenderer\utils\;src\SCREENS\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin\$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -114,6 +114,18 @@
 			<Add after='cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;' />
 			<Mode after="always" />
 		</ExtraCommands>
+		<Unit filename="..\..\..\GameScreen.cpp">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="..\..\..\GameScreen.h">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="..\..\..\Screen.cpp">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="..\..\..\Screen.h">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
 		<Unit filename="..\..\..\addons\ofxVectorGraphics\libs\CreEPS.cpp">
 			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
 		</Unit>
