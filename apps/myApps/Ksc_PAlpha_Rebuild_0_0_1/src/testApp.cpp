@@ -37,8 +37,8 @@ void testApp::setup() {
     map_view_scale_target           = .25;
     levelID                         = 1;
 
-    LOAD_WITH_SOUND                 = true;
-    CONTINUOUS_CAMERA               = false;
+    LOAD_WITH_SOUND                 = false;
+    CONTINUOUS_CAMERA               = true;
 
     ///------------------------------
     /// DON'T CHANGE THESE

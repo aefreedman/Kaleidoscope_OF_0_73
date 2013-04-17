@@ -76,7 +76,6 @@ public:
     int attractor;
 
     animation_t anim;
-    bool HAVE_ASTRONAUT;
 protected:
 
     ofVec2f planet_pos;
@@ -87,6 +86,7 @@ protected:
     float planet_r;
     string gravitator_type;
     int astronaut_pickup_range;
+    int astronaut_drop_range;
     int spring_strength;
 
 private:

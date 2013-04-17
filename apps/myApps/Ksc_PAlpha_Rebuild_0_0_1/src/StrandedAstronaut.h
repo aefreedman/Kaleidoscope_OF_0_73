@@ -45,6 +45,8 @@ public:
     void getPlayerData(ofVec2f _other_pos);
 
     bool FOLLOWING_PLAYER;
+    bool FOLLOWING_ASTRONAUT;
+    bool THE_END;
     bool CAN_TALK;
 
     string type;
@@ -71,6 +73,7 @@ private:
     int sa_collision;
     float lerp_speed;
     int astronaut;
+    int spring_spacing;
 };
 
 #endif // STRANDEDASTRONAUT_H

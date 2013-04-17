@@ -204,6 +204,7 @@ public:
     bool FACING_RIGHT;
     bool ROTATE_LEFT;
     bool ROTATE_RIGHT;
+    bool HAVE_ASTRONAUT;
 
     ofSoundPlayer fxDeath;
     ofSoundPlayer fxJetpackEmpty;
@@ -215,7 +216,6 @@ protected:
 
 
 private:
-    int astronaut_drop_range;
     //float G;
     bool DEBUG;
     int off_screen_limit;

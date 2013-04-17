@@ -10,9 +10,9 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
 StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     pos                         = _pos;
     r                           = 20;
-    m                           = 1.0;
+    m                           = 1.5;
     rotation                    = 180;
-    damp                        = 0.95;
+    damp                        = 0.97;
     restitution                 = 0.01;
     oxygen                      = 100;
     message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
@@ -20,8 +20,10 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     message_display_chance      = 7;                        ///larger number makes random delay between messages higher
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
-    spring_strength             = 500;
+    spring_strength             = 4000;
     astronaut                   = 0;
+    astronaut_drop_range        = 200;
+    spring_spacing              = 40;
 
 
     a.set(0, 0);
@@ -30,6 +32,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     k.set(spring_strength, spring_strength);
 
     FOLLOWING_PLAYER            = false;
+    FOLLOWING_ASTRONAUT         = false;
     HIT_GRAVITATOR                   = false;
     IN_GRAVITY_WELL             = false;
     EXITED_GRAVITY_WELL         = false;
@@ -40,7 +43,6 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     CAN_TALK                    = true;
     DRAW_MESSAGE                = false;
     IS_DEAD                     = false;
-    HAVE_ASTRONAUT              = false;
 
     type = "strandedastronaut";
 
@@ -69,8 +71,8 @@ void StrandedAstronaut::move() {
     if (FOLLOWING_PLAYER) {
         followPlayer(player_pos);
     }
-    if (HAVE_ASTRONAUT) {
-            followPlayer((*strandedAstronaut)[astronaut]->pos);
+    if (FOLLOWING_ASTRONAUT) {
+        followPlayer((*strandedAstronaut)[astronaut]->pos);
     }
 
     a  = (f / m) * dt;
@@ -115,7 +117,7 @@ void StrandedAstronaut::checkState() {
     }
     if (!IN_GRAVITY_WELL) {
     }
-    if (HAVE_ASTRONAUT) {
+    if (FOLLOWING_ASTRONAUT) {
         getPlayerData((*strandedAstronaut)[astronaut]->pos);
     }
 }
@@ -212,7 +214,7 @@ void StrandedAstronaut::draw() {
     ofPopMatrix();
     */
 
-    if (FOLLOWING_PLAYER || HAVE_ASTRONAUT) {
+    if (FOLLOWING_PLAYER || FOLLOWING_ASTRONAUT) {
         ofPushMatrix();
         ofSetColor(255, 0, 0, 200);
         ofLine(pos, player_pos);
@@ -294,9 +296,11 @@ void StrandedAstronaut::followPlayer() {
 void StrandedAstronaut::followPlayer(ofVec2f _player_pos) {
     ofVec2f normal;
     normal.set(pos - _player_pos);
-    normal.scale(0.9 * normal.length());
-    //f += -k * (pos - _player_pos);
-    f += -k * (normal);
+    if (normal.length() < spring_spacing) {
+        f += k * (normal);
+    } else {
+        f += -k * (normal);
+    }
 }
 
 void StrandedAstronaut::getPlayerData(ofVec2f _other_pos) {
@@ -305,19 +309,32 @@ void StrandedAstronaut::getPlayerData(ofVec2f _other_pos) {
 
 void StrandedAstronaut::detectPlayerCollisions() {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
-        if (id != i) {
             ofVec2f other_pos;
-            other_pos = (*strandedAstronaut)[i]->pos;
-            float dist = pos.squareDistance(other_pos);
-            float other_r = (*strandedAstronaut)[i]->r;
-            if (dist < (r + other_r) * (r + other_r)) {
+            other_pos               = (*strandedAstronaut)[i]->pos;
+            float dist              = pos.squareDistance(other_pos);
+            if (dist > 0) {
+                float other_r           = (*strandedAstronaut)[i]->r;
+                float pickup_range      = (r + other_r + astronaut_pickup_range) * (r + other_r + astronaut_pickup_range);
+                float drop_range        = (r + other_r + astronaut_drop_range) * (r + other_r + astronaut_drop_range);
+                float collision_range   = (r + other_r) * (r + other_r);
+            if (dist < collision_range) {
                 //bounce(i);
                 //v *= -1;
             }
-            if (!FOLLOWING_PLAYER && dist < (r + other_r + astronaut_pickup_range) * (r + other_r + astronaut_pickup_range)) {
-                //FOLLOWING_PLAYER = true;
-                HAVE_ASTRONAUT = true;
-                astronaut = i;
+            if (dist < pickup_range) {
+                if (FOLLOWING_PLAYER) {
+
+                } else if (!FOLLOWING_PLAYER) {
+                    if (FOLLOWING_ASTRONAUT) {
+
+                    }
+                    if (!FOLLOWING_ASTRONAUT && (*strandedAstronaut)[i]->THE_END) {
+                        (*strandedAstronaut)[i]->THE_END = false;
+                        THE_END = true;
+                        FOLLOWING_ASTRONAUT = true;
+                        astronaut = i;
+                    }
+                }
             }
         }
     }
