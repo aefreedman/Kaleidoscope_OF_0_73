@@ -28,11 +28,11 @@ public:
     void move();
     void checkState();
     void bounce(int other);
+    void gravitatorBounce();
 
     void detectGravitatorCollisions();
     void collisionData(int collision);
     void orientToPlanet(int collision);
-    void calculateGravity(int attractor);
     void displayMessage();
     void displayMessage(int messageNumber);
     bool displayMessageTimer();

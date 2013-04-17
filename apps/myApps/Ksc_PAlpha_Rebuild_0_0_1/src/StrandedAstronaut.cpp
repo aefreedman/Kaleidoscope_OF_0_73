@@ -13,7 +13,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     m                           = 1.5;
     rotation                    = 180;
     damp                        = 0.97;
-    restitution                 = 0.01;
+    restitution                 = 0.8;
     oxygen                      = 100;
     message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
     message_delay               = 20;                       ///Minimum delay between messages
@@ -24,7 +24,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     astronaut                   = 0;
     astronaut_drop_range        = 200;
     spring_spacing              = 40;
-
+    v_limit                     = 1200.0;
 
     a.set(0, 0);
     f.set(0, 0);
@@ -39,7 +39,6 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     ORIENT_TO_PLANET            = true;
     USING_GRAVITY               = true;
     SIMPLE_GRAVITY              = true;
-    //CAN_LAND_ON_PLANET          = true;
     CAN_TALK                    = true;
     DRAW_MESSAGE                = false;
     IS_DEAD                     = false;
@@ -79,6 +78,10 @@ void StrandedAstronaut::move() {
     //v += dir * a * dt;
     v += a * dt;
     v += gravity * dt;
+    if (v.length() > v_limit) {
+        v.scale(v_limit);
+    }
+
     v *= damp;
     pos += v * dt;
 
@@ -91,6 +94,7 @@ void StrandedAstronaut::bounce(int other) {
     ofVec2f other_v = (*strandedAstronaut)[other]->v;
     float other_mass = (*strandedAstronaut)[other]->m;
     ofVec2f sa_normal = pos - other_pos;
+    sa_normal.normalize();
     float a1 = v.dot(sa_normal);
     float a2 = other_v.dot(sa_normal);
     float optimizedP = (2.0 * (a1 - a2)) / (m + other_mass);
@@ -99,21 +103,17 @@ void StrandedAstronaut::bounce(int other) {
     ofVec2f v2_prime = other_v + optimizedP * m * sa_normal;
 
     v.set(v1_prime * restitution);
-    //(*strandedAstronaut)[other]->v.set(v2_prime * restitution);
+    (*strandedAstronaut)[other]->v.set(v2_prime * restitution);
 }
 
 void StrandedAstronaut::checkState() {
     if (HIT_GRAVITATOR) {
-        collisionData(collision);
-        gravitatorBounce();
     }
     if (!HIT_GRAVITATOR) {
     }
     if (HIT_GRAVITATOR && ORIENT_TO_PLANET) {
-        orientToPlanet(collision);
     }
     if (IN_GRAVITY_WELL && USING_GRAVITY) {
-        calculateGravity(attractor);
     }
     if (!IN_GRAVITY_WELL) {
     }
@@ -223,30 +223,52 @@ void StrandedAstronaut::draw() {
 }
 
 void StrandedAstronaut::detectGravitatorCollisions() {
-    HIT_GRAVITATOR = false;
-    IN_GRAVITY_WELL = false;
-    EXITED_GRAVITY_WELL = false;
-
     for (int i = 0; i < gravitator->size(); i++) {
-        float dist                = pos.distance((*gravitator)[i]->pos);
-        int planet_r              = (*gravitator)[i]->r;
-        int planet_gravity_range  = (*gravitator)[i]->gR;
+        ofVec2f planet_pos          = (*gravitator)[i]->pos;
+        float dist                  = pos.squareDistance((*gravitator)[i]->pos);
+        string gravitator_type      = (*gravitator)[i]->type;
+        int planet_r                = (*gravitator)[i]->r;
+        int planet_gravity_range    = (*gravitator)[i]->gR;
+        int planet_mass             = (*gravitator)[i]->m;
+        float planet_G              = (*gravitator)[i]->G;
+        ofVec2f planet_to_player_normal;
+        planet_to_player_normal.set(planet_pos - pos);
+        float collision_range       = (planet_r + r) * (planet_r + r);
+        float gravity_range         = (planet_gravity_range + r) * (planet_gravity_range + r);
 
-        if (dist <= planet_r + r) {
-            collision = i;
-            HIT_GRAVITATOR = true;
-            if (gravitator_type == "sun") {
+        if (dist <= collision_range) {
+            collision               = i;
+            collisionData(i);
+            if (gravitator_type == "planet") {
+                gravitatorBounce();
+            }
+           if (gravitator_type != "planet") {
                 IS_DEAD = true;
             }
+            HIT_GRAVITATOR          = true;
         }
-        if (dist >= planet_r + (r * 2)) {
-            //CAN_LAND_ON_PLANET = true;
+        if (dist > collision_range) {
+
         }
-        if (dist <= planet_gravity_range + r) {
-            attractor = i;
-            IN_GRAVITY_WELL = true;
+        if (dist < gravity_range && USING_GRAVITY) {
+            if (SIMPLE_GRAVITY) {
+                gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
+            } else {
+                gravity               += planet_G * (m * planet_mass) / (dist) * planet_to_player_normal.normalized();
+            }
         }
     }
+}
+
+void StrandedAstronaut::gravitatorBounce() {
+    if (v.length() < 0.05) {
+        //v.set(0, 0);
+    }
+    float a1 = v.dot(normalized_collision_normal);
+    float optimizedP = (2.0 * a1) / (m + planet_m);
+    ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
+    v_prime *= restitution;
+    v.set(v_prime);
 }
 
 void StrandedAstronaut::collisionData(int collision) {
@@ -259,25 +281,6 @@ void StrandedAstronaut::collisionData(int collision) {
     left                                = collision_perpendicular;
     right                               = -collision_perpendicular;
     gravitator_type                     = (*gravitator)[collision]->type;
-}
-
-void StrandedAstronaut::calculateGravity(int attractor) {
-    ofVec2f planet_pos = (*gravitator)[attractor]->pos;
-    int planet_gravity_range = (*gravitator)[attractor]->gR;
-    int planet_size =  (*gravitator)[attractor]->r;
-    int planet_mass = (*gravitator)[attractor]->m;
-    float planet_G = (*gravitator)[attractor]->G;
-
-    ofVec2f planet_to_player_normal;
-    planet_to_player_normal.set(planet_pos - pos);
-    ofVec2f sqrDist;
-    sqrDist.set(pos.squareDistance(planet_pos));
-
-    if (SIMPLE_GRAVITY) {
-        gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
-    } else {
-        gravity               += planet_G * (m * planet_mass) / (sqrDist) * planet_to_player_normal.normalized();
-    }
 }
 
 void StrandedAstronaut::orientToPlanet(int collision) {
@@ -318,8 +321,7 @@ void StrandedAstronaut::detectPlayerCollisions() {
                 float drop_range        = (r + other_r + astronaut_drop_range) * (r + other_r + astronaut_drop_range);
                 float collision_range   = (r + other_r) * (r + other_r);
             if (dist < collision_range) {
-                //bounce(i);
-                //v *= -1;
+                bounce(i);
             }
             if (dist < pickup_range) {
                 if (FOLLOWING_PLAYER) {

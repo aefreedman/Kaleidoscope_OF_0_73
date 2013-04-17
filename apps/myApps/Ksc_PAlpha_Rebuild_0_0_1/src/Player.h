@@ -166,6 +166,7 @@ public:
     void displayMessage(ofVec2f _pos, string text, ofColor background_color, ofColor foreground_color);
     void soundPlayer(string sound);
     void loadSound();
+    float countdownTimer(float time);
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
@@ -205,6 +206,8 @@ public:
     bool ROTATE_LEFT;
     bool ROTATE_RIGHT;
     bool HAVE_ASTRONAUT;
+    bool CAN_HIT_ASTRONAUTS;
+    bool CAN_PICKUP_ASTRONAUTS;
 
     ofSoundPlayer fxDeath;
     ofSoundPlayer fxJetpackEmpty;
@@ -212,6 +215,8 @@ public:
     ofSoundPlayer fxAstronautCollect;
     ofSoundPlayer fxAstronautRelease;
     float max_oxygen;
+    float astronaut_release_timer;
+    float astronaut_pickup_delay;
 protected:
 
 

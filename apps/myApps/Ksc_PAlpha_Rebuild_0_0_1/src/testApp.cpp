@@ -513,16 +513,9 @@ void testApp::keyPressed(int key) {
         }
         break;
     case 'x':
-        player.releaseAllAstronauts(true);
         break;
     case 32:
-        if (player.CAN_JETPACK && !player.HIT_GRAVITATOR && !player.DEATH_ANIMATION) {
-            player.jetpack(true);
-            break;
-        } else if (player.HIT_GRAVITATOR) {
-            player.chargeJump();
-            break;
-        }
+        player.releaseAllAstronauts(true);
         break;
     case '=':
         player.damp += 0.01;
