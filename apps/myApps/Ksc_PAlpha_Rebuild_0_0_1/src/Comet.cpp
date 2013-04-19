@@ -1,4 +1,5 @@
 #include "Comet.h"
+#define dt 1.0/60.0
 
 Comet::Comet() : Gravitator() {
     setup();
@@ -20,21 +21,31 @@ Comet::Comet(ofVec2f _pos, int _r, vector <ofVec2f> _pathPoints) : Gravitator(_p
     pathPoints                  = _pathPoints;
     destination                 = pathPoints[currentDest];
     pos                         = pathPoints[0];
-
-
 }
 
 void Comet::setup(){
 
     dir.set(0,0);
     currentDest                 = 0;
-    vel                         = 2;
+    vel                         = 1.5;
     m                           = 0.0;
     gR                          = 0;
+    r                           = 20;
     type                        = "comet";
     anim                        = comet;
-    spawnTimer                  = 2;
-
+    spawnTimer_init             = 0.001;                /// This needs to be a multiple of 0.0166r
+    spawnTimer                  = spawnTimer_init;
+    particle_max_size           = 5.0;
+    particle_min_size           = 1.0;
+    particle_pos_range          = 18.0;
+    particle_fade_rate          = 2.0 / dt;
+    particle_v                  = -vel / 4;
+    particles_per_frame         = 15;
+    cometColor.r                = 169;
+    cometColor.g                = 241;
+    cometColor.b                = 231;
+    cometColor_a_min            = 150;
+    cometColor_a_max            = 255;
 }
 
 void Comet::update() {
@@ -54,16 +65,18 @@ void Comet::update() {
     pos += dir * vel;
 
     if (spawnTimer > 0){
-        spawnTimer --;
+        spawnTimer -= dt;
     } else {
-        spawnParticle();
-        spawnTimer = 2;
+        for (int i = 0; i < particles_per_frame; i++) {
+            spawnParticle();
+        }
+        spawnTimer = spawnTimer_init;
     }
     if (ptclColor.size() > 1){
         for (int i = 0;i<ptclColor.size();){
             ptclPosSize[i].x += ptclDir[i].x;
             ptclPosSize[i].y += ptclDir[i].y;
-            ptclPosSize[i].z -=.1;
+            ptclPosSize[i].z -= particle_fade_rate;
             if (ptclPosSize[i].z < 0){
                 ptclPosSize.erase(ptclPosSize.begin()+i);
                 ptclColor.erase(ptclColor.begin()+i);
@@ -77,7 +90,13 @@ void Comet::update() {
 }
 
 void Comet::draw() {
-
+    if (ptclColor.size() > 1){
+        for (int i = 0;i<ptclColor.size();i++){
+            ofSetColor(ptclColor[i]);
+            ofFill();
+            ofRect(ptclPosSize[i].x,ptclPosSize[i].y,ptclPosSize[i].z,ptclPosSize[i].z);
+        }
+    }
     ///draw path with points
     ofPolyline line;
     for (int p = 1; p < pathPoints.size(); p++) {
@@ -94,19 +113,14 @@ void Comet::draw() {
     ofSetColor(255,20,141);
     ofCircle(pos,10);*/
 
-    if (ptclColor.size() > 1){
-        for (int i = 0;i<ptclColor.size();i++){
-            ofSetColor(ptclColor[i]);
-            ofFill();
-            ofRect(ptclPosSize[i].x,ptclPosSize[i].y,ptclPosSize[i].z,ptclPosSize[i].z);
-        }
-    }
+
 }
 
 void Comet::spawnParticle() {
-    ptclPosSize.push_back(ofVec3f(ofRandom(pos.x-20,pos.x+20),ofRandom(pos.y-20,pos.y+20),ofRandom(4,10)));
-    ptclColor.push_back(ofColor(169,241,231,ofRandom(150,255)));
-    ptclDir.push_back(dir * .5);
+    cometColor.a = ofRandom(cometColor_a_min, cometColor_a_max);
+    ptclPosSize.push_back(ofVec3f(ofRandom(pos.x - particle_pos_range, pos.x + particle_pos_range), ofRandom(pos.y - particle_pos_range, pos.y + particle_pos_range), ofRandom(particle_min_size , particle_max_size)));
+    ptclColor.push_back(cometColor);
+    ptclDir.push_back(dir * particle_v);
 }
 
 Comet::~Comet() {

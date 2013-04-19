@@ -10,21 +10,21 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
 StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     pos                         = _pos;
     r                           = 20;
-    m                           = 1.5;
+    m                           = 0.5;
     rotation                    = 180;
     damp                        = 0.97;
-    restitution                 = 0.8;
+    restitution                 = 0.5;
     oxygen                      = 100;
     message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
     message_delay               = 20;                       ///Minimum delay between messages
     message_display_chance      = 7;                        ///larger number makes random delay between messages higher
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
-    spring_strength             = 4000;
+    spring_strength             = 3000;
     astronaut                   = 0;
     astronaut_drop_range        = 200;
     spring_spacing              = 40;
-    v_limit                     = 1200.0;
+    v_limit                     = 600.0;
 
     a.set(0, 0);
     f.set(0, 0);
@@ -33,7 +33,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
 
     FOLLOWING_PLAYER            = false;
     FOLLOWING_ASTRONAUT         = false;
-    HIT_GRAVITATOR                   = false;
+    HIT_GRAVITATOR              = false;
     IN_GRAVITY_WELL             = false;
     EXITED_GRAVITY_WELL         = false;
     ORIENT_TO_PLANET            = true;
@@ -42,6 +42,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     CAN_TALK                    = true;
     DRAW_MESSAGE                = false;
     IS_DEAD                     = false;
+    THE_END                     = false;
 
     type = "strandedastronaut";
 

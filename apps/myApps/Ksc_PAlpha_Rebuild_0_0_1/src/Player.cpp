@@ -57,9 +57,9 @@ void Player::setup() {
     off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
     rotation_speed          = 4.0;          /// This is the speed of your rotation in space
     speed_on_planet         = 150.0;
-    jetpack_power           = 300000.0;
+    jetpack_power           = 400000.0;
     jump_multiplier         = 30.0;
-    jetpack_o2_use          = (max_oxygen / 50) - 1;
+    jetpack_o2_use          = (max_oxygen / 30) - 1;
     astronaut_pickup_range  = 50;
     astronaut_drop_range    = 200;
     jetpack_count           = 99999;
@@ -69,8 +69,8 @@ void Player::setup() {
     camera_move_delay       = 0.25;
     death_timer             = 0.5;
     flame_rotation          = 0;
-    v_limit                 = 1000.0;
-    astronaut_pickup_delay  = 0.5;
+    v_limit                 = 400.0;
+    astronaut_pickup_delay  = 1.0;
 
     HIT_GRAVITATOR          = false;
     TRAVERSE_MODE           = false;
@@ -99,14 +99,18 @@ void Player::setup() {
 void Player::loadSound() {
     fxDeath.loadSound("AUDIO/ksc_AUDIO_astronaut_death_002.wav");
     fxJetpackEmpty.loadSound("AUDIO/ksc_AUDIO_player_jetout_001.wav");
-    fxJetpackUse.loadSound("AUDIO/ksc_AUDIO_player_usejet_001.wav");
+    fxJetpackUse.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");
+    fxRotate.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");
     fxAstronautCollect.loadSound("AUDIO/ksc_AUDIO_astro_pickup_001.wav");
     fxAstronautRelease.loadSound("AUDIO/ksc_AUDIO_astronaut_death_001.wav");
+    fxJump.loadSound("AUDIO/ksc_AUDIO_jumpsound_001f.wav");
 
     fxDeath.setVolume(0.75);
-    fxJetpackUse.setVolume(.75);
-    fxAstronautCollect.setVolume(.5);
-    fxAstronautRelease.setVolume(.5);
+    fxJump.setVolume(0.3);
+    fxJetpackUse.setVolume(.55);
+    fxAstronautCollect.setVolume(.75);
+    fxAstronautRelease.setVolume(.75);
+    fxRotate.setVolume(0.1);
 }
 
 void Player::update() {
@@ -379,9 +383,9 @@ void Player::detectAstronautCollisions() {
         }
         if (CAN_PICKUP_ASTRONAUTS) {
             if (!HAVE_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER && dist <= pickup_range) {
-                (*strandedAstronaut)[i]->FOLLOWING_PLAYER            = true;
-                (*strandedAstronaut)[i]->THE_END                     = true;
-                HAVE_ASTRONAUT              = true;
+                (*strandedAstronaut)[i]->FOLLOWING_PLAYER               = true;
+                (*strandedAstronaut)[i]->THE_END                        = true;
+                HAVE_ASTRONAUT                                          = true;
                 fxAstronautCollect.play();
                 if (DEBUG_GUI) {
                     cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
@@ -394,6 +398,18 @@ void Player::detectAstronautCollisions() {
             if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
                 (*strandedAstronaut)[i]->getPlayerData(pos);
                 HAVE_ASTRONAUT              = true;
+            }
+            if (HAVE_ASTRONAUT) {
+                if (dist <= pickup_range && !(*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+                    for (int j = 0; j < strandedAstronaut->size(); j++) {
+                        if ((*strandedAstronaut)[j]->THE_END) {
+                            (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = true;
+                            (*strandedAstronaut)[i]->astronaut = j;
+                            (*strandedAstronaut)[j]->THE_END = false;
+                            (*strandedAstronaut)[i]->THE_END = true;
+                        }
+                    }
+                }
             }
         }
     }
@@ -603,11 +619,13 @@ void Player::jump() {
     }
 
     if (TRAVERSE_MODE) {
+        fxJump.play();
         starting_pos = pos;
         f += jumpStrength;
         LEAVING_PLANET = true;
         anim = lift;
         jump_timer = 0.1;
+
         if (DEBUG_GUI) {
             cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;
         }

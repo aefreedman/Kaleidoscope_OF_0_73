@@ -35,10 +35,10 @@ void testApp::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 1;
+    levelID                         = 6;
 
-    LOAD_WITH_SOUND                 = false;
-    CONTINUOUS_CAMERA               = true;
+    LOAD_WITH_SOUND                 = true;
+    CONTINUOUS_CAMERA               = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -54,10 +54,10 @@ void testApp::setup() {
     importLevel(levelID);
 
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 256); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	planetRenderer->loadTexture("ART/planets.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    planetRenderer->loadTexture("ART/planets.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     ofEnableAlphaBlending(); // turn on alpha blending. important!
 
@@ -66,11 +66,13 @@ void testApp::setup() {
 void testApp::loadSound() {
     jupiterSound.loadSound("AUDIO/ksc_AUDIO_background_music_001.mp3");
     jupiterSound.setLoop(true);
+    jupiterSound.setVolume(0.3);
     jupiterSound.play();
     backgroundSound.loadSound("AUDIO/background.wav");
     backgroundSound.setLoop(true);
-    backgroundSound.setVolume(0.35);
+    backgroundSound.setVolume(0.25);
     backgroundSound.play();
+
 }
 
 //--------------------------------------------------------------
@@ -125,22 +127,30 @@ void testApp::update() {
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
     planetRenderer->clear(); // clear the sheet
-	planetRenderer->update(ofGetElapsedTimeMillis());
+    planetRenderer->update(ofGetElapsedTimeMillis());
 
     nautRenderer->clear(); // clear the sheet
-	nautRenderer->update(ofGetElapsedTimeMillis());
+    nautRenderer->update(ofGetElapsedTimeMillis());
 
-    for(int i = 0;i<gravitator.size();i++){
-    float scaleFactor;
-    if (gravitator[i]->type == "comet"){
-        scaleFactor = 1;
-    } else if (gravitator[i]-> type == "planet"){
-        scaleFactor = 2.0*gravitator[i]->r/120.0;
-    }
-	planetRenderer->addCenteredTile(&gravitator[i]->anim, gravitator[i]->pos.x, gravitator[i]->pos.y, -1, F_NONE, scaleFactor, 255, 255, 255, 255);
+    for(int i = 0; i<gravitator.size(); i++) {
+        float scaleFactor;
+        if (gravitator[i]->type == "comet") {
+            scaleFactor = 1;
+            planetRenderer->addCenteredTile(&gravitator[i]->anim, gravitator[i]->pos.x, gravitator[i]->pos.y, -1, F_NONE, scaleFactor, 255, 255, 255, 255);
+
+        } else if (gravitator[i]-> type == "planet") {
+            scaleFactor = 2.0*gravitator[i]->r/120.0;
+            planetRenderer->addCenteredTile(&gravitator[i]->anim, gravitator[i]->pos.x, gravitator[i]->pos.y, -1, F_NONE, scaleFactor, 255, 255, 255, 255);
+
+        } else if (gravitator[i]->type == "sun") {
+
+        } else if (gravitator[i]->type == "blackhole") {
+
+        }
+
     }
 
-    for (int i=0;i<strandedAstronaut.size();i++){
+    for (int i=0; i<strandedAstronaut.size(); i++) {
         float scaleFactor = 1;
         nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
@@ -202,17 +212,19 @@ void testApp::draw() {
         strandedAstronaut[i]->draw();
     }
     player.draw();
-
-    ofSetColor(100, 100, 100);
-    for (int i = 0; i < strandedAstronaut.size(); i++) {
-        ofCircle(50+(25*i) + camera_pos.x, 50 + camera_pos.y, 10);
+    if (!MAP_VIEW) {
+        ofSetColor(100, 100, 100);
+        for (int i = 0; i < strandedAstronaut.size(); i++) {
+            ofCircle(50+(25*i) + camera_pos.x, 50 + camera_pos.y, 10);
+        }
+        int x = 1000 + camera_pos.x;
+        int y = 600 + camera_pos.y;
+        float o2_percent = player.oxygen / player.max_oxygen;
+        ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
+        ofRect(ofPoint(x, y), 20, -player.oxygen / 2);
+        ofPopMatrix();
     }
-    int x = 1000 + camera_pos.x;
-    int y = 600 + camera_pos.y;
-    float o2_percent = player.oxygen / player.max_oxygen;
-    ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
-    ofRect(ofPoint(x, y), 20, -player.oxygen / 2);
-    ofPopMatrix();
+
 
     ///Draw events that go on top of camera but are not subject to camera go below
 
@@ -376,7 +388,7 @@ void testApp::keyPressed(int key) {
         break;
     case 'd':
         if (MAP_VIEW || clickState != "play mode") {
-                moveCamera("right");
+            moveCamera("right");
         }
         if (iddqd == 1 || iddqd == 2) {
             iddqd++;
@@ -503,9 +515,15 @@ void testApp::keyPressed(int key) {
         break;
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = true;
+        if (!player.TRAVERSE_MODE) {
+            player.fxRotate.play();
+        }
         break;
     case OF_KEY_RIGHT:
         player.ROTATE_RIGHT = true;
+        if (!player.TRAVERSE_MODE) {
+            player.fxRotate.play();
+        }
         break;
     case 'w':
         if (MAP_VIEW || clickState != "play mode") {

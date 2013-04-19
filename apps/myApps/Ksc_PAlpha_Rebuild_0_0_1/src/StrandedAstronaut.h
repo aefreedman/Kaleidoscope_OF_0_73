@@ -57,6 +57,7 @@ public:
     std::vector<GUI *> *gui;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
     bool IS_DEAD;
+    int astronaut;
 
 protected:
 
@@ -72,7 +73,6 @@ private:
 
     int sa_collision;
     float lerp_speed;
-    int astronaut;
     int spring_spacing;
 };
 
