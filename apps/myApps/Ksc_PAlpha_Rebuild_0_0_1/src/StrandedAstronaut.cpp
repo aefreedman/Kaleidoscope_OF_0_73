@@ -10,7 +10,7 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
 StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     pos                         = _pos;
     r                           = 20;
-    m                           = 5;
+    m                           = 5.0;
     rotation                    = 180;
     damp                        = 1.0;
     restitution                 = 0.5;

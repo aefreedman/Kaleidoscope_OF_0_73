@@ -114,24 +114,6 @@
 			<Add after='cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;' />
 			<Mode after="always" />
 		</ExtraCommands>
-		<Unit filename="..\..\..\Frame.cpp">
-			<Option virtualFolder="src\" />
-		</Unit>
-		<Unit filename="..\..\..\Frame.h">
-			<Option virtualFolder="src\" />
-		</Unit>
-		<Unit filename="..\..\..\GameScreen.cpp">
-			<Option virtualFolder="src\SCREENS\" />
-		</Unit>
-		<Unit filename="..\..\..\GameScreen.h">
-			<Option virtualFolder="src\SCREENS\" />
-		</Unit>
-		<Unit filename="..\..\..\Screen.cpp">
-			<Option virtualFolder="src\SCREENS\" />
-		</Unit>
-		<Unit filename="..\..\..\Screen.h">
-			<Option virtualFolder="src\SCREENS\" />
-		</Unit>
 		<Unit filename="..\..\..\addons\ofxVectorGraphics\libs\CreEPS.cpp">
 			<Option virtualFolder="addons\ofxVectorGraphics\libs" />
 		</Unit>
@@ -231,6 +213,12 @@
 		<Unit filename="src\GameObject.h">
 			<Option virtualFolder="src\" />
 		</Unit>
+		<Unit filename="src\GameScreen.cpp">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="src\GameScreen.h">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
 		<Unit filename="src\Gravitator.cpp">
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
@@ -243,6 +231,12 @@
 		</Unit>
 		<Unit filename="src\LevelEditor.h">
 			<Option virtualFolder="src\SHELL\GUI\" />
+		</Unit>
+		<Unit filename="src\MenuScreen.cpp">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="src\MenuScreen.h">
+			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
 		<Unit filename="src\Message.cpp">
 			<Option virtualFolder="src\SHELL\GUI\" />
@@ -267,6 +261,12 @@
 		</Unit>
 		<Unit filename="src\Player.h">
 			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
+		<Unit filename="src\Screen.cpp">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="src\Screen.h">
+			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
 		<Unit filename="src\Shell.cpp">
 			<Option virtualFolder="src\SHELL\" />
@@ -296,10 +296,10 @@
 			<Option virtualFolder="src" />
 		</Unit>
 		<Unit filename="src\testApp.cpp">
-			<Option virtualFolder="src\SCREENS\" />
+			<Option virtualFolder="src\" />
 		</Unit>
 		<Unit filename="src\testApp.h">
-			<Option virtualFolder="src\SCREENS\" />
+			<Option virtualFolder="src\" />
 		</Unit>
 		<Extensions>
 			<code_completion />
