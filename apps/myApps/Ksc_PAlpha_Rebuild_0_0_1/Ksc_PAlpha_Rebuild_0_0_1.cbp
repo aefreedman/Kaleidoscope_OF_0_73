@@ -114,6 +114,12 @@
 			<Add after='cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;' />
 			<Mode after="always" />
 		</ExtraCommands>
+		<Unit filename="..\..\..\Frame.cpp">
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="..\..\..\Frame.h">
+			<Option virtualFolder="src\" />
+		</Unit>
 		<Unit filename="..\..\..\GameScreen.cpp">
 			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
@@ -290,10 +296,10 @@
 			<Option virtualFolder="src" />
 		</Unit>
 		<Unit filename="src\testApp.cpp">
-			<Option virtualFolder="src\" />
+			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
 		<Unit filename="src\testApp.h">
-			<Option virtualFolder="src" />
+			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
 		<Extensions>
 			<code_completion />
