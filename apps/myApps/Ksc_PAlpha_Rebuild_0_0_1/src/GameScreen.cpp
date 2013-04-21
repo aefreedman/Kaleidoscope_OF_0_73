@@ -44,7 +44,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 14;
+    levelID                         = 0;
 
     LOAD_WITH_SOUND                 = false;
     CONTINUOUS_CAMERA               = false;
@@ -107,30 +107,40 @@ void GameScreen::update() {
         }
         for (int i = 0; i < gui.size(); i++) {
             gui[i]->update();
+            if (!gui[i]->ACTIVE) {
+                //delete gui[i];
+                //gui.erase(gui.begin()+i);
+            }
+            if ((gui[i]->pos.x > ofGetWidth() + camera_target.x - 50 || gui[i]->pos.y > ofGetHeight() + camera_target.y + 30 || gui[i]->pos.x < camera_target.x - 50 || gui[i]->pos.y < camera_target.y + 30) && camera_pos.squareDistance(camera_target) < 10) {
+                //gui[i]->pos.interpolate(gui[i]->pos.getMiddle(player.pos), 1);
+                gui[i]->pos.interpolate(player.pos, 10 * dt);
+            }
             if (MOVE_MESSAGES) {
-                ofVec3f t;
+
+/*                ofVec3f t;
                 ofVec3f u;
                 ofVec3f r;
-                ofVec3f p; //
+                ofVec3f p;
                 p.set(player.pos.x, player.pos.y, 0);
-                r.set(gui[i]->pos.x, gui[i]->pos.y, 0);
+                r.set(gui[i]->pos.x, gui[i]->pos.y, 0);*/
 
                 if (gui[i]->pos.x > ofGetWidth() + camera_pos.x) { ///Off right
+
                     ofVec3f q;
                     ofVec3f s;
-                    ofVec3f divisor;
                     q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
                     s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
-                    divisor = s.getCrossed(r);
-
-                    t = s.getCrossed(q - p) / divisor;
-                    u = r.getCrossed(q - p) / divisor;
-                    //gui[i]->pos.set(p + (t * r));
-                    gui[i]->pos.x = camera_pos.x + (r.x * t.z);
-                    gui[i]->pos.y = camera_pos.y + (r.y * t.z);
+/*
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
+                    //gui[i]->pos.x = camera_pos.x + (r.x * t.z);
+                    //gui[i]->pos.y = camera_pos.y + (r.y * t.z);*/
 
                 } else if (gui[i]->pos.y > ofGetHeight() + camera_pos.y) { /// Below
-                    ofVec3f q;
+
+/*                    ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
                     s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
@@ -138,8 +148,11 @@ void GameScreen::update() {
                     t = s.getCrossed(q - p) / s.getCrossed(r);
                     u = r.getCrossed(q - p) / s.getCrossed(r);
                     gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
+*/
                 } else if (gui[i]->pos.x < camera_pos.x) { /// Off left
-                    ofVec3f q;
+
+/*                    ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x, camera_pos.y, 0);
                     s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
@@ -147,10 +160,13 @@ void GameScreen::update() {
                     t = s.getCrossed(q - p) / s.getCrossed(r);
                     u = r.getCrossed(q - p) / s.getCrossed(r);
                     gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
                     //gui[i]->pos.x = p.x + (t.z);
                     //gui[i]->pos.y = p.y + (t.z);
+*/
                 } else if (gui[i]->pos.y < camera_pos.y) { /// Above
-                    ofVec3f q;
+
+/*                    ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x, camera_pos.y, 0);
                     s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
@@ -158,11 +174,9 @@ void GameScreen::update() {
                     t = s.getCrossed(q - p) / s.getCrossed(r);
                     u = r.getCrossed(q - p) / s.getCrossed(r);
                     gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
+*/
                 }
-            }
-            if (!gui[i]->ACTIVE) {
-                delete gui[i];
-                gui.erase(gui.begin()+i);
             }
         }
         if (LEVEL_HAS_ASTRONAUTS && strandedAstronaut.size() == 0) {
