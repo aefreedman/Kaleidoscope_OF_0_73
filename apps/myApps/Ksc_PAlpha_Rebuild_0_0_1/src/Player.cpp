@@ -50,16 +50,16 @@ void Player::setup() {
     damp                    = 1.00;
     m                       = 1.0;
     jumpStrength            = 0.0;
-    jump_strength_1         = 250000.0;
-    jump_strength_2         = 500000.0;
-    jump_strength_3         = 1000000.0;
+    jump_strength_1         = 500000.0;
+    jump_strength_2         = 1000000.0;
+    jump_strength_3         = 2000000.0;
     restitution             = 0.50;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
     off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
     rotation_speed          = 4.0;          /// This is the speed of your rotation in space
     speed_on_planet         = 150.0;
-    jetpack_power           = 400000.0;
+    jetpack_power           = 3200000.0;
     jump_multiplier         = 30.0;
-    jetpack_o2_use          = (max_oxygen / 30) - 1;
+    jetpack_o2_use          = (max_oxygen / 8) - 1;
     astronaut_pickup_range  = 50;
     astronaut_drop_range    = 200;
     jetpack_count           = 99999;
@@ -69,7 +69,7 @@ void Player::setup() {
     camera_move_delay       = 0.25;
     death_timer             = 0.5;
     flame_rotation          = 0;
-    v_limit                 = 400.0;
+    v_limit                 = 300.0;
     astronaut_pickup_delay  = 1.0;
 
     HIT_GRAVITATOR          = false;
@@ -457,9 +457,9 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
 
                 collision               = i;
                 collisionData(i);
-                orientToPlanet(i);
 
                 if (gravitator_type == "planet") {
+                    orientToPlanet(i);
                     gravitatorBounce();
                     v.set(0, 0);
                     f.set(0, 0);

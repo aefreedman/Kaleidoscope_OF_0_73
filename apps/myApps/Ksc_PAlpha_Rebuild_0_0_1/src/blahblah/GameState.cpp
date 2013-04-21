@@ -1,4 +1,4 @@
-#include "testApp.h"
+#include "GameState.h"
 #include <fstream>
 #define nl '\n'
 #define screen_width 1280
@@ -9,7 +9,7 @@
 #define gap "   "
 
 //--------------------------------------------------------------
-void testApp::setup() {
+void GameState::setup() {
     ///------------------------------
     /// DON'T CHANGE THESE
     ///------------------------------
@@ -64,7 +64,7 @@ void testApp::setup() {
 
 }
 
-void testApp::loadSound() {
+void GameState::loadSound() {
     jupiterSound.loadSound("AUDIO/ksc_AUDIO_background_music_001.mp3");
     jupiterSound.setLoop(true);
     jupiterSound.setVolume(0.3);
@@ -77,7 +77,7 @@ void testApp::loadSound() {
 }
 
 //--------------------------------------------------------------
-void testApp::update() {
+void GameState::update() {
     if (clickState != "play mode") {
         PAUSE = true;
     } else if (!MAP_VIEW) {
@@ -202,18 +202,17 @@ void testApp::update() {
     } else if (gravitator[i]->type == "sun"){
         scaleFactor = 2 * gravitator[i]->r/128.0;
     }
-
     planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
 
     for (int i=0; i<strandedAstronaut.size(); i++) {
         float scaleFactor = 1;
         nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
-    }
+        }
     }
 
 }
 
-void testApp::moveCamera(string direction) {
+void GameState::moveCamera(string direction) {
     ofVec2f target;
     if (!CAMERA_SCALING) {
         if (direction == "up") {
@@ -233,13 +232,13 @@ void testApp::moveCamera(string direction) {
     camera_target.z = 0;
 }
 
-void testApp::moveCamera() {
+void GameState::moveCamera() {
     camera_target.x = player.pos.x - screen_width/2;
     camera_target.y = player.pos.y - screen_height/2;
 }
 
 //--------------------------------------------------------------
-void testApp::draw() {
+void GameState::draw() {
     ///Draw events that go behind the camera, but are not affected by zoom go below
     ofPushMatrix();
     ofSetColor(255);
@@ -437,11 +436,11 @@ void testApp::draw() {
     }
 }
 
-void testApp::reset() {
+void GameState::reset() {
     importLevel(levelID);
 }
 
-void testApp::addGravitator() {
+void GameState::addGravitator() {
     if (new_gravitator_type == "planet") {
         gravitator.push_back(new Planet((NEW_PLANET_POS + camera_pos) / view_scale, NEW_PLANET_R / view_scale, NEW_PLANET_M, NEW_PLANET_GR / view_scale));
     }
@@ -454,12 +453,12 @@ void testApp::addGravitator() {
     new_gravitator_type = "";
 }
 
-void testApp::addStrandedAstronaut(ofVec2f _pos) {
+void GameState::addStrandedAstronaut(ofVec2f _pos) {
     strandedAstronaut.push_back(new StrandedAstronaut((_pos + camera_pos) / view_scale, &gravitator, &strandedAstronaut, &gui));
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key) {
+void GameState::keyPressed(int key) {
 
     //justPressed.push_back(key);
 
@@ -643,7 +642,7 @@ void testApp::keyPressed(int key) {
 }
 
 //--------------------------------------------------------------
-void testApp::keyReleased(int key) {
+void GameState::keyReleased(int key) {
 
     /*for (int i = 0; i < justPressed.size(); i++){
         if (justPressed[i] == key){
@@ -657,7 +656,7 @@ void testApp::keyReleased(int key) {
     case 'd':
         break;
     case OF_KEY_UP:
-        if (player.TRAVERSE_MODE) {
+        if (player.HIT_GRAVITATOR) {
             player.jump();
             break;
         } else {
@@ -686,7 +685,7 @@ void testApp::keyReleased(int key) {
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y ) {
+void GameState::mouseMoved(int x, int y ) {
     if (clickState == "placing player") {
         player.pos.set((x + camera_pos.x) / view_scale, (y + camera_pos.y) / view_scale);
     }
@@ -694,7 +693,7 @@ void testApp::mouseMoved(int x, int y ) {
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button) {
+void GameState::mouseDragged(int x, int y, int button) {
     if (clickState == "edit mode") {
         ofVec2f mouse_pos;
         mouse_pos.set(x, y);
@@ -714,7 +713,7 @@ void testApp::mouseDragged(int x, int y, int button) {
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button) {
+void GameState::mousePressed(int x, int y, int button) {
     if (clickState == "edit mode" && button == 2) {
 
     }
@@ -768,7 +767,7 @@ void testApp::mousePressed(int x, int y, int button) {
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button) {
+void GameState::mouseReleased(int x, int y, int button) {
     if (clickState == "setting size") {
         NEW_PLANET_R = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
         clickState = "setting grav";
@@ -777,21 +776,21 @@ void testApp::mouseReleased(int x, int y, int button) {
 }
 
 //--------------------------------------------------------------
-void testApp::windowResized(int w, int h) {
+void GameState::windowResized(int w, int h) {
 
 }
 
 //--------------------------------------------------------------
-void testApp::gotMessage(ofMessage msg) {
+void GameState::gotMessage(ofMessage msg) {
 
 }
 
 //--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo) {
+void GameState::dragEvent(ofDragInfo dragInfo) {
 
 }
 
-void testApp::exportLevel() {
+void GameState::exportLevel() {
     while (true) {
         string levelName = "level_" + ofToString(levelID++);
         std::ifstream input(levelName.c_str());
@@ -830,7 +829,7 @@ void testApp::exportLevel() {
 
 }
 
-void testApp::importLevel(int levelID) {
+void GameState::importLevel(int levelID) {
     std::ifstream input(("level_" + ofToString(levelID)).c_str());
     if (input.good()) {
         vector<Gravitator *>::iterator a = gravitator.begin();
