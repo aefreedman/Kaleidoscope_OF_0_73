@@ -46,6 +46,16 @@ void Comet::setup(){
     cometColor.b                = 231;
     cometColor_a_min            = 150;
     cometColor_a_max            = 255;
+
+    perpDir = dir.getPerpendicular();
+    tail1.set(pos.x + 20*dir.x,pos.y+20*dir.y);
+    tail2.set(pos.x + 20*perpDir.x, pos.y + 20*perpDir.y);
+    tail8.set(pos.x - 20*perpDir.x,pos.y - 20*perpDir.y);
+
+    for (int i = 0; i < 50; i++){
+        posArray[i] = pos;
+    }
+
 }
 
 void Comet::update() {
@@ -86,10 +96,40 @@ void Comet::update() {
             }
         }
     }
+    // TAIL STUFF
+
+    perpDir = dir.getPerpendicular();
+    tail1.set(pos.x + 20*dir.x,pos.y+20*dir.y);
+    tail2.set(pos.x + 20*perpDir.x, pos.y + 20*perpDir.y);
+    tail8.set(pos.x - 20*perpDir.x,pos.y - 20*perpDir.y);
+
+
+    for (int i=0; i<49; i++){
+        posArray[i] = posArray[i+1];
+    }
+    posArray[49] = pos;
+
+    tail5 = posArray[0];
+
+
+
+
 
 }
 
+
 void Comet::draw() {
+    ofVec2f perpDir = dir.getPerpendicular();
+
+    ofSetPolyMode(OF_POLY_WINDING_NONZERO);
+    ofBeginShape();
+        ofVertex(tail1);
+        ofVertex(tail2);
+        ofVertex(tail5);
+        ofVertex(tail8);
+    ofEndShape();
+
+
     if (ptclColor.size() > 1){
         for (int i = 0;i<ptclColor.size();i++){
             ofSetColor(ptclColor[i]);

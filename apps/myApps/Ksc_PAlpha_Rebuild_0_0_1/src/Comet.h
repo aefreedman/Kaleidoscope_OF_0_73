@@ -12,8 +12,13 @@ public:
     void setup();
     void update();
     void draw();
+    void drawBG();
 
     void spawnParticle();
+
+    ofVec2f perpDir;
+    ofPoint tail1, tail2, tail3, tail4, tail5, tail6, tail7, tail8;
+    ofPoint posArray[50];
 
     //vector <ofVec2f> pathPoints;
 
