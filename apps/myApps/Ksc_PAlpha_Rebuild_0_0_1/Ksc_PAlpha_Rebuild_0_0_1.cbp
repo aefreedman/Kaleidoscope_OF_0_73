@@ -250,6 +250,8 @@
 		<Unit filename="src\Player.h">
 			<Option virtualFolder="src\ASTRONAUT\" />
 		</Unit>
+		<Unit filename="src\Screen.cpp" />
+		<Unit filename="src\Screen.h" />
 		<Unit filename="src\Shell.cpp">
 			<Option virtualFolder="src\SHELL\" />
 		</Unit>

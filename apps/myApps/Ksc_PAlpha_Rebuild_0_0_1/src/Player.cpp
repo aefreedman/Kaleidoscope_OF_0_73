@@ -57,9 +57,9 @@ void Player::setup() {
     off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
     rotation_speed          = 4.0;          /// This is the speed of your rotation in space
     speed_on_planet         = 150.0;
-    jetpack_power           = 400000.0;
+    jetpack_power           = 4000000.0;
     jump_multiplier         = 30.0;
-    jetpack_o2_use          = (max_oxygen / 30) - 1;
+    jetpack_o2_use          = (max_oxygen / 10) - 1;
     astronaut_pickup_range  = 50;
     astronaut_drop_range    = 200;
     jetpack_count           = 99999;
@@ -69,7 +69,7 @@ void Player::setup() {
     camera_move_delay       = 0.25;
     death_timer             = 0.5;
     flame_rotation          = 0;
-    v_limit                 = 400.0;
+    v_limit                 = 300.0;
     astronaut_pickup_delay  = 1.0;
 
     HIT_GRAVITATOR          = false;
@@ -400,18 +400,18 @@ void Player::detectAstronautCollisions() {
                 (*strandedAstronaut)[i]->getPlayerData(pos);
                 HAVE_ASTRONAUT              = true;
             }
-//            if (HAVE_ASTRONAUT) {
-//                if (dist <= pickup_range && !(*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
-//                    for (int j = 0; j < strandedAstronaut->size(); j++) {
-//                        if ((*strandedAstronaut)[j]->THE_END) {
-//                            (*strandedAstronaut)[i]->astronaut = j;
-//                            (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = true;
-//                            (*strandedAstronaut)[i]->THE_END = true;
-//                            (*strandedAstronaut)[j]->THE_END = false;
-//                        }
-//                    }
-//                }
-//            }
+            if (HAVE_ASTRONAUT) {
+                if (dist <= pickup_range && !(*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+                    for (int j = 0; j < strandedAstronaut->size(); j++) {
+                        if ((*strandedAstronaut)[j]->THE_END) {
+                            (*strandedAstronaut)[i]->astronaut = j;
+                            (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = true;
+                            (*strandedAstronaut)[i]->THE_END = true;
+                            (*strandedAstronaut)[j]->THE_END = false;
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -457,9 +457,9 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
 
                 collision               = i;
                 collisionData(i);
-                orientToPlanet(i);
 
                 if (gravitator_type == "planet") {
+                    orientToPlanet(i);
                     gravitatorBounce();
                     v.set(0, 0);
                     f.set(0, 0);
@@ -481,6 +481,9 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
                     gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
                 } else {
                     gravity               += planet_G * (m * planet_mass) / (dist) * planet_to_player_normal.normalized();
+                }
+                if (gravitator_type == "blackhole") {
+                    //gravity               += planet_G * (m * planet_mass) / (dist) * planet_to_player_normal.normalized();
                 }
             }
         }
@@ -639,7 +642,7 @@ void Player::jetpack(bool JETPACK_FORWARD) {
     if (oxygen - jetpack_o2_use <= 0) {
         CAN_JETPACK = false;
     }
-    if (jetpack_count > 0 && CAN_JETPACK) {
+    if (CAN_JETPACK) {
         float angle = dir.angle(v);
         if (abs(angle) > 10) {
             //v.scale(0.5 * v.length());
@@ -648,13 +651,11 @@ void Player::jetpack(bool JETPACK_FORWARD) {
             ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
             f += VEC_MAGNITUDE;
             oxygen -= jetpack_o2_use;
-            jetpack_count--;
             CAN_JETPACK = false;
         } else {
             ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);
             f -= VEC_MAGNITUDE;
             oxygen -= jetpack_o2_use;
-            jetpack_count--;
             CAN_JETPACK = false;
         }
         if (DEBUG_GUI) {

@@ -10,7 +10,7 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
 StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     pos                         = _pos;
     r                           = 20;
-    m                           = 0.5;
+    m                           = 5.0;
     rotation                    = 180;
     damp                        = 1.0;
     restitution                 = 0.5;
@@ -20,7 +20,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     message_display_chance      = 7;                        ///larger number makes random delay between messages higher
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
-    spring_strength             = 1500;
+    spring_strength             = 15000;
     astronaut                   = 0;
     astronaut_drop_range        = 200;
     spring_spacing              = 0;
@@ -123,7 +123,7 @@ void StrandedAstronaut::checkState() {
     }
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
         CAN_HIT_ASTRONAUTS = false;
-        damp = 0.97;
+        damp = 0.87;
     } else {
         //CAN_HIT_ASTRONAUTS = true;
         damp = 0.99;

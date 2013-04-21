@@ -635,7 +635,7 @@ void testApp::keyReleased(int key) {
     case 'd':
         break;
     case OF_KEY_UP:
-        if (player.HIT_GRAVITATOR) {
+        if (player.TRAVERSE_MODE) {
             player.jump();
             break;
         } else {
