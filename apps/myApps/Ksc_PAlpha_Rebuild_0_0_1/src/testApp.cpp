@@ -55,7 +55,7 @@ void testApp::setup() {
     importLevel(levelID);
 
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 128); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	planetRenderer->loadTexture("ART/planets.png", 256, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    planetRenderer->loadTexture("ART/planets.png", 256, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
     nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -120,8 +120,7 @@ void testApp::update() {
                     gui[i]->pos.x = camera_pos.x + (r.x * t.z);
                     gui[i]->pos.y = camera_pos.y + (r.y * t.z);
 
-                } else
-                if (gui[i]->pos.y > ofGetHeight() + camera_pos.y) { /// Below
+                } else if (gui[i]->pos.y > ofGetHeight() + camera_pos.y) { /// Below
                     ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
@@ -130,8 +129,7 @@ void testApp::update() {
                     t = s.getCrossed(q - p) / s.getCrossed(r);
                     u = r.getCrossed(q - p) / s.getCrossed(r);
                     gui[i]->pos.set(p + (t * r));
-                } else
-                if (gui[i]->pos.x < camera_pos.x) { /// Off left
+                } else if (gui[i]->pos.x < camera_pos.x) { /// Off left
                     ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x, camera_pos.y, 0);
@@ -142,8 +140,7 @@ void testApp::update() {
                     gui[i]->pos.set(p + (t * r));
                     //gui[i]->pos.x = p.x + (t.z);
                     //gui[i]->pos.y = p.y + (t.z);
-                } else
-                if (gui[i]->pos.y < camera_pos.y) { /// Above
+                } else if (gui[i]->pos.y < camera_pos.y) { /// Above
                     ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x, camera_pos.y, 0);
@@ -187,30 +184,26 @@ void testApp::update() {
         CAMERA_SCALING = true;
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
+
     planetRenderer->clear(); // clear the sheet
-    planetRenderer->update(ofGetElapsedTimeMillis());
-
-    nautRenderer->clear(); // clear the sheet
-    nautRenderer->update(ofGetElapsedTimeMillis());
-
-    for(int i = 0;i<gravitator.size();i++){
-    float scaleFactor;
-    if (gravitator[i]->type == "comet"){
-        scaleFactor = 2;
-    } else if (gravitator[i]-> type == "planet"){
-        scaleFactor = 4.0*gravitator[i]->r/120.0;
-    } else if (gravitator[i]->type == "sun"){
-        scaleFactor = 2 * gravitator[i]->r/128.0;
+    for(int i = 0; i < gravitator.size(); i++) {
+        float scaleFactor;
+        if (gravitator[i]->type == "comet") {
+            scaleFactor = 2;
+        } else if (gravitator[i]-> type == "planet") {
+            scaleFactor = 4.0*gravitator[i]->r/120.0;
+        } else if (gravitator[i]->type == "sun") {
+            scaleFactor = 2 * gravitator[i]->r/128.0;
+        }
+        planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
-
-    planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
-
+    planetRenderer->update(ofGetElapsedTimeMillis());
+    nautRenderer->clear(); // clear the sheet
     for (int i=0; i<strandedAstronaut.size(); i++) {
         float scaleFactor = 1;
         nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
-    }
-
+    nautRenderer->update(ofGetElapsedTimeMillis());
 }
 
 void testApp::moveCamera(string direction) {
@@ -252,13 +245,13 @@ void testApp::draw() {
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255,50);
-    for (int i = 0; i < 30; i++){
+    for (int i = 0; i < 30; i++) {
         ofPolyline line;
         line.addVertex(1280*i,0);
         line.addVertex(1280*i,8000);
         line.draw();
     }
-    for (int i = 0; i< 30;i++){
+    for (int i = 0; i< 30; i++) {
         ofPolyline line;
         line.addVertex(0,720*i);
         line.addVertex(8000,720*i);
@@ -267,22 +260,15 @@ void testApp::draw() {
     ofPopMatrix();
 
 
-
     ///Draw events that should be subject to camera go below
     ofPushMatrix();
     ofTranslate(-camera_pos);
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
-
-
-
     ofSetColor(255,255,255);
 
     planetRenderer -> draw();
     nautRenderer -> draw();
-
-
-
 
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
@@ -304,13 +290,11 @@ void testApp::draw() {
         float o2_percent = player.oxygen / player.max_oxygen;
         ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
         ofRect(ofPoint(x, y), 20, -player.oxygen / 2);
-        ofPopMatrix();
     }
-
+    ofPopMatrix();
 
     ///Draw events that go on top of camera but are not subject to camera go below
 
-    /// TODO (Aaron#9#): Move level editor into own class
     ///LEVEL EDITOR---------------------------------------------
     int text_gap = 15;
     if (clickState == "setting size") {
@@ -380,8 +364,6 @@ void testApp::draw() {
         ofDrawBitmapString(top_text, 1, 10);
         ofPopMatrix();
     }
-
-
 
     ///FLOATING MOUSE TEXT ----------------------------------
     if (clickState != "play mode") {
