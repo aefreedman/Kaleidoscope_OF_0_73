@@ -57,11 +57,11 @@ void Player::setup() {
     off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
     rotation_speed          = 4.0;          /// This is the speed of your rotation in space
     speed_on_planet         = 150.0;
-    jetpack_power           = 1000000.0;
+    jetpack_power           = 400000.0;
     jump_multiplier         = 30.0;
-    jetpack_o2_use          = (max_oxygen / 50) - 1;
-    astronaut_pickup_range  = 20;
-    astronaut_drop_range    = 120;
+    jetpack_o2_use          = (max_oxygen / 30) - 1;
+    astronaut_pickup_range  = 50;
+    astronaut_drop_range    = 200;
     jetpack_count           = 99999;
     max_jetpack_count       = jetpack_count;
     planet_orientation_speed= 50.0;
@@ -69,7 +69,8 @@ void Player::setup() {
     camera_move_delay       = 0.25;
     death_timer             = 0.5;
     flame_rotation          = 0;
-    v_limit                 = 1000.0;
+    v_limit                 = 400.0;
+    astronaut_pickup_delay  = 1.0;
 
     HIT_GRAVITATOR          = false;
     TRAVERSE_MODE           = false;
@@ -85,6 +86,8 @@ void Player::setup() {
     FACING_RIGHT            = true;
     ROTATE_LEFT             = false;
     ROTATE_RIGHT            = false;
+    CAN_HIT_ASTRONAUTS      = false;         /// Bouncing off astronauts gets a little annoying when they keep pushing themselves into you
+    HAVE_ASTRONAUT          = false;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -97,14 +100,18 @@ void Player::setup() {
 void Player::loadSound() {
     fxDeath.loadSound("AUDIO/ksc_AUDIO_astronaut_death_002.wav");
     fxJetpackEmpty.loadSound("AUDIO/ksc_AUDIO_player_jetout_001.wav");
-    fxJetpackUse.loadSound("AUDIO/ksc_AUDIO_player_usejet_001.wav");
+    fxJetpackUse.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");
+    fxRotate.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");
     fxAstronautCollect.loadSound("AUDIO/ksc_AUDIO_astro_pickup_001.wav");
     fxAstronautRelease.loadSound("AUDIO/ksc_AUDIO_astronaut_death_001.wav");
+    fxJump.loadSound("AUDIO/ksc_AUDIO_jumpsound_001f.wav");
 
     fxDeath.setVolume(0.75);
-    fxJetpackUse.setVolume(.75);
-    fxAstronautCollect.setVolume(.5);
-    fxAstronautRelease.setVolume(.5);
+    fxJump.setVolume(0.3);
+    fxJetpackUse.setVolume(.55);
+    fxAstronautCollect.setVolume(.75);
+    fxAstronautRelease.setVolume(.75);
+    fxRotate.setVolume(0.1);
 }
 
 void Player::update() {
@@ -141,27 +148,24 @@ void Player::update() {
     }
 }
 
+float Player::countdownTimer(float time) {
+    time -= dt;
+    return time;
+}
+
 void Player::move() {
     if (rotation >= 360 || rotation <= -360) {
         rotation = 0;
     }
-//    if (!TRAVERSE_MODE) {
-        a           = (f / m) * dt;
-        v          += dir * a * dt;
-        v          += gravity * dt;
-        v          *= damp;
-        if (v.length() > v_limit) {
-            v.set(v.getScaled(v_limit));
-        }
-        pos        += v * dt;
-/*
+    a           = (f / m) * dt;
+    v          += dir * a * dt;
+    v          += gravity * dt;
+    v          *= damp;
+    if (v.length() > v_limit) {
+        v.set(v.getScaled(v_limit));
     }
-    if (TRAVERSE_MODE) {
-        a           = (f / m) * dt;
-        v          += dir * a * dt;
-        pos        += v * dt;
-    }
-*/
+    pos        += v * dt;
+
     display_f   = m / a;
     f.set(0, 0);
     gravity.set(0, 0);
@@ -192,17 +196,7 @@ void Player::draw() {
 }
 
 void Player::drawGUI() {
-    int x = 1000 + camera_pos.x;
-    int y = 600 + camera_pos.y;
-    string gui = "";
-    gui += "O2: " + ofToString(oxygen, 2) + nl;
-    ofSetColor(0, 50, 255);
-    //ofDrawBitmapString(gui, x + camera_pos.x, y + camera_pos.y);
-    ofPushMatrix();
-    float o2_percent = oxygen / max_oxygen;
-    ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
-    ofRect(ofPoint(x, y), 20, -oxygen / 2);
-    ofPopMatrix();
+
 }
 
 void Player::drawDebugGUI() {
@@ -237,9 +231,6 @@ void Player::drawDebugGUI() {
     if (IN_GRAVITY_WELL) {
         info_b.append("IN THE GRAVITY WELL, BRO \n");
     }
-    //if (CAN_LAND_ON_PLANET) {
-    //    info_b.append("CAN LAND ON PLANET, BRO \n");
-    //}
     else {
         info_b.append("LANDED ON THE PLANET, BRO \n");
     }
@@ -294,6 +285,15 @@ void Player::checkState() {
     if (ROTATE_RIGHT && !TRAVERSE_MODE) {
         rotateDirection(false);
     }
+    if (!CAN_PICKUP_ASTRONAUTS) {
+        astronaut_release_timer = countdownTimer(astronaut_release_timer);
+        if (astronaut_release_timer <= 0) {
+            CAN_PICKUP_ASTRONAUTS = true;
+        }
+    }
+    if (CAN_PICKUP_ASTRONAUTS) {
+        astronaut_release_timer = astronaut_pickup_delay;
+    }
 
     ///---------------------
     /// GRAVITATORS
@@ -315,7 +315,6 @@ void Player::checkState() {
         }
     }
     if (HIT_GRAVITATOR && ORIENT_TO_PLANET) {
-        //orientToPlanet(collision);
     }
     if (!IN_GRAVITY_WELL) {
         display_g.set(0);
@@ -358,38 +357,86 @@ void Player::soundPlayer(string sound) {
 
 void Player::detectAstronautCollisions() {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
-        float dist                  = pos.distance((*strandedAstronaut)[i]->pos);
+        float dist                  = pos.squareDistance((*strandedAstronaut)[i]->pos);
         float astronaut_r           = (*strandedAstronaut)[i]->r;
+        float pickup_range          = (astronaut_pickup_range) * (astronaut_pickup_range);
+        float collision_range       = (r + astronaut_r) * (r + astronaut_r);
+        //float pickup_range          = (r + astronaut_r + astronaut_pickup_range) * (r + astronaut_r + astronaut_pickup_range);
+        float drop_range            = (astronaut_drop_range) * (astronaut_drop_range);
+        bool ANAUT_IS_FOLLOWING_ME  = (*strandedAstronaut)[i]->FOLLOWING_PLAYER;
 
-        if (dist <= r + astronaut_r + astronaut_pickup_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER == false ) {
-            (*strandedAstronaut)[i]->FOLLOWING_PLAYER = true;
-            fxAstronautCollect.play();
-            if (DEBUG_GUI) {
-                cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
+        if (dist <= collision_range && CAN_HIT_ASTRONAUTS) {
+            ofVec2f other_pos = (*strandedAstronaut)[i]->pos;
+            ofVec2f other_v = (*strandedAstronaut)[i]->v;
+            float other_mass = (*strandedAstronaut)[i]->m;
+            float other_restitution = (*strandedAstronaut)[i]->restitution;
+            ofVec2f sa_normal = pos - other_pos;
+            sa_normal.normalize();
+            float a1 = v.dot(sa_normal);
+            float a2 = other_v.dot(sa_normal);
+            float optimizedP = (2.0 * (a1 - a2)) / (m + other_mass);
+
+            ofVec2f v1_prime = v - optimizedP * other_mass * sa_normal;
+            ofVec2f v2_prime = other_v + optimizedP * m * sa_normal;
+
+            v.set(v1_prime * restitution);
+            (*strandedAstronaut)[i]->v.set(v2_prime * other_restitution);
+        }
+        if (CAN_PICKUP_ASTRONAUTS) {
+            if (!HAVE_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER && dist <= pickup_range) {
+                (*strandedAstronaut)[i]->FOLLOWING_PLAYER               = true;
+                (*strandedAstronaut)[i]->THE_END                        = true;
+                HAVE_ASTRONAUT                                          = true;
+                fxAstronautCollect.play();
+                if (DEBUG_GUI) {
+                    cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
+                }
             }
-        }
-        if (dist > r + astronaut_r + astronaut_drop_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER == true) {
-            (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
-            fxAstronautRelease.play();
-        }
-        if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER == true) {
-            (*strandedAstronaut)[i]->getPlayerData(pos);
+            if (dist > drop_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+                releaseAllAstronauts(true);
+                fxAstronautRelease.play();
+            }
+            if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+                (*strandedAstronaut)[i]->getPlayerData(pos);
+                HAVE_ASTRONAUT              = true;
+            }
+//            if (HAVE_ASTRONAUT) {
+//                if (dist <= pickup_range && !(*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+//                    for (int j = 0; j < strandedAstronaut->size(); j++) {
+//                        if ((*strandedAstronaut)[j]->THE_END) {
+//                            (*strandedAstronaut)[i]->astronaut = j;
+//                            (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = true;
+//                            (*strandedAstronaut)[i]->THE_END = true;
+//                            (*strandedAstronaut)[j]->THE_END = false;
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }
 
 void Player::releaseAstronaut(int i) {
     (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
+    (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
+    (*strandedAstronaut)[i]->THE_END = false;
+    HAVE_ASTRONAUT = false;
     fxAstronautRelease.play();
+    CAN_PICKUP_ASTRONAUTS = false;
 }
 
 void Player::releaseAllAstronauts(bool SOUND) {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
         (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
+        (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
+        (*strandedAstronaut)[i]->THE_END = false;
     }
     if (SOUND) {
         fxAstronautRelease.play();
     }
+    CAN_PICKUP_ASTRONAUTS = false;
+    HAVE_ASTRONAUT = false;
+
 }
 
 void Player::detectGravitatorCollisions() {             ///This method only detects if the player is touching a planet
@@ -403,9 +450,10 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
         float planet_G              = (*gravitator)[i]->G;
         ofVec2f planet_to_player_normal;
         planet_to_player_normal.set(planet_pos - pos);
+        float collision_range       = (planet_r + r) * (planet_r + r);
 
         if (!TRAVERSE_MODE) {
-            if (dist <= (planet_r + r) * (planet_r + r)) {
+            if (dist <= collision_range ) {
 
                 collision               = i;
                 collisionData(i);
@@ -573,11 +621,13 @@ void Player::jump() {
     }
 
     if (TRAVERSE_MODE) {
+        fxJump.play();
         starting_pos = pos;
         f += jumpStrength;
         LEAVING_PLANET = true;
         anim = lift;
         jump_timer = 0.1;
+
         if (DEBUG_GUI) {
             cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;
         }
@@ -592,7 +642,7 @@ void Player::jetpack(bool JETPACK_FORWARD) {
     if (jetpack_count > 0 && CAN_JETPACK) {
         float angle = dir.angle(v);
         if (abs(angle) > 10) {
-            v.set(0, 0);
+            //v.scale(0.5 * v.length());
         }
         if (JETPACK_FORWARD) {
             ofVec2f VEC_MAGNITUDE(jetpack_power, jetpack_power);

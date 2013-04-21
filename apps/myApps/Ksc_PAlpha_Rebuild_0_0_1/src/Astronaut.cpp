@@ -37,7 +37,7 @@ void Astronaut::orientToPlanet(int collision) {
 }
 void Astronaut::gravitatorBounce() {
     if (v.length() < 0.05) {
-        v.set(0, 0);
+        //v.set(0, 0);
     }
     float a1 = v.dot(normalized_collision_normal);
     float optimizedP = (2.0 * a1) / (m + planet_m);
@@ -46,9 +46,6 @@ void Astronaut::gravitatorBounce() {
     v.set(v_prime);
 
     /// NOTE (Aaron#4#): StrandedAstronauts needs an update to their controller.
-
-}
-void Astronaut::calculateGravity(int attractor) {
 
 }
 

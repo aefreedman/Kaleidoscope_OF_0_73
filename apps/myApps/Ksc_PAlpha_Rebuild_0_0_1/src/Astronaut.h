@@ -24,14 +24,10 @@ public:
 /// TODO (Aaron#1#): Astronaut gravity and movement can be moved to Astronaut, but needs to handle the Gravitator vector first.
 /// TODO (Aaron#1#): Different collision conditions for objects
     virtual void detectGravitatorCollisions();
-
     virtual void collisionData(int collision);
     virtual void orientToPlanet(int collision);
     void gravitatorBounce();
-    virtual void calculateGravity(int attractor);
-
     virtual void checkState();
-
     virtual void drawGUIOverlay(ofVec2f _pos, string text);
     virtual void displayMessage(ofVec2f _pos, string text);
 
@@ -68,6 +64,7 @@ public:
     float damp;
     float restitution;
     float oxygen;
+    float v_limit;
 
     int w;
     int h;
@@ -76,7 +73,6 @@ public:
     int attractor;
 
     animation_t anim;
-
 protected:
 
     ofVec2f planet_pos;
@@ -86,6 +82,10 @@ protected:
     float planet_m;
     float planet_r;
     string gravitator_type;
+    int astronaut_pickup_range;
+    int astronaut_drop_range;
+    int spring_strength;
+
 private:
 
 

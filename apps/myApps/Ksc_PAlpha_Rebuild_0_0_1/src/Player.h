@@ -70,7 +70,7 @@ static animation_t charge =
 	4,	/* .totalframes		(int) - the animation length in frames																												*/
 	1,	/* .width			(int) - the width of each animation frame in tiles																									*/
 	1,	/* .height			(int) - the height of each animation frame in tiles																									*/
-	500,	/* .frameduration	(unsigned int) - how many milliseconds each frame should be on screen. Less = faster																*/
+	250,	/* .frameduration	(unsigned int) - how many milliseconds each frame should be on screen. Less = faster																*/
 	0,	/* .nexttick		(unsigned int) - the next time the frame should change. based on frame duration. This is an internal variable and should always be set to 0 at init	*/
 	1,	/* .loops			(int) - the number of loops to run. -1 equals infinite. This can be adjusted at runtime to pause animations, etc.									*/
 	-1,	/* .finalindex		(int) - the index of the final tile to draw when the animation finishes. -1 is the default so total_frames-1 will be the last frame.				*/
@@ -166,6 +166,7 @@ public:
     void displayMessage(ofVec2f _pos, string text, ofColor background_color, ofColor foreground_color);
     void soundPlayer(string sound);
     void loadSound();
+    float countdownTimer(float time);
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
@@ -204,19 +205,24 @@ public:
     bool FACING_RIGHT;
     bool ROTATE_LEFT;
     bool ROTATE_RIGHT;
+    bool HAVE_ASTRONAUT;
+    bool CAN_HIT_ASTRONAUTS;
+    bool CAN_PICKUP_ASTRONAUTS;
 
     ofSoundPlayer fxDeath;
     ofSoundPlayer fxJetpackEmpty;
     ofSoundPlayer fxJetpackUse;
     ofSoundPlayer fxAstronautCollect;
     ofSoundPlayer fxAstronautRelease;
-
+    ofSoundPlayer fxJump;
+    ofSoundPlayer fxRotate;
+    float max_oxygen;
+    float astronaut_release_timer;
+    float astronaut_pickup_delay;
 protected:
 
 
 private:
-    int astronaut_pickup_range;
-    int astronaut_drop_range;
     //float G;
     bool DEBUG;
     int off_screen_limit;
@@ -231,7 +237,7 @@ private:
     float death_timer;
     int jetpack_count;
     int max_jetpack_count;
-    float max_oxygen;
+
     float rotation_timer;
 
     /// TODO (Aaron#1#): discrete jump strength levels

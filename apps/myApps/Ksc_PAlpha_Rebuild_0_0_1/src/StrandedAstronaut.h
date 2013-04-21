@@ -28,11 +28,11 @@ public:
     void move();
     void checkState();
     void bounce(int other);
+    void gravitatorBounce();
 
     void detectGravitatorCollisions();
     void collisionData(int collision);
     void orientToPlanet(int collision);
-    void calculateGravity(int attractor);
     void displayMessage();
     void displayMessage(int messageNumber);
     bool displayMessageTimer();
@@ -41,19 +41,24 @@ public:
 
     void detectPlayerCollisions();
     void followPlayer();
-    void getPlayerData(ofVec2f _player_pos);
+    void followPlayer(ofVec2f _player_pos);
+    void getPlayerData(ofVec2f _other_pos);
 
     bool FOLLOWING_PLAYER;
+    bool FOLLOWING_ASTRONAUT;
+    bool THE_END;
     bool CAN_TALK;
+    bool CAN_HIT_ASTRONAUTS;
 
     string type;
     int id;
+    ofVec2f k;
 
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
-
-    //ofxSpriteSheetRenderer * nautRenderer;
+    bool IS_DEAD;
+    int astronaut;
 
 protected:
 
@@ -63,13 +68,13 @@ private:
     float message_timer;
     int message_delay;
     ofVec2f player_pos;
+    ofVec2f player_v;
 
     bool DRAW_MESSAGE;
 
     int sa_collision;
     float lerp_speed;
-
-
+    int spring_spacing;
 };
 
 #endif // STRANDEDASTRONAUT_H

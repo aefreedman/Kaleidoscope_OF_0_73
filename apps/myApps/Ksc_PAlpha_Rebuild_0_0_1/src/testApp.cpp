@@ -19,6 +19,7 @@ void testApp::setup() {
     camera_target.set(0, 0, 0);
     CAN_EDIT_LEVEL                  = false;
     CAMERA_SCALING                  = false;
+    WON_LEVEL                       = false;
     default_view_scale              = 1;
     view_scale                      = 1;
     view_scale_target               = 1;
@@ -34,10 +35,11 @@ void testApp::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 1;
+    levelID                         = 14;
 
-    LOAD_WITH_SOUND                 = true;
+    LOAD_WITH_SOUND                 = false;
     CONTINUOUS_CAMERA               = false;
+    MOVE_MESSAGES                   = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -56,22 +58,22 @@ void testApp::setup() {
 	planetRenderer->loadTexture("ART/planets.png", 256, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-	nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
-
+    nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     ofEnableAlphaBlending(); // turn on alpha blending. important!
-
 
 }
 
 void testApp::loadSound() {
     jupiterSound.loadSound("AUDIO/ksc_AUDIO_background_music_001.mp3");
     jupiterSound.setLoop(true);
+    jupiterSound.setVolume(0.3);
     jupiterSound.play();
     backgroundSound.loadSound("AUDIO/background.wav");
     backgroundSound.setLoop(true);
-    backgroundSound.setVolume(0.35);
+    backgroundSound.setVolume(0.25);
     backgroundSound.play();
+
 }
 
 //--------------------------------------------------------------
@@ -81,7 +83,7 @@ void testApp::update() {
     } else if (!MAP_VIEW) {
         PAUSE = false;
     }
-    if (!PAUSE) {  /// TODO (Aaron#1#): Pausing causes sprite position errors if editing
+    if (!PAUSE) {
         player.update();
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
@@ -89,9 +91,80 @@ void testApp::update() {
         for (int i = 0; i < strandedAstronaut.size(); i++) {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
+            if (strandedAstronaut[i]->IS_DEAD) {
+                delete strandedAstronaut[i];
+                strandedAstronaut.erase(strandedAstronaut.begin()+i);
+            }
         }
         for (int i = 0; i < gui.size(); i++) {
             gui[i]->update();
+            if (MOVE_MESSAGES) {
+                ofVec3f t;
+                ofVec3f u;
+                ofVec3f r;
+                ofVec3f p; //
+                p.set(player.pos.x, player.pos.y, 0);
+                r.set(gui[i]->pos.x, gui[i]->pos.y, 0);
+
+                if (gui[i]->pos.x > ofGetWidth() + camera_pos.x) { ///Off right
+                    ofVec3f q;
+                    ofVec3f s;
+                    ofVec3f divisor;
+                    q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
+                    s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
+                    divisor = s.getCrossed(r);
+
+                    t = s.getCrossed(q - p) / divisor;
+                    u = r.getCrossed(q - p) / divisor;
+                    //gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.x = camera_pos.x + (r.x * t.z);
+                    gui[i]->pos.y = camera_pos.y + (r.y * t.z);
+
+                } else
+                if (gui[i]->pos.y > ofGetHeight() + camera_pos.y) { /// Below
+                    ofVec3f q;
+                    ofVec3f s;
+                    q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
+                    s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
+
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                } else
+                if (gui[i]->pos.x < camera_pos.x) { /// Off left
+                    ofVec3f q;
+                    ofVec3f s;
+                    q.set(camera_pos.x, camera_pos.y, 0);
+                    s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
+
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                    //gui[i]->pos.x = p.x + (t.z);
+                    //gui[i]->pos.y = p.y + (t.z);
+                } else
+                if (gui[i]->pos.y < camera_pos.y) { /// Above
+                    ofVec3f q;
+                    ofVec3f s;
+                    q.set(camera_pos.x, camera_pos.y, 0);
+                    s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
+
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                }
+            }
+            if (!gui[i]->ACTIVE) {
+                delete gui[i];
+                gui.erase(gui.begin()+i);
+            }
+        }
+        if (LEVEL_HAS_ASTRONAUTS && strandedAstronaut.size() == 0) {
+            WON_LEVEL = true;
+        }
+        if (WON_LEVEL) {
+            levelID++;
+            importLevel(levelID);
         }
     }
 
@@ -115,10 +188,10 @@ void testApp::update() {
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
     planetRenderer->clear(); // clear the sheet
-	planetRenderer->update(ofGetElapsedTimeMillis());
+    planetRenderer->update(ofGetElapsedTimeMillis());
 
     nautRenderer->clear(); // clear the sheet
-	nautRenderer->update(ofGetElapsedTimeMillis());
+    nautRenderer->update(ofGetElapsedTimeMillis());
 
     for(int i = 0;i<gravitator.size();i++){
     float scaleFactor;
@@ -128,11 +201,10 @@ void testApp::update() {
         scaleFactor = 4.0*gravitator[i]->r/120.0;
     } else if (gravitator[i]->type == "sun"){
         scaleFactor = 2 * gravitator[i]->r/128.0;
-    }
-	planetRenderer->addCenteredTile(&gravitator[i]->anim, gravitator[i]->pos.x, gravitator[i]->pos.y, -1, F_NONE, scaleFactor, 255, 255, 255, 255);
+
     }
 
-    for (int i=0;i<strandedAstronaut.size();i++){
+    for (int i=0; i<strandedAstronaut.size(); i++) {
         float scaleFactor = 1;
         nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
@@ -218,10 +290,22 @@ void testApp::draw() {
         gui[i]->draw();
     }
     for (int i = 0; i < strandedAstronaut.size(); i++) {
+        //strandedAstronaut[i]->draw();
     }
     player.draw();
+    if (!MAP_VIEW) {
+        ofSetColor(100, 100, 100);
+        for (int i = 0; i < strandedAstronaut.size(); i++) {
+            ofCircle(50+(25*i) + camera_pos.x, 50 + camera_pos.y, 10);
+        }
+        int x = 1000 + camera_pos.x;
+        int y = 600 + camera_pos.y;
+        float o2_percent = player.oxygen / player.max_oxygen;
+        ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
+        ofRect(ofPoint(x, y), 20, -player.oxygen / 2);
+        ofPopMatrix();
+    }
 
-    ofPopMatrix();
 
     ///Draw events that go on top of camera but are not subject to camera go below
 
@@ -354,7 +438,6 @@ void testApp::draw() {
 
 void testApp::reset() {
     importLevel(levelID);
-    setup();
 }
 
 void testApp::addGravitator() {
@@ -387,7 +470,7 @@ void testApp::keyPressed(int key) {
         break;
     case 'd':
         if (MAP_VIEW || clickState != "play mode") {
-                moveCamera("right");
+            moveCamera("right");
         }
         if (iddqd == 1 || iddqd == 2) {
             iddqd++;
@@ -514,9 +597,15 @@ void testApp::keyPressed(int key) {
         break;
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = true;
+        if (!player.TRAVERSE_MODE) {
+            player.fxRotate.play();
+        }
         break;
     case OF_KEY_RIGHT:
         player.ROTATE_RIGHT = true;
+        if (!player.TRAVERSE_MODE) {
+            player.fxRotate.play();
+        }
         break;
     case 'w':
         if (MAP_VIEW || clickState != "play mode") {
@@ -524,16 +613,9 @@ void testApp::keyPressed(int key) {
         }
         break;
     case 'x':
-        player.releaseAllAstronauts(true);
         break;
     case 32:
-        if (player.CAN_JETPACK && !player.HIT_GRAVITATOR && !player.DEATH_ANIMATION) {
-            player.jetpack(true);
-            break;
-        } else if (player.HIT_GRAVITATOR) {
-            player.chargeJump();
-            break;
-        }
+        player.releaseAllAstronauts(true);
         break;
     case '=':
         player.damp += 0.01;
@@ -795,6 +877,12 @@ void testApp::importLevel(int levelID) {
         }
         gui.push_back(new GUI());
         levelState = "loaded " + ofToString(levelID) + ".";
+        WON_LEVEL = false;
+        if (strandedAstronaut.size() > 0) {
+            LEVEL_HAS_ASTRONAUTS    = true;
+        } else {
+            LEVEL_HAS_ASTRONAUTS    = false;
+        }
         input.close();
     } else {
         levelState = "That level doesn't exist.";
