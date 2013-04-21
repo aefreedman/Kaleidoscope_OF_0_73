@@ -87,6 +87,7 @@ void Player::setup() {
     ROTATE_LEFT             = false;
     ROTATE_RIGHT            = false;
     CAN_HIT_ASTRONAUTS      = false;         /// Bouncing off astronauts gets a little annoying when they keep pushing themselves into you
+    HAVE_ASTRONAUT          = false;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -399,18 +400,18 @@ void Player::detectAstronautCollisions() {
                 (*strandedAstronaut)[i]->getPlayerData(pos);
                 HAVE_ASTRONAUT              = true;
             }
-            if (HAVE_ASTRONAUT) {
-                if (dist <= pickup_range && !(*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
-                    for (int j = 0; j < strandedAstronaut->size(); j++) {
-                        if ((*strandedAstronaut)[j]->THE_END) {
-                            (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = true;
-                            (*strandedAstronaut)[i]->astronaut = j;
-                            (*strandedAstronaut)[j]->THE_END = false;
-                            (*strandedAstronaut)[i]->THE_END = true;
-                        }
-                    }
-                }
-            }
+//            if (HAVE_ASTRONAUT) {
+//                if (dist <= pickup_range && !(*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+//                    for (int j = 0; j < strandedAstronaut->size(); j++) {
+//                        if ((*strandedAstronaut)[j]->THE_END) {
+//                            (*strandedAstronaut)[i]->astronaut = j;
+//                            (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = true;
+//                            (*strandedAstronaut)[i]->THE_END = true;
+//                            (*strandedAstronaut)[j]->THE_END = false;
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }
@@ -429,12 +430,13 @@ void Player::releaseAllAstronauts(bool SOUND) {
         (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
         (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
         (*strandedAstronaut)[i]->THE_END = false;
-        HAVE_ASTRONAUT = false;
     }
     if (SOUND) {
         fxAstronautRelease.play();
     }
     CAN_PICKUP_ASTRONAUTS = false;
+    HAVE_ASTRONAUT = false;
+
 }
 
 void Player::detectGravitatorCollisions() {             ///This method only detects if the player is touching a planet

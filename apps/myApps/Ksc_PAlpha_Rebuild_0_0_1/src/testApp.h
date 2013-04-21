@@ -103,5 +103,11 @@ class testApp : public ofBaseApp {
         bool CONTINUOUS_CAMERA;
         bool WON_LEVEL;
         bool LEVEL_HAS_ASTRONAUTS;
+        bool MOVE_MESSAGES;
+
+        ofVec3f topRightCorner;
+        ofVec3f bottomRightCorner;
+        ofVec3f bottomLeftCorner;
+        ofVec3f topLeftCorner;
 
 };

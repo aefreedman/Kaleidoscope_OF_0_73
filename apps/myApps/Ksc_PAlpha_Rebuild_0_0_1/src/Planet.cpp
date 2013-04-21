@@ -16,7 +16,7 @@ Planet::~Planet() {
 void Planet::setup() {
     habitable = true;
     type = "planet";
-    G = 200;
+    G = 300;
     anim = planet1;
     ofEnableAlphaBlending(); // turn on alpha blending. important!}
 }

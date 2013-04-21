@@ -48,6 +48,7 @@ public:
     bool FOLLOWING_ASTRONAUT;
     bool THE_END;
     bool CAN_TALK;
+    bool CAN_HIT_ASTRONAUTS;
 
     string type;
     int id;

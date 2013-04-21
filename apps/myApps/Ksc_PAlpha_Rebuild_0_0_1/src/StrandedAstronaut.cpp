@@ -12,7 +12,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     r                           = 20;
     m                           = 0.5;
     rotation                    = 180;
-    damp                        = 0.97;
+    damp                        = 1.0;
     restitution                 = 0.5;
     oxygen                      = 100;
     message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
@@ -20,10 +20,10 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     message_display_chance      = 7;                        ///larger number makes random delay between messages higher
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
-    spring_strength             = 3000;
+    spring_strength             = 1500;
     astronaut                   = 0;
     astronaut_drop_range        = 200;
-    spring_spacing              = 40;
+    spring_spacing              = 0;
     v_limit                     = 600.0;
 
     a.set(0, 0);
@@ -43,6 +43,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     DRAW_MESSAGE                = false;
     IS_DEAD                     = false;
     THE_END                     = false;
+    CAN_HIT_ASTRONAUTS          = true;
 
     type = "strandedastronaut";
 
@@ -55,7 +56,6 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
 StrandedAstronaut::~StrandedAstronaut() {
 }
 
-/// TODO (Aaron#1#): Astronauts should sit and wait for the player, then follow the player when the player gets close enough to it
 void StrandedAstronaut::update() {
     checkState();
     detectPlayerCollisions();
@@ -120,6 +120,13 @@ void StrandedAstronaut::checkState() {
     }
     if (FOLLOWING_ASTRONAUT) {
         getPlayerData((*strandedAstronaut)[astronaut]->pos);
+    }
+    if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
+        CAN_HIT_ASTRONAUTS = false;
+        damp = 0.97;
+    } else {
+        //CAN_HIT_ASTRONAUTS = true;
+        damp = 0.99;
     }
 }
 
@@ -321,7 +328,7 @@ void StrandedAstronaut::detectPlayerCollisions() {
                 float pickup_range      = (r + other_r + astronaut_pickup_range) * (r + other_r + astronaut_pickup_range);
                 float drop_range        = (r + other_r + astronaut_drop_range) * (r + other_r + astronaut_drop_range);
                 float collision_range   = (r + other_r) * (r + other_r);
-            if (dist < collision_range) {
+            if (dist < collision_range && CAN_HIT_ASTRONAUTS) {
                 bounce(i);
             }
             if (dist < pickup_range) {

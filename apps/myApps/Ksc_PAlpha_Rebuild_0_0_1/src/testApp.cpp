@@ -35,10 +35,11 @@ void testApp::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 6;
+    levelID                         = 14;
 
-    LOAD_WITH_SOUND                 = true;
+    LOAD_WITH_SOUND                 = false;
     CONTINUOUS_CAMERA               = false;
+    MOVE_MESSAGES                   = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -82,7 +83,7 @@ void testApp::update() {
     } else if (!MAP_VIEW) {
         PAUSE = false;
     }
-    if (!PAUSE) {  /// TODO (Aaron#1#): Pausing causes sprite position errors if editing
+    if (!PAUSE) {
         player.update();
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
@@ -97,6 +98,66 @@ void testApp::update() {
         }
         for (int i = 0; i < gui.size(); i++) {
             gui[i]->update();
+            if (MOVE_MESSAGES) {
+                ofVec3f t;
+                ofVec3f u;
+                ofVec3f r;
+                ofVec3f p; //
+                p.set(player.pos.x, player.pos.y, 0);
+                r.set(gui[i]->pos.x, gui[i]->pos.y, 0);
+
+                if (gui[i]->pos.x > ofGetWidth() + camera_pos.x) { ///Off right
+                    ofVec3f q;
+                    ofVec3f s;
+                    ofVec3f divisor;
+                    q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
+                    s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
+                    divisor = s.getCrossed(r);
+
+                    t = s.getCrossed(q - p) / divisor;
+                    u = r.getCrossed(q - p) / divisor;
+                    //gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.x = camera_pos.x + (r.x * t.z);
+                    gui[i]->pos.y = camera_pos.y + (r.y * t.z);
+
+                } else
+                if (gui[i]->pos.y > ofGetHeight() + camera_pos.y) { /// Below
+                    ofVec3f q;
+                    ofVec3f s;
+                    q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
+                    s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
+
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                } else
+                if (gui[i]->pos.x < camera_pos.x) { /// Off left
+                    ofVec3f q;
+                    ofVec3f s;
+                    q.set(camera_pos.x, camera_pos.y, 0);
+                    s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
+
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                    //gui[i]->pos.x = p.x + (t.z);
+                    //gui[i]->pos.y = p.y + (t.z);
+                } else
+                if (gui[i]->pos.y < camera_pos.y) { /// Above
+                    ofVec3f q;
+                    ofVec3f s;
+                    q.set(camera_pos.x, camera_pos.y, 0);
+                    s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
+
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                }
+            }
+            if (!gui[i]->ACTIVE) {
+                delete gui[i];
+                gui.erase(gui.begin()+i);
+            }
         }
         if (LEVEL_HAS_ASTRONAUTS && strandedAstronaut.size() == 0) {
             WON_LEVEL = true;
