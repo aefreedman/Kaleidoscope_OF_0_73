@@ -119,7 +119,7 @@ void StrandedAstronaut::checkState() {
     if (!IN_GRAVITY_WELL) {
     }
     if (FOLLOWING_ASTRONAUT) {
-        getPlayerData((*strandedAstronaut)[astronaut]->pos);
+        getPlayerData((*strandedAstronaut)[astronaut]->pos, (*strandedAstronaut)[astronaut]->v);
     }
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
         CAN_HIT_ASTRONAUTS = false;
@@ -226,8 +226,19 @@ void StrandedAstronaut::draw() {
 
     if (FOLLOWING_PLAYER || FOLLOWING_ASTRONAUT) {
         ofPushMatrix();
-        ofSetColor(255, 0, 0, 200);
-        ofLine(pos, player_pos);
+        ofSetColor(240, 206, 103, 200);
+        int d = 3;
+        int offset = 2;
+        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
+        ofBezier(player_pos.x, player_pos.y, player_pos.x, player_pos.y, pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
+        ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
+        d = 4;
+        ofSetColor(240, 106, 103, 200);
+        //ofBezier(player_pos.x, player_pos.y, player_pos.x, player_pos.y, pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
+        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
+        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
+        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (player_v.x / d), player_pos.y + (player_v.y / d), pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
+        //ofLine(pos, player_pos);
         ofPopMatrix();
     }
 }
@@ -322,8 +333,9 @@ void StrandedAstronaut::followPlayer(ofVec2f _player_pos) {
     }
 }
 
-void StrandedAstronaut::getPlayerData(ofVec2f _other_pos) {
+void StrandedAstronaut::getPlayerData(ofVec2f _other_pos, ofVec2f _other_v) {
     player_pos = _other_pos;
+    player_v = _other_v;
 }
 
 void StrandedAstronaut::detectPlayerCollisions() {

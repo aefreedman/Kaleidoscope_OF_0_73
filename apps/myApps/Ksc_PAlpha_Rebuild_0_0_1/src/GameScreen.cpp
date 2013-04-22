@@ -11,9 +11,7 @@
 #define gap "   "
 
 //--------------------------------------------------------------
-GameScreen::GameScreen() : Screen() {
-
-}
+GameScreen::GameScreen() : Screen() {}
 
 GameScreen::~GameScreen() {}
 
@@ -45,9 +43,8 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 0;
+    levelID                         = 29;
 
-    //LOAD_WITH_SOUND                 = true;
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
     ENABLE_EDITOR                   = false;
@@ -77,7 +74,7 @@ void GameScreen::setup() {
 
     O2frame.loadImage("ART/O2_frame.png");
     O2bar.loadImage("ART/O2_bar.png");
-    map.loadImage("ART/map.png");
+    map.loadImage("ART/map3.png");
 
 }
 
@@ -325,7 +322,7 @@ void GameScreen::draw() {
     }
 
     planetRenderer -> draw();
-    nautRenderer -> draw();
+
 
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->draw();
@@ -334,22 +331,22 @@ void GameScreen::draw() {
         strandedAstronaut[i]->draw();
     }
     player.draw();
-
+    nautRenderer -> draw();
     if (!MAP_VIEW) {
         ofSetColor(255, 255, 255);
         for (int i = 0; i < totalCrew; i++) {
             if (i < strandedAstronaut.size()){
                 ofSetColor(255, 255, 255);
-                ofRect(36+(10*i) + camera_pos.x, camera_pos.y + ofGetHeight() - map.height + 46, 5,5);
+                ofRect(30+(12*i) + camera_pos.x, camera_pos.y + ofGetHeight() - map.height + 34, 7,7);
             } else {
                 ofSetColor(223, 42, 99);
-                ofRect(36+(10*i) + camera_pos.x, camera_pos.y + ofGetHeight() - map.height + 46, 5,5);
+                ofRect(30+(12*i) + camera_pos.x, camera_pos.y + ofGetHeight() - map.height + 34, 7,7);
             }
         }
         int x = ofGetWidth() + camera_pos.x - 53;
         int y = ofGetHeight() + camera_pos.y - 26;
         float o2_percent = player.oxygen / player.max_oxygen;
-        ofSetColor(88 - (88 * o2_percent), 211, 222 * o2_percent);
+        ofSetColor(200 - (200 * o2_percent), 211 * o2_percent, 222 * o2_percent);
         ofRect(ofPoint(x, y), 20, -136 * o2_percent);
 
         int percentOut = 400 * (1 -(player.oxygen/player.max_oxygen));
@@ -618,10 +615,14 @@ void GameScreen::keyPressed(int key) {
         }
         break;
     case 'g':
+        if (ENABLE_EDITOR) {
         player.USING_GRAVITY = !player.USING_GRAVITY;
+        }
         break;
     case 'G':
-        player.SIMPLE_GRAVITY = !player.SIMPLE_GRAVITY;
+        if (ENABLE_EDITOR) {
+        player.USING_GRAVITY = !player.USING_GRAVITY;
+        }
         break;
     case OF_KEY_UP:
         if (clickState == "placing gravitators") {
@@ -701,6 +702,11 @@ void GameScreen::keyPressed(int key) {
         break;
     case 'R':
         reset();
+        break;
+    case 'z':
+        for (int i = 0; i < strandedAstronaut.size(); i++) {
+        strandedAstronaut[i]->FOLLOWING_ASTRONAUT = false;
+        }
         break;
     }
 }
@@ -867,37 +873,35 @@ void GameScreen::exportLevel() {
             levelName = "levels/saves/level_" + ofToString(levelID) + ".sav";
         }
         std::ifstream input(levelName.c_str());
- //       if  (input.good()) {
-            std::ofstream output(levelName.c_str());
-            output << gravitator.size() + strandedAstronaut.size() << std::endl;
-            output << player.starting_pos.x << ' ' << player.starting_pos.y << std::endl;
-            for (int i = 0; i < gravitator.size(); i++) {
-                output << gravitator[i]->pos.x << ' '
-                << gravitator[i]->pos.y << ' '
-                << gravitator[i]->r << ' '
-                << gravitator[i]->m << ' '
-                << gravitator[i]->gR << ' '
-                << gravitator[i]->type << ' '
-                << gravitator[i]->pathPoints.size() << ' ';
-                for (int j = 0; j < gravitator[i]->pathPoints.size(); j++) {
-                    output << gravitator[i]->pathPoints[j].x << ' '
-                    << gravitator[i]->pathPoints[j].y << ' ';
-                }
-                output << std::endl;
+        std::ofstream output(levelName.c_str());
+        output << gravitator.size() + strandedAstronaut.size() << std::endl;
+        output << player.starting_pos.x << ' ' << player.starting_pos.y << std::endl;
+        for (int i = 0; i < gravitator.size(); i++) {
+            output << gravitator[i]->pos.x << ' '
+            << gravitator[i]->pos.y << ' '
+            << gravitator[i]->r << ' '
+            << gravitator[i]->m << ' '
+            << gravitator[i]->gR << ' '
+            << gravitator[i]->type << ' '
+            << gravitator[i]->pathPoints.size() << ' ';
+            for (int j = 0; j < gravitator[i]->pathPoints.size(); j++) {
+                output << gravitator[i]->pathPoints[j].x << ' '
+                << gravitator[i]->pathPoints[j].y << ' ';
             }
-            for (int i = 0; i < strandedAstronaut.size(); i++) {
-                output << strandedAstronaut[i]->pos.x << ' '
-                << strandedAstronaut[i]->pos.y << ' '
-                << 0 << ' '
-                << 0 << ' '
-                << 0 << ' '
-                << strandedAstronaut[i]->type << ' '
-                << 0 << ' '
-                << std::endl;
-            }
-            levelState = ofToString(levelName) + " saved";
-            break;
-  //      }
+            output << std::endl;
+        }
+        for (int i = 0; i < strandedAstronaut.size(); i++) {
+            output << strandedAstronaut[i]->pos.x << ' '
+            << strandedAstronaut[i]->pos.y << ' '
+            << 0 << ' '
+            << 0 << ' '
+            << 0 << ' '
+            << strandedAstronaut[i]->type << ' '
+            << 0 << ' '
+            << std::endl;
+        }
+        levelState = ofToString(levelName) + " saved";
+        break;
     }
 }
 
@@ -908,7 +912,6 @@ void GameScreen::importLevel(int levelID) {
     } else if (!ENABLE_EDITOR) {
         levelName = "levels/saves/level_" + ofToString(levelID) + ".sav";
     }
-    //std::ifstream input(levelName.c_str());
     std::ifstream input(levelName.c_str());
 
     if (!input.good()) {

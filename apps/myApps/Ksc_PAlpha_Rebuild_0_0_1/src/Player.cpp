@@ -421,7 +421,7 @@ void Player::detectAstronautCollisions() {
                 fxAstronautRelease.play();
             }
             if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
-                (*strandedAstronaut)[i]->getPlayerData(pos);
+                (*strandedAstronaut)[i]->getPlayerData(pos, v);
                 HAVE_ASTRONAUT              = true;
             }
             if (HAVE_ASTRONAUT) {

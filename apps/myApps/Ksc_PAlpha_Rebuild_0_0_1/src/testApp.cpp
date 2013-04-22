@@ -3,28 +3,35 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-
+    ///------------------------------
+    /// DON'T CHANGE THESE
+    ///------------------------------
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
-
-    currentScreen = &menuScreen;
-    //currentScreen = &gameScreen;
-    gameScreen.setup();
-
-    currentScreen->setup();
     ofEnableAlphaBlending();
-    STARTED = false;
-    start_timer = 3.0;
-    timer = start_timer;
+    STARTED                         = false;
 
-    LOAD_WITH_SOUND = true;
+    ///------------------------------
+    /// YOU CAN CHANGE THESE
+    ///------------------------------
+    start_timer                     = 3.0;
+    timer                           = start_timer;
+    currentScreen                   = &menuScreen;
+    //currentScreen                 = &gameScreen;
+    LOAD_WITH_SOUND                 = true;
 
+    ///------------------------------
+    /// DON'T CHANGE THESE
+    ///------------------------------
     if (!LOAD_WITH_SOUND) {
         menuScreen.LOAD_WITH_SOUND = false;
         gameScreen.LOAD_WITH_SOUND = false;
+    } else {
+        menuScreen.LOAD_WITH_SOUND = true;
+        gameScreen.LOAD_WITH_SOUND = true;
     }
-
-
+    gameScreen.setup();
+    currentScreen->setup();
 }
 
 //--------------------------------------------------------------
@@ -36,6 +43,7 @@ void testApp::update(){
         timer = countdownTimer(timer);
     }
     if (timer <= 0) {
+        menuScreen.fxEngineLoop.stop();
         currentScreen = &gameScreen;
         gameScreen.fadeIn.ACTIVE = true;
     }
@@ -61,7 +69,6 @@ void testApp::keyPressed(int key){
     switch (key) {
         case 32:
             if (currentScreen == &menuScreen) {
-                menuScreen.fxEngineLoop.stop();
                 menuScreen.fxExplosion.play();
                 STARTED = true;
                 menuScreen.guiFadeOut.max_timer = start_timer + 1;
