@@ -861,10 +861,10 @@ void GameScreen::exportLevel() {
     while (true) {
         string levelName;
         if (ENABLE_EDITOR) {
-            levelName = "level_" + ofToString(levelID);
+            levelName = "levels/level_" + ofToString(levelID);
         }
         if (!ENABLE_EDITOR) {
-            levelName = "level_" + ofToString(levelID) + ".sav";
+            levelName = "levels/saves/level_" + ofToString(levelID) + ".sav";
         }
         std::ifstream input(levelName.c_str());
  //       if  (input.good()) {
@@ -904,14 +904,15 @@ void GameScreen::exportLevel() {
 void GameScreen::importLevel(int levelID) {
     string levelName;
     if (ENABLE_EDITOR) {
-        levelName = "level_" + ofToString(levelID);
+        levelName = "levels/level_" + ofToString(levelID);
     } else if (!ENABLE_EDITOR) {
-        levelName = "level_" + ofToString(levelID) + ".sav";
+        levelName = "levels/saves/level_" + ofToString(levelID) + ".sav";
     }
+    //std::ifstream input(levelName.c_str());
     std::ifstream input(levelName.c_str());
 
     if (!input.good()) {
-        levelName = "level_" + ofToString(levelID);
+        levelName = "levels/level_" + ofToString(levelID);
         input.open(levelName.c_str());
     }
 
