@@ -62,12 +62,14 @@ public:
         std::vector<StrandedAstronaut *> strandedAstronaut;
         std::vector<GUI *> gui;
         Player player;
+        int totalCrew;
 
         ofImage background;
 
         //HUD ASSETS
             ofImage O2frame;
             ofImage O2bar;
+            ofImage map;
 
         ofxSpriteSheetRenderer * planetRenderer;
         ofxSpriteSheetRenderer * nautRenderer;
