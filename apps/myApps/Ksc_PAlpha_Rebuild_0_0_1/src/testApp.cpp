@@ -15,6 +15,7 @@ void testApp::setup(){
     ofEnableAlphaBlending();
     STARTED = false;
     start_timer = 3.0;
+    timer = start_timer;
 
 
 }
@@ -25,12 +26,11 @@ void testApp::update(){
     currentScreen->update();
 
     if (STARTED) {
-        start_timer = countdownTimer(start_timer);
+        timer = countdownTimer(timer);
     }
-
-    if (start_timer <= 0) {
-        gameScreen.fadeIn.ACTIVE = true;
+    if (timer <= 0) {
         currentScreen = &gameScreen;
+        gameScreen.fadeIn.ACTIVE = true;
     }
 
 }
@@ -57,6 +57,8 @@ void testApp::keyPressed(int key){
                 menuScreen.fxEngineLoop.stop();
                 menuScreen.fxExplosion.play();
                 STARTED = true;
+                menuScreen.guiFadeOut.max_timer = start_timer + 1;
+                menuScreen.guiFadeOut.timer = start_timer + 1;
                 //currentScreen->setup();
             }
         break;

@@ -34,7 +34,6 @@ void GameScreen::setup() {
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
     fadeIn                          = GUIFadeIn(camera_pos);
-    fadeIn.ACTIVE                   = false;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -46,12 +45,12 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 30;
+    levelID                         = 0;
 
     LOAD_WITH_SOUND                 = true;
-    CONTINUOUS_CAMERA               = false;
+    CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
-    ENABLE_EDITOR                   = false;
+    ENABLE_EDITOR                   = true;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -113,7 +112,12 @@ void GameScreen::update() {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
             if (strandedAstronaut[i]->IS_DEAD) {
-
+                for (int j = 0; j < strandedAstronaut.size(); j++) {
+                    if (strandedAstronaut[j]->astronaut == i) {
+                        strandedAstronaut[j]->FOLLOWING_ASTRONAUT = false;
+                        strandedAstronaut[j]->THE_END = false;
+                    }
+                }
                 delete strandedAstronaut[i];
                 strandedAstronaut.erase(strandedAstronaut.begin()+i);
             }
@@ -339,7 +343,6 @@ void GameScreen::draw() {
         ofRect(ofPoint(x, y), 20, -136 * o2_percent);
 
         int percentOut = 400 * (1 -(player.oxygen/player.max_oxygen));
-        cout << ofToString(percentOut) + "\n";
 
         ofSetColor(255,255,255,255);
         //O2bar.draw(camera_pos.x + ofGetWidth()-O2bar.width - 34,camera_pos.y + ofGetHeight()-O2bar.height - 24);
@@ -347,9 +350,6 @@ void GameScreen::draw() {
     }
     fadeIn.draw();
     ofPopMatrix();
-
-
-
 
     ///Draw events that go on top of camera but are not subject to camera go below
 
@@ -638,10 +638,6 @@ void GameScreen::keyPressed(int key) {
             break;
         }
     case OF_KEY_DOWN:
-        if (player.CAN_JETPACK && !player.IN_GRAVITY_WELL) {
-            break;
-        }
-        cout << "d";
         break;
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = true;
@@ -661,10 +657,17 @@ void GameScreen::keyPressed(int key) {
         }
         break;
     case 'x':
-        break;
-    case 32:
         player.releaseAllAstronauts(true);
         //player.releaseAstronaut();
+        break;
+    case 32:
+        if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
+            player.jetpack(true);
+            break;
+        } else if (player.TRAVERSE_MODE) {
+            player.chargeJump();
+            break;
+        }
         break;
     case '=':
         player.damp += 0.01;

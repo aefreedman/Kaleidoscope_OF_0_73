@@ -207,6 +207,12 @@
 		<Unit filename="src\GUIFadeIn.h">
 			<Option virtualFolder="src\SHELL\GUI\" />
 		</Unit>
+		<Unit filename="src\GUIFadeOut.cpp">
+			<Option virtualFolder="src\SHELL\GUI\" />
+		</Unit>
+		<Unit filename="src\GUIFadeOut.h">
+			<Option virtualFolder="src\SHELL\GUI\" />
+		</Unit>
 		<Unit filename="src\GUIOverlay.cpp">
 			<Option virtualFolder="src\SHELL\GUI\" />
 		</Unit>

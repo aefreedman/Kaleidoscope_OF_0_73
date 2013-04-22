@@ -35,7 +35,7 @@ void MenuScreen::setup() {
     fxExplosion.loadSound("AUDIO/ksc_AUDIO_ship_explosion_001.wav");
     fxExplosion.setSpeed(0.5);
 
-
+    guiFadeOut = GUIFadeOut(ofVec2f(0, 0));
 
 }
 
@@ -65,7 +65,7 @@ void MenuScreen::update() {
             nearStars[i].y = ofRandomHeight();
         }
     }
-
+    guiFadeOut.update();
 }
 
 void MenuScreen::draw() {
@@ -86,11 +86,17 @@ void MenuScreen::draw() {
     menuRenderer->draw();
 
     ofDrawBitmapString("- SPACE TO START -", ofGetWidth()/2-75,ofGetHeight()-75);
+    guiFadeOut.draw();
 }
 
 
 //--------------------------------------------------------------
 void MenuScreen::keyPressed(int key){
+    switch (key) {
+        case 32:
+            guiFadeOut.ACTIVE = true;
+        break;
+    }
 
 }
 

@@ -29,6 +29,7 @@ class testApp : public ofBaseApp {
 
 		bool STARTED;
 		float start_timer;
+		float timer;
 
     private:
 

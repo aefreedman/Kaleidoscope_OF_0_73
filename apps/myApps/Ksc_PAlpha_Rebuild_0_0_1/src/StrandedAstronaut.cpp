@@ -252,11 +252,14 @@ void StrandedAstronaut::detectGravitatorCollisions() {
             if (gravitator_type == "planet") {
                 gravitatorBounce();
             }
-           if (gravitator_type != "planet") {
+            if (gravitator_type == "planet" || gravitator_type == "comet") {
                 IS_DEAD = true;
                 FOLLOWING_ASTRONAUT = false;
                 FOLLOWING_PLAYER = false;
                 THE_END = false;
+            }
+            if (gravitator_type == "blackhole") {
+
             }
             HIT_GRAVITATOR          = true;
         }

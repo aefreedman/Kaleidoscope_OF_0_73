@@ -3,6 +3,7 @@
 
 #include "Screen.h"
 #include "ofxSpriteSheetRenderer.h"
+#include "GUIFadeOut.h"
 
 static animation_t ship =
 {	0,	/* .index			(int) - this is the index of the first animation frame. indicies start at 0 and go left to right, top to bottom by tileWidth on the spriteSheet		*/
@@ -54,6 +55,7 @@ public:
     ofxSpriteSheetRenderer * menuRenderer;
     animation_t anim;
     int shakeCounter;
+    GUIFadeOut guiFadeOut;
 
     ofVec3f farStars[30];
     ofVec3f nearStars[30];
