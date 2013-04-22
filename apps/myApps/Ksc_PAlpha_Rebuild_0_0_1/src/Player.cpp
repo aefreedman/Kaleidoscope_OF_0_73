@@ -37,6 +37,7 @@ void Player::setup() {
     v.set(0,0);
     dir.set(-1, 0);
     pos.set(starting_pos);
+    IS_DEAD                 = false;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -95,6 +96,7 @@ void Player::setup() {
     gravitator_type         = "null";
     anim = idle;
     ofEnableAlphaBlending();
+    releaseAllAstronauts(false);
 }
 
 void Player::loadSound() {
@@ -104,10 +106,21 @@ void Player::loadSound() {
     fxRotate.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");
     fxAstronautCollect.loadSound("AUDIO/ksc_AUDIO_astro_pickup_001.wav");
     fxAstronautRelease.loadSound("AUDIO/ksc_AUDIO_astronaut_death_001.wav");
-    fxJump.loadSound("AUDIO/ksc_AUDIO_jumpsound_001f.wav");
+    for (int i = 0; i < 3; i++) {
+        fxJump.push_back(new ofSoundPlayer());
+        fxJump[i]->loadSound("AUDIO/ksc_AUDIO_jump_001.wav");
+
+    }
+    //fxJump[0]->loadSound("AUDIO/ksc_AUDIO_jump_001.wav");
+    //fxJump[1]->loadSound("AUDIO/ksc_AUDIO_jump_002.wav");
+    //fxJump[2]->loadSound("AUDIO/ksc_AUDIO_jump_003.wav");
+    //fxJump[3]->loadSound("AUDIO/ksc_AUDIO_jump_004.wav");
 
     fxDeath.setVolume(0.75);
-    fxJump.setVolume(0.3);
+    fxJump[0]->setVolume(0.3);
+    //fxJump[1]->setVolume(0.3);
+    //fxJump[2]->setVolume(0.3);
+    //fxJump[3]->setVolume(0.3);
     fxJetpackUse.setVolume(.55);
     fxAstronautCollect.setVolume(.75);
     fxAstronautRelease.setVolume(.75);
@@ -408,6 +421,7 @@ void Player::detectAstronautCollisions() {
                             (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = true;
                             (*strandedAstronaut)[i]->THE_END = true;
                             (*strandedAstronaut)[j]->THE_END = false;
+                            j = strandedAstronaut->size();
                         }
                     }
                 }
@@ -416,11 +430,21 @@ void Player::detectAstronautCollisions() {
     }
 }
 
-void Player::releaseAstronaut(int i) {
-    (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
-    (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
-    (*strandedAstronaut)[i]->THE_END = false;
-    HAVE_ASTRONAUT = false;
+void Player::releaseAstronaut() {
+    for (int i = 0; i < strandedAstronaut->size(); i++) {
+        if ((*strandedAstronaut)[i]->THE_END) {
+            if ((*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT) {
+                (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
+                (*strandedAstronaut)[(*strandedAstronaut)[i]->astronaut]->THE_END = true;
+            }
+//            if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+//                (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
+//                (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
+//                (*strandedAstronaut)[i]->THE_END = false;
+//                HAVE_ASTRONAUT = false;
+//            }
+        }
+    }
     fxAstronautRelease.play();
     CAN_PICKUP_ASTRONAUTS = false;
 }
@@ -428,7 +452,7 @@ void Player::releaseAstronaut(int i) {
 void Player::releaseAllAstronauts(bool SOUND) {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
         (*strandedAstronaut)[i]->FOLLOWING_PLAYER = false;
-        (*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
+        //(*strandedAstronaut)[i]->FOLLOWING_ASTRONAUT = false;
         (*strandedAstronaut)[i]->THE_END = false;
     }
     if (SOUND) {
@@ -513,8 +537,9 @@ bool Player::die() {
             return true;
         }
         if (death_timer <= 0) {
-            setup();
-            releaseAllAstronauts(false);
+            IS_DEAD = true;
+            //setup();
+            //releaseAllAstronauts(false);
             displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
             return false;
         }
@@ -624,7 +649,8 @@ void Player::jump() {
     }
 
     if (TRAVERSE_MODE) {
-        fxJump.play();
+        int random = ofRandom(0, fxJump.size());
+        fxJump[random]->play();
         starting_pos = pos;
         f += jumpStrength;
         LEAVING_PLANET = true;

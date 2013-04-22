@@ -146,7 +146,7 @@ public:
     void jump();
     void chargeJump();
     void detectAstronautCollisions();
-    void releaseAstronaut(int i);
+    void releaseAstronaut();
     void releaseAllAstronauts(bool SOUND);
     void detectGravitatorCollisions();
     void collisionData(int collision);
@@ -208,13 +208,14 @@ public:
     bool HAVE_ASTRONAUT;
     bool CAN_HIT_ASTRONAUTS;
     bool CAN_PICKUP_ASTRONAUTS;
+    bool IS_DEAD;
 
     ofSoundPlayer fxDeath;
     ofSoundPlayer fxJetpackEmpty;
     ofSoundPlayer fxJetpackUse;
     ofSoundPlayer fxAstronautCollect;
     ofSoundPlayer fxAstronautRelease;
-    ofSoundPlayer fxJump;
+    vector <ofSoundPlayer *> fxJump;
     ofSoundPlayer fxRotate;
     float max_oxygen;
     float astronaut_release_timer;

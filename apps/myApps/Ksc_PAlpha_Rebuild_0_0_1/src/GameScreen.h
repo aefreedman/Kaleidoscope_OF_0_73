@@ -110,6 +110,7 @@ private:
         bool WON_LEVEL;
         bool LEVEL_HAS_ASTRONAUTS;
         bool MOVE_MESSAGES;
+        bool ENABLE_EDITOR;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;

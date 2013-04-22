@@ -18,7 +18,7 @@ void MenuScreen::update() {
 
 void MenuScreen::draw() {
     ofSetColor(230, 124, 212);
-    ofDrawBitmapString("HAI GAIZ DIS IZ MENU SCREEN", ofGetWidth() / 2, ofGetHeight() / 2);
+    ofDrawBitmapString("RETTSU PUREI HYAKUIROMEGANE!", ofGetWidth() / 2, ofGetHeight() / 2);
 }
 
 

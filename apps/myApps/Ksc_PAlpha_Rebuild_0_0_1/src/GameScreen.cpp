@@ -46,9 +46,10 @@ void GameScreen::setup() {
     map_view_scale_target           = .25;
     levelID                         = 0;
 
-    LOAD_WITH_SOUND                 = false;
+    LOAD_WITH_SOUND                 = true;
     CONTINUOUS_CAMERA               = false;
     MOVE_MESSAGES                   = false;
+    ENABLE_EDITOR                   = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -94,6 +95,9 @@ void GameScreen::update() {
     }
     if (!PAUSE) {
         player.update();
+        if (player.IS_DEAD) {
+            reset();
+        }
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
         }
@@ -101,6 +105,7 @@ void GameScreen::update() {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
             if (strandedAstronaut[i]->IS_DEAD) {
+
                 delete strandedAstronaut[i];
                 strandedAstronaut.erase(strandedAstronaut.begin()+i);
             }
@@ -444,6 +449,7 @@ void GameScreen::draw() {
 
 void GameScreen::reset() {
     importLevel(levelID);
+    player.setup();
 }
 
 void GameScreen::addGravitator() {
@@ -492,11 +498,13 @@ void GameScreen::keyPressed(int key) {
         }
         break;
     case OF_KEY_F1:
-        CAN_EDIT_LEVEL = !CAN_EDIT_LEVEL;
-        if (clickState == "play mode") {
-            clickState = "edit mode";
-        } else {
-            clickState = "play mode";
+        if (ENABLE_EDITOR) {
+            CAN_EDIT_LEVEL = !CAN_EDIT_LEVEL;
+            if (clickState == "play mode") {
+                clickState = "edit mode";
+            } else {
+                clickState = "play mode";
+            }
         }
         break;
     case 'p':
@@ -622,6 +630,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 32:
         player.releaseAllAstronauts(true);
+        //player.releaseAstronaut();
         break;
     case '=':
         player.damp += 0.01;
@@ -664,6 +673,9 @@ void GameScreen::keyReleased(int key) {
     case OF_KEY_UP:
         if (player.TRAVERSE_MODE) {
             player.jump();
+            if (!ENABLE_EDITOR) {
+                exportLevel();
+            }
             break;
         } else {
             player.CAN_JETPACK = true;
@@ -798,9 +810,15 @@ void GameScreen::dragEvent(ofDragInfo dragInfo) {
 
 void GameScreen::exportLevel() {
     while (true) {
-        string levelName = "level_" + ofToString(levelID++);
+        string levelName;
+        if (ENABLE_EDITOR) {
+            levelName = "level_" + ofToString(levelID);
+        }
+        if (!ENABLE_EDITOR) {
+            levelName = "level_" + ofToString(levelID) + ".sav";
+        }
         std::ifstream input(levelName.c_str());
-        if  (input.good()) {
+ //       if  (input.good()) {
             std::ofstream output(levelName.c_str());
             output << gravitator.size() + strandedAstronaut.size() << std::endl;
             output << player.starting_pos.x << ' ' << player.starting_pos.y << std::endl;
@@ -830,13 +848,24 @@ void GameScreen::exportLevel() {
             }
             levelState = ofToString(levelName) + " saved";
             break;
-        }
+  //      }
     }
-
 }
 
 void GameScreen::importLevel(int levelID) {
-    std::ifstream input(("level_" + ofToString(levelID)).c_str());
+    string levelName;
+    if (ENABLE_EDITOR) {
+        levelName = "level_" + ofToString(levelID);
+    } else if (!ENABLE_EDITOR) {
+        levelName = "level_" + ofToString(levelID) + ".sav";
+    }
+    std::ifstream input(levelName.c_str());
+
+    if (!input.good()) {
+        levelName = "level_" + ofToString(levelID);
+        input.open(levelName.c_str());
+    }
+
     if (input.good()) {
         vector<Gravitator *>::iterator a = gravitator.begin();
         while (a != gravitator.end()) {

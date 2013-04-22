@@ -124,9 +124,11 @@ void StrandedAstronaut::checkState() {
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
         CAN_HIT_ASTRONAUTS = false;
         damp = 0.87;
-    } else {
+    } else if (!IN_GRAVITY_WELL) {
         //CAN_HIT_ASTRONAUTS = true;
         damp = 0.99;
+    } else {
+        damp = 1.0;
     }
 }
 
@@ -252,13 +254,16 @@ void StrandedAstronaut::detectGravitatorCollisions() {
             }
            if (gravitator_type != "planet") {
                 IS_DEAD = true;
+                FOLLOWING_ASTRONAUT = false;
+                FOLLOWING_PLAYER = false;
+                THE_END = false;
             }
             HIT_GRAVITATOR          = true;
         }
         if (dist > collision_range) {
-
+            HIT_GRAVITATOR = false;
         }
-        if (dist < gravity_range && USING_GRAVITY) {
+        if (dist < gravity_range && USING_GRAVITY && !HIT_GRAVITATOR) {
             if (SIMPLE_GRAVITY) {
                 gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
             } else {
