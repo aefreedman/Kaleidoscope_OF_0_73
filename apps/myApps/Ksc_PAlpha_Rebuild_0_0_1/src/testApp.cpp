@@ -1,4 +1,5 @@
 #include "testApp.h"
+#define dt 1.0/60.0
 
 //--------------------------------------------------------------
 void testApp::setup(){
@@ -6,10 +7,14 @@ void testApp::setup(){
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
 
-    currentScreen = &menuScreen;
+    //currentScreen = &menuScreen;
+    currentScreen = &gameScreen;
+    gameScreen.setup();
 
     currentScreen->setup();
     ofEnableAlphaBlending();
+    STARTED = false;
+    start_timer = 3.0;
 
 
 }
@@ -18,6 +23,15 @@ void testApp::setup(){
 void testApp::update(){
 
     currentScreen->update();
+
+    if (STARTED) {
+        start_timer = countdownTimer(start_timer);
+    }
+
+    if (start_timer <= 0) {
+        //&gameScreen.(*gui).push_back(new GUIFadeIn(&gameScreen.player.pos));
+        currentScreen = &gameScreen;
+    }
 
 }
 
@@ -28,19 +42,27 @@ void testApp::draw(){
 
 }
 
+float testApp::countdownTimer(float time) {
+    time -= dt;
+    return time;
+}
+
+
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-
+    currentScreen->keyPressed(key);
     switch (key) {
-        case OF_KEY_RETURN:
+        case 32:
             if (currentScreen == &menuScreen) {
-                currentScreen = &gameScreen;
-                currentScreen->setup();
+                menuScreen.fxEngineLoop.stop();
+                menuScreen.fxExplosion.play();
+                STARTED = true;
+                //currentScreen->setup();
             }
         break;
     }
 
-    currentScreen->keyPressed(key);
+
 
 }
 

@@ -215,7 +215,8 @@ public:
     ofSoundPlayer fxJetpackUse;
     ofSoundPlayer fxAstronautCollect;
     ofSoundPlayer fxAstronautRelease;
-    vector <ofSoundPlayer *> fxJump;
+    //vector <ofSoundPlayer> fxJump;
+    ofSoundPlayer fxJump;
     ofSoundPlayer fxRotate;
     float max_oxygen;
     float astronaut_release_timer;

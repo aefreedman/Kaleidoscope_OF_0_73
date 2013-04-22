@@ -96,38 +96,10 @@ void Comet::update() {
             }
         }
     }
-    // TAIL STUFF
-
-    perpDir = dir.getPerpendicular();
-    tail1.set(pos.x + 20*dir.x,pos.y+20*dir.y);
-    tail2.set(pos.x + 20*perpDir.x, pos.y + 20*perpDir.y);
-    tail8.set(pos.x - 20*perpDir.x,pos.y - 20*perpDir.y);
-
-
-    for (int i=0; i<49; i++){
-        posArray[i] = posArray[i+1];
-    }
-    posArray[49] = pos;
-
-    tail5 = posArray[0];
-
-
-
-
-
 }
 
 
 void Comet::draw() {
-    ofVec2f perpDir = dir.getPerpendicular();
-
-    ofSetPolyMode(OF_POLY_WINDING_NONZERO);
-    ofBeginShape();
-        ofVertex(tail1);
-        ofVertex(tail2);
-        ofVertex(tail5);
-        ofVertex(tail8);
-    ofEndShape();
 
 
     if (ptclColor.size() > 1){
@@ -158,7 +130,10 @@ void Comet::draw() {
 
 void Comet::spawnParticle() {
     cometColor.a = ofRandom(cometColor_a_min, cometColor_a_max);
-    ptclPosSize.push_back(ofVec3f(ofRandom(pos.x - particle_pos_range, pos.x + particle_pos_range), ofRandom(pos.y - particle_pos_range, pos.y + particle_pos_range), ofRandom(particle_min_size , particle_max_size)));
+    ofVec3f newPos;
+    newPos.set(ofVec3f(ofRandom(pos.x - particle_pos_range, pos.x + particle_pos_range), ofRandom(pos.y - particle_pos_range, pos.y + particle_pos_range), ofRandom(particle_min_size , particle_max_size)));
+    newPos.z*=(r-(ofDist(pos.x,pos.y,newPos.x,newPos.y)/r))/r;
+    ptclPosSize.push_back(newPos);
     ptclColor.push_back(cometColor);
     ptclDir.push_back(dir * particle_v);
 }

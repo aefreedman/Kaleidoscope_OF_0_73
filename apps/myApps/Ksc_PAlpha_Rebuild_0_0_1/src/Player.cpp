@@ -106,25 +106,33 @@ void Player::loadSound() {
     fxRotate.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");
     fxAstronautCollect.loadSound("AUDIO/ksc_AUDIO_astro_pickup_001.wav");
     fxAstronautRelease.loadSound("AUDIO/ksc_AUDIO_astronaut_death_001.wav");
-    for (int i = 0; i < 3; i++) {
-        fxJump.push_back(new ofSoundPlayer());
-        fxJump[i]->loadSound("AUDIO/ksc_AUDIO_jump_001.wav");
-
-    }
+//    for (int i = 0; i < 3; i++) {
+//        fxJump.push_back(ofSoundPlayer());
+//        fxJump[i].loadSound("AUDIO/ksc_AUDIO_player_jump_00" + ofToString(i) + ".wav");
+//        fxJump[i].setVolume(0.3);
+//    }
     //fxJump[0]->loadSound("AUDIO/ksc_AUDIO_jump_001.wav");
     //fxJump[1]->loadSound("AUDIO/ksc_AUDIO_jump_002.wav");
     //fxJump[2]->loadSound("AUDIO/ksc_AUDIO_jump_003.wav");
     //fxJump[3]->loadSound("AUDIO/ksc_AUDIO_jump_004.wav");
 
+    int random = ofRandom (1, 4);
+    if (random == 1) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_001.wav");}
+    if (random == 2) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_002.wav");}
+    if (random == 3) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_003.wav");}
+    if (random == 4) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_004.wav");}
+
+    fxJump.setVolume(0.3);
+
+
     fxDeath.setVolume(0.75);
-    fxJump[0]->setVolume(0.3);
-    //fxJump[1]->setVolume(0.3);
-    //fxJump[2]->setVolume(0.3);
-    //fxJump[3]->setVolume(0.3);
+
     fxJetpackUse.setVolume(.55);
     fxAstronautCollect.setVolume(.75);
     fxAstronautRelease.setVolume(.75);
     fxRotate.setVolume(0.1);
+
+    fxJetpackUse.setMultiPlay(true);
 }
 
 void Player::update() {
@@ -649,8 +657,9 @@ void Player::jump() {
     }
 
     if (TRAVERSE_MODE) {
-        int random = ofRandom(0, fxJump.size());
-        fxJump[random]->play();
+        //fxJump[0].play();
+        fxJump.setSpeed(ofRandom(0.9, 1.2));
+        fxJump.play();
         starting_pos = pos;
         f += jumpStrength;
         LEAVING_PLANET = true;
@@ -688,6 +697,7 @@ void Player::jetpack(bool JETPACK_FORWARD) {
             cout << "impulsed at " + ofToString(f.x, 0) + "N, " + ofToString(f.y, 0) + "N" + nl;
         }
         anim = jetpackFull;
+        fxJetpackUse.setSpeed(ofRandom(0.95, 1.1));
         fxJetpackUse.play();
     } else {
         anim = jetpackEmpty;

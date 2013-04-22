@@ -19,6 +19,7 @@
 #include "Solid.h"
 #include "Nonsolid.h"
 #include "GUI.h"
+#include "GUIFadeIn.h"
 #include "Message.h"
 #include "LevelEditor.h"
 #include "GUIOverlay.h"
@@ -63,6 +64,10 @@ public:
         Player player;
 
         ofImage background;
+
+        //HUD ASSETS
+            ofImage O2frame;
+            ofImage O2bar;
 
         ofxSpriteSheetRenderer * planetRenderer;
         ofxSpriteSheetRenderer * nautRenderer;
@@ -116,6 +121,8 @@ private:
         ofVec3f bottomRightCorner;
         ofVec3f bottomLeftCorner;
         ofVec3f topLeftCorner;
+
+        GUIFadeIn fadeIn;
 };
 
 #endif // GAMESCREEN_H

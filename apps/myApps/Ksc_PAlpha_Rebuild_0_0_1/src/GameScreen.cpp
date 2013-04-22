@@ -33,6 +33,8 @@ void GameScreen::setup() {
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
+    fadeIn                          = GUIFadeIn(camera_pos);
+    fadeIn.ACTIVE                   = false;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -72,6 +74,11 @@ void GameScreen::setup() {
 
     ofEnableAlphaBlending(); // turn on alpha blending. important!
 
+    //HUD
+
+    O2frame.loadImage("ART/O2_frame.png");
+    O2bar.loadImage("ART/O2_bar.png");
+
 }
 
 void GameScreen::loadSound() {
@@ -95,6 +102,7 @@ void GameScreen::update() {
     }
     if (!PAUSE) {
         player.update();
+        fadeIn.update();
         if (player.IS_DEAD) {
             reset();
         }
@@ -212,6 +220,7 @@ void GameScreen::update() {
         CAMERA_SCALING = true;
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
+    fadeIn.pos.interpolate(camera_target, camera_lerp_speed * dt);
 
     planetRenderer->clear(); // clear the sheet
     for(int i = 0; i < gravitator.size(); i++) {
@@ -222,6 +231,8 @@ void GameScreen::update() {
             scaleFactor = 4.0*gravitator[i]->r/120.0;
         } else if (gravitator[i]->type == "sun") {
             scaleFactor = 2 * gravitator[i]->r/128.0;
+        } else if (gravitator[i]->type == "blackhole") {
+            scaleFactor = 0;
         }
         planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
@@ -232,6 +243,10 @@ void GameScreen::update() {
         nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
     nautRenderer->update(ofGetElapsedTimeMillis());
+
+
+
+
 }
 
 void GameScreen::moveCamera(string direction) {
@@ -252,6 +267,8 @@ void GameScreen::moveCamera(string direction) {
     camera_target.x = target.x;
     camera_target.y = target.y;
     camera_target.z = 0;
+
+
 }
 
 void GameScreen::moveCamera() {
@@ -295,12 +312,13 @@ void GameScreen::draw() {
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255);
 
-    planetRenderer -> draw();
-    nautRenderer -> draw();
-
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
+
+    planetRenderer -> draw();
+    nautRenderer -> draw();
+
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->draw();
     }
@@ -308,18 +326,30 @@ void GameScreen::draw() {
         strandedAstronaut[i]->draw();
     }
     player.draw();
+
     if (!MAP_VIEW) {
         ofSetColor(100, 100, 100);
         for (int i = 0; i < strandedAstronaut.size(); i++) {
             ofCircle(50+(25*i) + camera_pos.x, 50 + camera_pos.y, 10);
         }
-        int x = 1000 + camera_pos.x;
-        int y = 600 + camera_pos.y;
+        int x = ofGetWidth() + camera_pos.x - 53;
+        int y = ofGetHeight() + camera_pos.y - 26;
         float o2_percent = player.oxygen / player.max_oxygen;
-        ofSetColor(255 - (255 * o2_percent), 0, 255 * o2_percent);
-        ofRect(ofPoint(x, y), 20, -player.oxygen / 2);
+        ofSetColor(88 - (88 * o2_percent), 211, 222 * o2_percent);
+        ofRect(ofPoint(x, y), 20, -136 * o2_percent);
+
+        int percentOut = 400 * (1 -(player.oxygen/player.max_oxygen));
+        cout << ofToString(percentOut) + "\n";
+
+        ofSetColor(255,255,255,255);
+        //O2bar.draw(camera_pos.x + ofGetWidth()-O2bar.width - 34,camera_pos.y + ofGetHeight()-O2bar.height - 24);
+        O2frame.draw(camera_pos.x + ofGetWidth()-O2frame.width - 20,camera_pos.y + ofGetHeight()-O2frame.height - 20);
     }
+    fadeIn.draw();
     ofPopMatrix();
+
+
+
 
     ///Draw events that go on top of camera but are not subject to camera go below
 
@@ -356,6 +386,8 @@ void GameScreen::draw() {
         ofCircle(mouseX, mouseY, 10);
         ofPopMatrix();
     }
+
+
 
     ///TOP TEXT DISPLAY-----------------------------------------
 
@@ -450,6 +482,8 @@ void GameScreen::draw() {
 void GameScreen::reset() {
     importLevel(levelID);
     player.setup();
+    //fadeIn.pos.set(ofVec2f(camera_target.x, camera_target.y));
+    fadeIn.setup();
 }
 
 void GameScreen::addGravitator() {
