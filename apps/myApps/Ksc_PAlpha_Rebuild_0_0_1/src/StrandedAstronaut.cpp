@@ -252,7 +252,7 @@ void StrandedAstronaut::detectGravitatorCollisions() {
             if (gravitator_type == "planet") {
                 gravitatorBounce();
             }
-            if (gravitator_type == "planet" || gravitator_type == "comet") {
+            if (gravitator_type == "sun" || gravitator_type == "comet") {
                 IS_DEAD = true;
                 FOLLOWING_ASTRONAUT = false;
                 FOLLOWING_PLAYER = false;

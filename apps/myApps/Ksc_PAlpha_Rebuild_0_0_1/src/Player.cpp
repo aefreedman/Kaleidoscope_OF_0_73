@@ -72,6 +72,7 @@ void Player::setup() {
     flame_rotation          = 0;
     v_limit                 = 300.0;
     astronaut_pickup_delay  = 1.0;
+    astronaut_release_timer = astronaut_pickup_delay;
 
     HIT_GRAVITATOR          = false;
     TRAVERSE_MODE           = false;

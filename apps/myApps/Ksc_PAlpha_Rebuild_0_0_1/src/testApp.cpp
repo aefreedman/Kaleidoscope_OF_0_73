@@ -17,7 +17,8 @@ void testApp::setup(){
     start_timer = 3.0;
     timer = start_timer;
 
-    LOAD_WITH_SOUND = false;
+    LOAD_WITH_SOUND = true;
+
     if (!LOAD_WITH_SOUND) {
         menuScreen.LOAD_WITH_SOUND = false;
         gameScreen.LOAD_WITH_SOUND = false;
