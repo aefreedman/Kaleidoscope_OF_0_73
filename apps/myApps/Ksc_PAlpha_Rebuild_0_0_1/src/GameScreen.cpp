@@ -47,10 +47,10 @@ void GameScreen::setup() {
     map_view_scale_target           = .25;
     levelID                         = 0;
 
-    LOAD_WITH_SOUND                 = true;
+    //LOAD_WITH_SOUND                 = true;
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
-    ENABLE_EDITOR                   = true;
+    ENABLE_EDITOR                   = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -295,18 +295,7 @@ void GameScreen::draw() {
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255,50);
-    for (int i = 0; i < 30; i++) {
-        ofPolyline line;
-        line.addVertex(1280*i,0);
-        line.addVertex(1280*i,8000);
-        line.draw();
-    }
-    for (int i = 0; i< 30; i++) {
-        ofPolyline line;
-        line.addVertex(0,720*i);
-        line.addVertex(8000,720*i);
-        line.draw();
-    }
+
     ofPopMatrix();
 
 
@@ -317,6 +306,20 @@ void GameScreen::draw() {
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255);
 
+    if (clickState != "play mode") {   /// FIXME (Aaron#1#): BROKEN
+        for (int i = 0; i < 4; i++) {
+            ofPolyline line;
+            line.addVertex(1280 * i, 0);
+            line.addVertex(1280 * i, 8000);
+            line.draw();
+        }
+        for (int i = 0; i< 4; i++) {
+            ofPolyline line;
+            line.addVertex(0, 720 * i);
+            line.addVertex(8000, 720 * i);
+            line.draw();
+        }
+    }
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }

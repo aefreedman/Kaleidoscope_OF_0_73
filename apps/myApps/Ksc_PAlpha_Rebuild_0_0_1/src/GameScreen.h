@@ -73,6 +73,7 @@ public:
 
         ofxSpriteSheetRenderer * planetRenderer;
         ofxSpriteSheetRenderer * nautRenderer;
+        bool CONTINUOUS_CAMERA;
 
         string clickState;
         string levelState;
@@ -113,8 +114,7 @@ private:
         float view_lerp_speed;
         float map_view_scale_target;
         bool MAP_VIEW;
-        bool LOAD_WITH_SOUND;
-        bool CONTINUOUS_CAMERA;
+        //bool LOAD_WITH_SOUND;
         bool WON_LEVEL;
         bool LEVEL_HAS_ASTRONAUTS;
         bool MOVE_MESSAGES;

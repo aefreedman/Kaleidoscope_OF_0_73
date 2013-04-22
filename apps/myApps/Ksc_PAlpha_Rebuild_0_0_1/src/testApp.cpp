@@ -17,6 +17,12 @@ void testApp::setup(){
     start_timer = 3.0;
     timer = start_timer;
 
+    LOAD_WITH_SOUND = false;
+    if (!LOAD_WITH_SOUND) {
+        menuScreen.LOAD_WITH_SOUND = false;
+        gameScreen.LOAD_WITH_SOUND = false;
+    }
+
 
 }
 
@@ -61,6 +67,9 @@ void testApp::keyPressed(int key){
                 menuScreen.guiFadeOut.timer = start_timer + 1;
                 //currentScreen->setup();
             }
+        break;
+        case 'c':
+            gameScreen.CONTINUOUS_CAMERA = !gameScreen.CONTINUOUS_CAMERA;
         break;
     }
 

@@ -30,6 +30,7 @@ class testApp : public ofBaseApp {
 		bool STARTED;
 		float start_timer;
 		float timer;
+		bool LOAD_WITH_SOUND;
 
     private:
 

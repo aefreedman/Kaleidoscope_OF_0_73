@@ -106,6 +106,8 @@ void Player::loadSound() {
     fxRotate.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");
     fxAstronautCollect.loadSound("AUDIO/ksc_AUDIO_astro_pickup_001.wav");
     fxAstronautRelease.loadSound("AUDIO/ksc_AUDIO_astronaut_death_001.wav");
+    fxWalk.loadSound("AUDIO/ksc_AUDIO_player_walk_001.wav");
+
 //    for (int i = 0; i < 3; i++) {
 //        fxJump.push_back(ofSoundPlayer());
 //        fxJump[i].loadSound("AUDIO/ksc_AUDIO_player_jump_00" + ofToString(i) + ".wav");
@@ -614,6 +616,10 @@ void Player::traversePlanet(bool move_left) {
     }
     pos.x = (cos(theta) * (planet_r + r)) + planet_pos.x;
     pos.y = (sin(theta) * (planet_r + r)) + planet_pos.y;
+    if (!fxWalk.getIsPlaying()) {
+        fxWalk.setSpeed(ofRandom(0.8, 1.2));
+        fxWalk.play();
+    }
 
 }
 

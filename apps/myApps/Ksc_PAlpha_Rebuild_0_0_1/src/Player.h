@@ -218,6 +218,7 @@ public:
     //vector <ofSoundPlayer> fxJump;
     ofSoundPlayer fxJump;
     ofSoundPlayer fxRotate;
+    ofSoundPlayer fxWalk;
     float max_oxygen;
     float astronaut_release_timer;
     float astronaut_pickup_delay;

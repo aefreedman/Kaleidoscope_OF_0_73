@@ -23,6 +23,8 @@ public:
     void gotMessage(ofMessage msg);
 
     float countdownTimer(float time);
+
+    bool LOAD_WITH_SOUND;
 protected:
 private:
 };
