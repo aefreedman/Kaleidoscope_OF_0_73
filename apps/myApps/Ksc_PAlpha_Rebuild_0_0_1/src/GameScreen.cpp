@@ -276,12 +276,14 @@ void GameScreen::draw() {
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255);
 
-    planetRenderer -> draw();
-    nautRenderer -> draw();
-
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
+
+    planetRenderer -> draw();
+    nautRenderer -> draw();
+
+
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->draw();
     }
