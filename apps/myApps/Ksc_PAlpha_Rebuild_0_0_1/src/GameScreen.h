@@ -64,6 +64,10 @@ public:
 
         ofImage background;
 
+        //HUD ASSETS
+            ofImage O2frame;
+            ofImage O2bar;
+
         ofxSpriteSheetRenderer * planetRenderer;
         ofxSpriteSheetRenderer * nautRenderer;
 
