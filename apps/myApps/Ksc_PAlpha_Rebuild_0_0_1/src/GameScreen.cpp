@@ -33,6 +33,8 @@ void GameScreen::setup() {
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
+    fadeIn                          = GUIFadeIn(camera_pos);
+    fadeIn.ACTIVE                   = false;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -44,11 +46,12 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 14;
+    levelID                         = 30;
 
-    LOAD_WITH_SOUND                 = false;
+    LOAD_WITH_SOUND                 = true;
     CONTINUOUS_CAMERA               = false;
     MOVE_MESSAGES                   = false;
+    ENABLE_EDITOR                   = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -99,6 +102,10 @@ void GameScreen::update() {
     }
     if (!PAUSE) {
         player.update();
+        fadeIn.update();
+        if (player.IS_DEAD) {
+            reset();
+        }
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
         }
@@ -106,36 +113,47 @@ void GameScreen::update() {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
             if (strandedAstronaut[i]->IS_DEAD) {
+
                 delete strandedAstronaut[i];
                 strandedAstronaut.erase(strandedAstronaut.begin()+i);
             }
         }
         for (int i = 0; i < gui.size(); i++) {
             gui[i]->update();
+            if (!gui[i]->ACTIVE) {
+                //delete gui[i];
+                //gui.erase(gui.begin()+i);
+            }
+            if ((gui[i]->pos.x > ofGetWidth() + camera_target.x - 50 || gui[i]->pos.y > ofGetHeight() + camera_target.y + 30 || gui[i]->pos.x < camera_target.x - 50 || gui[i]->pos.y < camera_target.y + 30) && camera_pos.squareDistance(camera_target) < 10) {
+                //gui[i]->pos.interpolate(gui[i]->pos.getMiddle(player.pos), 1);
+                gui[i]->pos.interpolate(player.pos, 10 * dt);
+            }
             if (MOVE_MESSAGES) {
-                ofVec3f t;
+
+/*                ofVec3f t;
                 ofVec3f u;
                 ofVec3f r;
-                ofVec3f p; //
+                ofVec3f p;
                 p.set(player.pos.x, player.pos.y, 0);
-                r.set(gui[i]->pos.x, gui[i]->pos.y, 0);
+                r.set(gui[i]->pos.x, gui[i]->pos.y, 0);*/
 
                 if (gui[i]->pos.x > ofGetWidth() + camera_pos.x) { ///Off right
+
                     ofVec3f q;
                     ofVec3f s;
-                    ofVec3f divisor;
                     q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
                     s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
-                    divisor = s.getCrossed(r);
-
-                    t = s.getCrossed(q - p) / divisor;
-                    u = r.getCrossed(q - p) / divisor;
-                    //gui[i]->pos.set(p + (t * r));
-                    gui[i]->pos.x = camera_pos.x + (r.x * t.z);
-                    gui[i]->pos.y = camera_pos.y + (r.y * t.z);
+/*
+                    t = s.getCrossed(q - p) / s.getCrossed(r);
+                    u = r.getCrossed(q - p) / s.getCrossed(r);
+                    gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
+                    //gui[i]->pos.x = camera_pos.x + (r.x * t.z);
+                    //gui[i]->pos.y = camera_pos.y + (r.y * t.z);*/
 
                 } else if (gui[i]->pos.y > ofGetHeight() + camera_pos.y) { /// Below
-                    ofVec3f q;
+
+/*                    ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x + ofGetWidth(), camera_pos.y + ofGetHeight(), 0);
                     s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
@@ -143,8 +161,11 @@ void GameScreen::update() {
                     t = s.getCrossed(q - p) / s.getCrossed(r);
                     u = r.getCrossed(q - p) / s.getCrossed(r);
                     gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
+*/
                 } else if (gui[i]->pos.x < camera_pos.x) { /// Off left
-                    ofVec3f q;
+
+/*                    ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x, camera_pos.y, 0);
                     s.set(camera_pos.x, camera_pos.y + ofGetHeight(), 0);
@@ -152,10 +173,13 @@ void GameScreen::update() {
                     t = s.getCrossed(q - p) / s.getCrossed(r);
                     u = r.getCrossed(q - p) / s.getCrossed(r);
                     gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
                     //gui[i]->pos.x = p.x + (t.z);
                     //gui[i]->pos.y = p.y + (t.z);
+*/
                 } else if (gui[i]->pos.y < camera_pos.y) { /// Above
-                    ofVec3f q;
+
+/*                    ofVec3f q;
                     ofVec3f s;
                     q.set(camera_pos.x, camera_pos.y, 0);
                     s.set(camera_pos.x + ofGetWidth(), camera_pos.y, 0);
@@ -163,11 +187,9 @@ void GameScreen::update() {
                     t = s.getCrossed(q - p) / s.getCrossed(r);
                     u = r.getCrossed(q - p) / s.getCrossed(r);
                     gui[i]->pos.set(p + (t * r));
+                    gui[i]->pos.middle(p);
+*/
                 }
-            }
-            if (!gui[i]->ACTIVE) {
-                delete gui[i];
-                gui.erase(gui.begin()+i);
             }
         }
         if (LEVEL_HAS_ASTRONAUTS && strandedAstronaut.size() == 0) {
@@ -198,6 +220,7 @@ void GameScreen::update() {
         CAMERA_SCALING = true;
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
+    fadeIn.pos.interpolate(camera_target, camera_lerp_speed * dt);
 
     planetRenderer->clear(); // clear the sheet
     for(int i = 0; i < gravitator.size(); i++) {
@@ -208,6 +231,8 @@ void GameScreen::update() {
             scaleFactor = 4.0*gravitator[i]->r/120.0;
         } else if (gravitator[i]->type == "sun") {
             scaleFactor = 2 * gravitator[i]->r/128.0;
+        } else if (gravitator[i]->type == "blackhole") {
+            scaleFactor = 0;
         }
         planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
@@ -294,7 +319,6 @@ void GameScreen::draw() {
     planetRenderer -> draw();
     nautRenderer -> draw();
 
-
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->draw();
     }
@@ -302,7 +326,6 @@ void GameScreen::draw() {
         strandedAstronaut[i]->draw();
     }
     player.draw();
-
 
     if (!MAP_VIEW) {
         ofSetColor(100, 100, 100);
@@ -319,14 +342,10 @@ void GameScreen::draw() {
         cout << ofToString(percentOut) + "\n";
 
         ofSetColor(255,255,255,255);
-
-
-
-    //O2bar.draw(camera_pos.x + ofGetWidth()-O2bar.width - 34,camera_pos.y + ofGetHeight()-O2bar.height - 24);
-    O2frame.draw(camera_pos.x + ofGetWidth()-O2frame.width - 20,camera_pos.y + ofGetHeight()-O2frame.height - 20);
-
+        //O2bar.draw(camera_pos.x + ofGetWidth()-O2bar.width - 34,camera_pos.y + ofGetHeight()-O2bar.height - 24);
+        O2frame.draw(camera_pos.x + ofGetWidth()-O2frame.width - 20,camera_pos.y + ofGetHeight()-O2frame.height - 20);
     }
-
+    fadeIn.draw();
     ofPopMatrix();
 
 
@@ -462,6 +481,9 @@ void GameScreen::draw() {
 
 void GameScreen::reset() {
     importLevel(levelID);
+    player.setup();
+    //fadeIn.pos.set(ofVec2f(camera_target.x, camera_target.y));
+    fadeIn.setup();
 }
 
 void GameScreen::addGravitator() {
@@ -510,11 +532,13 @@ void GameScreen::keyPressed(int key) {
         }
         break;
     case OF_KEY_F1:
-        CAN_EDIT_LEVEL = !CAN_EDIT_LEVEL;
-        if (clickState == "play mode") {
-            clickState = "edit mode";
-        } else {
-            clickState = "play mode";
+        if (ENABLE_EDITOR) {
+            CAN_EDIT_LEVEL = !CAN_EDIT_LEVEL;
+            if (clickState == "play mode") {
+                clickState = "edit mode";
+            } else {
+                clickState = "play mode";
+            }
         }
         break;
     case 'p':
@@ -640,6 +664,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 32:
         player.releaseAllAstronauts(true);
+        //player.releaseAstronaut();
         break;
     case '=':
         player.damp += 0.01;
@@ -682,6 +707,9 @@ void GameScreen::keyReleased(int key) {
     case OF_KEY_UP:
         if (player.TRAVERSE_MODE) {
             player.jump();
+            if (!ENABLE_EDITOR) {
+                exportLevel();
+            }
             break;
         } else {
             player.CAN_JETPACK = true;
@@ -816,9 +844,15 @@ void GameScreen::dragEvent(ofDragInfo dragInfo) {
 
 void GameScreen::exportLevel() {
     while (true) {
-        string levelName = "level_" + ofToString(levelID++);
+        string levelName;
+        if (ENABLE_EDITOR) {
+            levelName = "level_" + ofToString(levelID);
+        }
+        if (!ENABLE_EDITOR) {
+            levelName = "level_" + ofToString(levelID) + ".sav";
+        }
         std::ifstream input(levelName.c_str());
-        if  (input.good()) {
+ //       if  (input.good()) {
             std::ofstream output(levelName.c_str());
             output << gravitator.size() + strandedAstronaut.size() << std::endl;
             output << player.starting_pos.x << ' ' << player.starting_pos.y << std::endl;
@@ -848,13 +882,24 @@ void GameScreen::exportLevel() {
             }
             levelState = ofToString(levelName) + " saved";
             break;
-        }
+  //      }
     }
-
 }
 
 void GameScreen::importLevel(int levelID) {
-    std::ifstream input(("level_" + ofToString(levelID)).c_str());
+    string levelName;
+    if (ENABLE_EDITOR) {
+        levelName = "level_" + ofToString(levelID);
+    } else if (!ENABLE_EDITOR) {
+        levelName = "level_" + ofToString(levelID) + ".sav";
+    }
+    std::ifstream input(levelName.c_str());
+
+    if (!input.good()) {
+        levelName = "level_" + ofToString(levelID);
+        input.open(levelName.c_str());
+    }
+
     if (input.good()) {
         vector<Gravitator *>::iterator a = gravitator.begin();
         while (a != gravitator.end()) {

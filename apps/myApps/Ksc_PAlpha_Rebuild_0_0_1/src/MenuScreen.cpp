@@ -28,6 +28,13 @@ void MenuScreen::setup() {
 
     shakeCounter = 4;
 
+    fxEngineLoop.loadSound("AUDIO/ksc_AUDIO_ship_engineloop_001.wav");
+    fxEngineLoop.setLoop(true);
+    fxEngineLoop.play();
+
+    fxExplosion.loadSound("AUDIO/ksc_AUDIO_ship_explosion_001.wav");
+    fxExplosion.setSpeed(0.5);
+
 
 
 }

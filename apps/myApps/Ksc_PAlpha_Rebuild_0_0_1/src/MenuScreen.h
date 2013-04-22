@@ -59,6 +59,8 @@ public:
     ofVec3f nearStars[30];
 
     ofPoint shipPos;
+    ofSoundPlayer fxEngineLoop;
+    ofSoundPlayer fxExplosion;
 
 
 protected:

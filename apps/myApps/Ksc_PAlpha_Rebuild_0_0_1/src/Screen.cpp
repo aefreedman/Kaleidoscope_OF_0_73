@@ -1,4 +1,5 @@
 #include "Screen.h"
+#define dt 1.0/60.0
 
 Screen::Screen() {
     //ctor
@@ -7,6 +8,12 @@ Screen::Screen() {
 Screen::~Screen() {
     //dtor
 }
+
+float Screen::countdownTimer(float time) {
+    time -= dt;
+    return time;
+}
+
 
 //--------------------------------------------------------------
 void Screen::keyPressed(int key){

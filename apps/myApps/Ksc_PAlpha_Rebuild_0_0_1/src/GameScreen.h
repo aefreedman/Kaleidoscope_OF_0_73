@@ -19,6 +19,7 @@
 #include "Solid.h"
 #include "Nonsolid.h"
 #include "GUI.h"
+#include "GUIFadeIn.h"
 #include "Message.h"
 #include "LevelEditor.h"
 #include "GUIOverlay.h"
@@ -88,6 +89,7 @@ public:
 
         int justPressed[100];
         int wasPressed[];
+        GUIFadeIn fadeIn;
 protected:
 private:
         int planet_base_m;
@@ -114,11 +116,14 @@ private:
         bool WON_LEVEL;
         bool LEVEL_HAS_ASTRONAUTS;
         bool MOVE_MESSAGES;
+        bool ENABLE_EDITOR;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;
         ofVec3f bottomLeftCorner;
         ofVec3f topLeftCorner;
+
+
 };
 
 #endif // GAMESCREEN_H
