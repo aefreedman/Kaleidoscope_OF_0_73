@@ -77,6 +77,7 @@ void GameScreen::setup() {
 
     O2frame.loadImage("ART/O2_frame.png");
     O2bar.loadImage("ART/O2_bar.png");
+    map.loadImage("ART/map.png");
 
 }
 
@@ -332,9 +333,15 @@ void GameScreen::draw() {
     player.draw();
 
     if (!MAP_VIEW) {
-        ofSetColor(100, 100, 100);
-        for (int i = 0; i < strandedAstronaut.size(); i++) {
-            ofCircle(50+(25*i) + camera_pos.x, 50 + camera_pos.y, 10);
+        ofSetColor(255, 255, 255);
+        for (int i = 0; i < totalCrew; i++) {
+            if (i < strandedAstronaut.size()){
+                ofSetColor(255, 255, 255);
+                ofRect(36+(10*i) + camera_pos.x, camera_pos.y + ofGetHeight() - map.height + 46, 5,5);
+            } else {
+                ofSetColor(223, 42, 99);
+                ofRect(36+(10*i) + camera_pos.x, camera_pos.y + ofGetHeight() - map.height + 46, 5,5);
+            }
         }
         int x = ofGetWidth() + camera_pos.x - 53;
         int y = ofGetHeight() + camera_pos.y - 26;
@@ -347,6 +354,8 @@ void GameScreen::draw() {
         ofSetColor(255,255,255,255);
         //O2bar.draw(camera_pos.x + ofGetWidth()-O2bar.width - 34,camera_pos.y + ofGetHeight()-O2bar.height - 24);
         O2frame.draw(camera_pos.x + ofGetWidth()-O2frame.width - 20,camera_pos.y + ofGetHeight()-O2frame.height - 20);
+
+        map.draw(camera_pos.x,camera_pos.y + ofGetHeight() - map.height);
     }
     fadeIn.draw();
     ofPopMatrix();
@@ -942,6 +951,7 @@ void GameScreen::importLevel(int levelID) {
                 strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), &gravitator, &strandedAstronaut, &gui));
             }
         }
+        totalCrew = strandedAstronaut.size();
         vector<GUI *>::iterator c = gui.begin();
         while (c != gui.end()) {
             delete *c;
