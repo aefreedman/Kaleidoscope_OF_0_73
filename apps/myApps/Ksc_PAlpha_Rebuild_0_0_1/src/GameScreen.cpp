@@ -689,6 +689,7 @@ void GameScreen::keyPressed(int key) {
         player.damp -= 0.01;
         break;
     case 'm':
+        if (ENABLE_EDITOR) {
         if (!MAP_VIEW) {
             //camera_target_save = camera_target;
             view_scale_target = map_view_scale_target;
@@ -699,6 +700,7 @@ void GameScreen::keyPressed(int key) {
         }
         MAP_VIEW = !MAP_VIEW;
         PAUSE = !PAUSE;
+        }
         break;
     case 'R':
         reset();
