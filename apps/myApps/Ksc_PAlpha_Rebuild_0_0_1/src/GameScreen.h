@@ -89,6 +89,7 @@ public:
 
         int justPressed[100];
         int wasPressed[];
+        GUIFadeIn fadeIn;
 protected:
 private:
         int planet_base_m;
@@ -122,7 +123,7 @@ private:
         ofVec3f bottomLeftCorner;
         ofVec3f topLeftCorner;
 
-        GUIFadeIn fadeIn;
+
 };
 
 #endif // GAMESCREEN_H

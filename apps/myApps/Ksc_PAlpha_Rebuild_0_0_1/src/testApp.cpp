@@ -7,8 +7,8 @@ void testApp::setup(){
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
 
-    //currentScreen = &menuScreen;
-    currentScreen = &gameScreen;
+    currentScreen = &menuScreen;
+    //currentScreen = &gameScreen;
     gameScreen.setup();
 
     currentScreen->setup();
@@ -29,7 +29,7 @@ void testApp::update(){
     }
 
     if (start_timer <= 0) {
-        //&gameScreen.(*gui).push_back(new GUIFadeIn(&gameScreen.player.pos));
+        gameScreen.fadeIn.ACTIVE = true;
         currentScreen = &gameScreen;
     }
 

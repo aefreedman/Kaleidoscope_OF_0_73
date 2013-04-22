@@ -46,7 +46,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 0;
+    levelID                         = 30;
 
     LOAD_WITH_SOUND                 = true;
     CONTINUOUS_CAMERA               = false;
