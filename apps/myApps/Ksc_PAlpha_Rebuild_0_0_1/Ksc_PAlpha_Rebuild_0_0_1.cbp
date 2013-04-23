@@ -239,10 +239,10 @@
 		</Unit>
 		<Unit filename="src\Gravitator.h.save" />
 		<Unit filename="src\LevelEditor.cpp">
-			<Option virtualFolder="src\SHELL\GUI\" />
+			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
 		<Unit filename="src\LevelEditor.h">
-			<Option virtualFolder="src\SHELL\GUI\" />
+			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
 		<Unit filename="src\MenuScreen.cpp">
 			<Option virtualFolder="src\SCREENS\" />

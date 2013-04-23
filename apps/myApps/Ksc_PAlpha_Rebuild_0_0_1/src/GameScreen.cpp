@@ -205,12 +205,13 @@ void GameScreen::update() {
     }
 
     /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
-
     if (CONTINUOUS_CAMERA && clickState == "play mode" && !PAUSE && !MAP_VIEW) {
-        moveCamera();
+        camPlayer();
+    } else {
+        camIndependent();
     }
     if (!CONTINUOUS_CAMERA && player.OFF_SCREEN == true && clickState == "play mode") {
-        moveCamera(player.camera_move_direction);
+        moveCamPlayer(player.camera_move_direction);
         player.OFF_SCREEN = false;
     }
     player.camera_pos = camera_pos;
@@ -247,12 +248,9 @@ void GameScreen::update() {
     }
     nautRenderer->update(ofGetElapsedTimeMillis());
 
-
-
-
 }
 
-void GameScreen::moveCamera(string direction) {
+void GameScreen::moveCamPlayer(string direction) {
     ofVec2f target;
     if (!CAMERA_SCALING) {
         if (direction == "up") {
@@ -274,9 +272,34 @@ void GameScreen::moveCamera(string direction) {
 
 }
 
-void GameScreen::moveCamera() {
-    camera_target.x = player.pos.x - screen_width/2;
-    camera_target.y = player.pos.y - screen_height/2;
+void GameScreen::moveCamIndependent(string direction) {
+    ofVec2f target;
+    if (!CAMERA_SCALING) {
+        if (direction == "up") {
+            target.set(0, -screen_height * view_scale);
+        } else if (direction == "down") {
+            target.set(0, screen_height * view_scale);
+        } else if (direction == "left") {
+            target.set(-screen_width * view_scale, 0);
+        } else if (direction == "right") {
+            target.set(screen_width * view_scale, 0);
+        }
+    }
+
+    target += camera_target;
+    camera_independent_target.x = target.x;
+    camera_independent_target.y = target.y;
+    camera_independent_target.z = 0;
+}
+
+void GameScreen::camPlayer() {
+    camera_target.x = (player.pos.x * view_scale_target) - ofGetWidth()/2;
+    camera_target.y = (player.pos.y * view_scale_target) - ofGetHeight()/2;
+}
+
+void GameScreen::camIndependent() {
+    camera_target.x = (camera_independent_target.x * view_scale_target) - ofGetWidth()/2;
+    camera_target.y = (camera_independent_target.y * view_scale_target) - ofGetHeight()/2;
 }
 
 //--------------------------------------------------------------
@@ -359,7 +382,7 @@ void GameScreen::draw() {
 
         map.draw(camera_pos.x,camera_pos.y + ofGetHeight() - map.height);
     }
-    fadeIn.draw();
+    fadeIn.draw();/// TODO (Aaron#1#): FadeIn needs to scale
     ofPopMatrix();
 
     ///Draw events that go on top of camera but are not subject to camera go below
@@ -527,7 +550,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 'd':
         if (MAP_VIEW || clickState != "play mode") {
-            moveCamera("right");
+            moveCamIndependent("right");
         }
         if (iddqd == 1 || iddqd == 2) {
             iddqd++;
@@ -562,7 +585,7 @@ void GameScreen::keyPressed(int key) {
         if (CAN_EDIT_LEVEL && clickState == "edit mode") {
             clickState = "placing astronaut";
         } else if (MAP_VIEW || clickState != "play mode") {
-            moveCamera("left");
+            moveCamIndependent("left");
         }
         break;
     case 'A':
@@ -572,7 +595,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 's':
         if (MAP_VIEW || clickState != "play mode") {
-            moveCamera("down");
+            moveCamIndependent("down");
         }
         break;
     case 'P':
@@ -662,7 +685,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 'w':
         if (MAP_VIEW || clickState != "play mode") {
-            moveCamera("up");
+            moveCamIndependent("up");
         }
         break;
     case 'x':
@@ -687,12 +710,10 @@ void GameScreen::keyPressed(int key) {
     case 'm':
         if (ENABLE_EDITOR) {
         if (!MAP_VIEW) {
-            //camera_target_save = camera_target;
             view_scale_target = map_view_scale_target;
+            camera_independent_target = player.pos;
         } else if (MAP_VIEW) {
-            //camera_target = camera_target_save;
             view_scale_target = default_view_scale;
-            camera_target.set(0, 0, 0);
         }
         MAP_VIEW = !MAP_VIEW;
         PAUSE = !PAUSE;

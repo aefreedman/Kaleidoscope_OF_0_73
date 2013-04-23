@@ -49,8 +49,10 @@ public:
 
 		void addGravitator();
 		void addStrandedAstronaut(ofVec2f _pos);
-		void moveCamera(string direction);
-		void moveCamera();
+		void moveCamPlayer(string direction);
+		void moveCamIndependent(string direction);
+		void camPlayer();
+		void camIndependent();
 		void reset();
 		void loadSound();
 
@@ -88,6 +90,7 @@ public:
 
         ofVec3f camera_pos;
         ofVec3f camera_target;
+        ofVec3f camera_independent_target;
         ofVec3f camera_target_save;
 
         int justPressed[100];
