@@ -92,11 +92,7 @@ void GameScreen::loadSound() {
 
 //--------------------------------------------------------------
 void GameScreen::update() {
-    if (clickState != "play mode") {
-        PAUSE = true;
-    } else if (!MAP_VIEW) {
-        PAUSE = false;
-    }
+    checkPause();
     if (!PAUSE) {
         player.update();
         fadeIn.update();
@@ -203,7 +199,22 @@ void GameScreen::update() {
             fadeIn.ACTIVE = true;
         }
     }
+    camera();
+    fadeIn.pos.interpolate(camera_target, camera_lerp_speed * dt);
+    renderSprites();
+    player.camera_pos = camera_pos;
+    player.camera_target = camera_target;
+}
 
+void GameScreen::checkPause() {
+    if (clickState != "play mode") {
+        PAUSE = true;
+    } else if (!MAP_VIEW) {
+        PAUSE = false;
+    }
+}
+
+void GameScreen::camera() {
     /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
     if (CONTINUOUS_CAMERA && clickState == "play mode" && !PAUSE && !MAP_VIEW) {
         camPlayer();
@@ -214,9 +225,6 @@ void GameScreen::update() {
         moveCamPlayer(player.camera_move_direction);
         player.OFF_SCREEN = false;
     }
-    player.camera_pos = camera_pos;
-    player.camera_target = camera_target;
-
     view_scale = ofLerp(view_scale, view_scale_target, view_lerp_speed * dt);
     if (view_scale >= view_scale_target * 0.95 && view_scale <= view_scale_target * 1.05) {
         CAMERA_SCALING = false;
@@ -224,30 +232,6 @@ void GameScreen::update() {
         CAMERA_SCALING = true;
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
-    fadeIn.pos.interpolate(camera_target, camera_lerp_speed * dt);
-
-    planetRenderer->clear(); // clear the sheet
-    for(int i = 0; i < gravitator.size(); i++) {
-        float scaleFactor;
-        if (gravitator[i]->type == "comet") {
-            scaleFactor = 2;
-        } else if (gravitator[i]-> type == "planet") {
-            scaleFactor = 4.0*gravitator[i]->r/120.0;
-        } else if (gravitator[i]->type == "sun") {
-            scaleFactor = 2 * gravitator[i]->r/128.0;
-        } else if (gravitator[i]->type == "blackhole") {
-            scaleFactor = 0;
-        }
-        planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
-    }
-    planetRenderer->update(ofGetElapsedTimeMillis());
-    nautRenderer->clear(); // clear the sheet
-    for (int i=0; i<strandedAstronaut.size(); i++) {
-        float scaleFactor = 1;
-        nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
-    }
-    nautRenderer->update(ofGetElapsedTimeMillis());
-
 }
 
 void GameScreen::moveCamPlayer(string direction) {
@@ -302,7 +286,29 @@ void GameScreen::camIndependent() {
     camera_target.y = (camera_independent_target.y * view_scale_target) - ofGetHeight()/2;
 }
 
-//--------------------------------------------------------------
+void GameScreen::renderSprites() {
+    planetRenderer->clear(); // clear the sheet
+    for(int i = 0; i < gravitator.size(); i++) {
+        float scaleFactor;
+        if (gravitator[i]->type == "comet") {
+            scaleFactor = 2;
+        } else if (gravitator[i]-> type == "planet") {
+            scaleFactor = 4.0*gravitator[i]->r/120.0;
+        } else if (gravitator[i]->type == "sun") {
+            scaleFactor = 2 * gravitator[i]->r/128.0;
+        } else if (gravitator[i]->type == "blackhole") {
+            scaleFactor = 0;
+        }
+        planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
+    }
+    planetRenderer->update(ofGetElapsedTimeMillis());
+    nautRenderer->clear(); // clear the sheet
+    for (int i=0; i<strandedAstronaut.size(); i++) {
+        float scaleFactor = 1;
+        nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
+    }
+    nautRenderer->update(ofGetElapsedTimeMillis());
+}
 void GameScreen::draw() {
     ///Draw events that go behind the camera, but are not affected by zoom go below
     ofPushMatrix();

@@ -36,6 +36,7 @@ public:
         void setup();
 		void update();
 		void draw();
+		void renderSprites();
 
         void keyPressed(int key);
         void keyReleased(int key);
@@ -49,6 +50,8 @@ public:
 
 		void addGravitator();
 		void addStrandedAstronaut(ofVec2f _pos);
+		void camera();
+		void checkPause();
 		void moveCamPlayer(string direction);
 		void moveCamIndependent(string direction);
 		void camPlayer();
