@@ -164,7 +164,6 @@ public:
     void displayMessage(ofVec2f _pos, string text, ofColor background_color, ofColor foreground_color);
     void soundPlayer(string sound);
     void loadSound();
-    float countdownTimer(float time);
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;

@@ -176,11 +176,6 @@ void Player::update() {
     }
 }
 
-float Player::countdownTimer(float time) {
-    time -= dt;
-    return time;
-}
-
 void Player::move() {
     if (rotation >= 360 || rotation <= -360) {
         rotation = 0;
@@ -338,7 +333,7 @@ void Player::checkState() {
         v_limit = v_limit_in_gravity;
         if (gravity_type == "planet") {
             if (oxygen < max_oxygen) {
-            oxygen          += 5 * oxygen_depletion_speed * dt;
+            oxygen          += 1 * oxygen_depletion_speed * dt;
             }
         } else if (gravity_type != "planet") {
             if (oxygen > 0) {
@@ -401,7 +396,7 @@ void Player::detectAstronautCollisions() {
     for (int i = 0; i < strandedAstronaut->size(); i++) {
         float dist                  = pos.squareDistance((*strandedAstronaut)[i]->pos);
         float astronaut_r           = (*strandedAstronaut)[i]->r;
-        float pickup_range          = (astronaut_pickup_range) * (astronaut_pickup_range);
+        float pickup_range          = (astronaut_pickup_range) * (astronaut_pickup_range) + (20 * 20);
         float collision_range       = (r + astronaut_r) * (r + astronaut_r);
         //float pickup_range          = (r + astronaut_r + astronaut_pickup_range) * (r + astronaut_r + astronaut_pickup_range);
         float drop_range            = (astronaut_drop_range) * (astronaut_drop_range);
@@ -428,16 +423,17 @@ void Player::detectAstronautCollisions() {
             if (!HAVE_ASTRONAUT && !(*strandedAstronaut)[i]->FOLLOWING_PLAYER && dist <= pickup_range) {
                 (*strandedAstronaut)[i]->FOLLOWING_PLAYER               = true;
                 (*strandedAstronaut)[i]->THE_END                        = true;
+                (*strandedAstronaut)[i]->RELEASED                       = false;
                 HAVE_ASTRONAUT                                          = true;
                 fxAstronautCollect.play();
                 if (DEBUG_GUI) {
                     cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
                 }
             }
-            if (dist > drop_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
-                releaseAllAstronauts(true);
-                fxAstronautRelease.play();
-            }
+//            if (dist > drop_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
+//                releaseAllAstronauts(true);
+//                fxAstronautRelease.play();
+//            }
             if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
                 (*strandedAstronaut)[i]->getPlayerData(pos, v);
                 HAVE_ASTRONAUT              = true;

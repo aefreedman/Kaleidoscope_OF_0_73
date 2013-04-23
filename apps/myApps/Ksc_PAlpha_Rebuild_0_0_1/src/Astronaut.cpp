@@ -1,4 +1,5 @@
 #include "Astronaut.h"
+#define dt 1.0/60.0
 
 Astronaut::Astronaut() {
     //ctor
@@ -19,6 +20,11 @@ void Astronaut::checkState() {}
 
 void Astronaut::detectGravitatorCollisions() {
 
+}
+
+float Astronaut::countdownTimer(float timer) {
+    timer -= dt;
+    return timer;
 }
 void Astronaut::collisionData(int collision) {
     planet_pos                          = (*gravitator)[collision]->pos;

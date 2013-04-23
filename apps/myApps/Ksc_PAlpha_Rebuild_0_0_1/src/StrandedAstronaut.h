@@ -1,6 +1,5 @@
 #ifndef STRANDEDASTRONAUT_H
 #define STRANDEDASTRONAUT_H
-
 #include "Astronaut.h"
 #include "Shell.h"
 #include <vector>
@@ -38,6 +37,7 @@ public:
     bool displayMessageTimer();
     string pickMessage(int messageNumber);
     string pickMessageRandom();
+    void followReset();
 
     void detectPlayerCollisions();
     void followPlayer();
@@ -77,6 +77,8 @@ private:
 
     int sa_collision;
     float lerp_speed;
+    float release_timer;
+    float release_timer_start;
 
 };
 

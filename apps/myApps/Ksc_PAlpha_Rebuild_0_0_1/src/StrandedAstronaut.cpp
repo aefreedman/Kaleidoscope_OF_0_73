@@ -27,6 +27,8 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     no_spacing                  = 0;
     released_spacing            = 40;
     v_limit                     = 600.0;
+    release_timer_start         = 2.0;
+    release_timer               = release_timer_start;
 
     a.set(0, 0);
     f.set(0, 0);
@@ -49,8 +51,6 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     RELEASED                    = false;
 
     type = "strandedastronaut";
-
-
     anim = floating;
 
 	ofEnableAlphaBlending();
@@ -123,6 +123,12 @@ void StrandedAstronaut::checkState() {
     }
     if (FOLLOWING_ASTRONAUT) {
         getPlayerData((*strandedAstronaut)[astronaut]->pos, (*strandedAstronaut)[astronaut]->v);
+        if (!(*strandedAstronaut)[astronaut]->RELEASED) {
+            //RELEASED = false;
+        }
+    }
+    if (FOLLOWING_PLAYER) {
+        //RELEASED = false;
     }
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
         CAN_HIT_ASTRONAUTS = false;
@@ -135,9 +141,22 @@ void StrandedAstronaut::checkState() {
     }
     if (RELEASED) {
         spring_spacing = released_spacing;
+        release_timer = countdownTimer(release_timer);
+        if (release_timer <= 0) {
+            followReset();
+        }
     } else if (!RELEASED) {
         spring_spacing = no_spacing;
+        release_timer = release_timer_start;
     }
+}
+
+void StrandedAstronaut::followReset() {
+    FOLLOWING_ASTRONAUT         = false;
+    FOLLOWING_PLAYER            = false;
+    RELEASED                    = false;
+    release_timer               = release_timer_start;
+    spring_spacing              = no_spacing;
 }
 
 void StrandedAstronaut::displayMessage() {

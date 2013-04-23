@@ -30,6 +30,7 @@ public:
     virtual void checkState();
     virtual void drawGUIOverlay(ofVec2f _pos, string text);
     virtual void displayMessage(ofVec2f _pos, string text);
+    float countdownTimer(float timer);
 
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;
