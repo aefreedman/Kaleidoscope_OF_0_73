@@ -47,7 +47,7 @@ void GameScreen::setup() {
 
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
-    ENABLE_EDITOR                   = false;
+    ENABLE_EDITOR                   = true;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -200,6 +200,7 @@ void GameScreen::update() {
         if (WON_LEVEL) {
             levelID++;
             importLevel(levelID);
+            fadeIn.ACTIVE = true;
         }
     }
 
@@ -302,7 +303,7 @@ void GameScreen::draw() {
     //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255);
-
+/*
     if (clickState != "play mode") {   /// FIXME (Aaron#1#): BROKEN
         for (int i = 0; i < 4; i++) {
             ofPolyline line;
@@ -317,6 +318,7 @@ void GameScreen::draw() {
             line.draw();
         }
     }
+*/
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
     }
@@ -654,15 +656,9 @@ void GameScreen::keyPressed(int key) {
         break;
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = true;
-        if (!player.TRAVERSE_MODE) {
-            player.fxRotate.play();
-        }
         break;
     case OF_KEY_RIGHT:
         player.ROTATE_RIGHT = true;
-        if (!player.TRAVERSE_MODE) {
-            player.fxRotate.play();
-        }
         break;
     case 'w':
         if (MAP_VIEW || clickState != "play mode") {
@@ -750,10 +746,12 @@ void GameScreen::keyReleased(int key) {
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = false;
         player.anim = idle;
+        player.fxJetpackLoop.stop();
         break;
     case OF_KEY_RIGHT:
         player.ROTATE_RIGHT = false;
         player.anim = idle;
+        player.fxJetpackLoop.stop();
         break;
     }
 

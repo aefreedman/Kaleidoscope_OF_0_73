@@ -24,6 +24,8 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     astronaut                   = 0;
     astronaut_drop_range        = 200;
     spring_spacing              = 0;
+    no_spacing                  = 0;
+    released_spacing            = 40;
     v_limit                     = 600.0;
 
     a.set(0, 0);
@@ -44,6 +46,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     IS_DEAD                     = false;
     THE_END                     = false;
     CAN_HIT_ASTRONAUTS          = true;
+    RELEASED                    = false;
 
     type = "strandedastronaut";
 
@@ -129,6 +132,11 @@ void StrandedAstronaut::checkState() {
         damp = 0.99;
     } else {
         damp = 1.0;
+    }
+    if (RELEASED) {
+        spring_spacing = released_spacing;
+    } else if (!RELEASED) {
+        spring_spacing = no_spacing;
     }
 }
 

@@ -33,7 +33,7 @@ void MenuScreen::setup() {
         fxEngineLoop.setLoop(true);
         fxEngineLoop.play();
 
-        fxExplosion.loadSound("AUDIO/ksc_AUDIO_ship_explosion_001.wav");
+        fxExplosion.loadSound("AUDIO/ksc_AUDIO_ship_explosion_002.wav");
         fxExplosion.setSpeed(0.5);
     }
 

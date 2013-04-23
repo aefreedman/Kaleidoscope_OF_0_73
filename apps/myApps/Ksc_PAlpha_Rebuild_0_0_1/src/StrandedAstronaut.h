@@ -49,6 +49,7 @@ public:
     bool THE_END;
     bool CAN_TALK;
     bool CAN_HIT_ASTRONAUTS;
+    bool RELEASED;
 
     string type;
     int id;
@@ -59,7 +60,9 @@ public:
     std::vector<StrandedAstronaut *> *strandedAstronaut;
     bool IS_DEAD;
     int astronaut;
-
+    int spring_spacing;
+    int released_spacing;
+    int no_spacing;
 protected:
 
 private:
@@ -74,7 +77,7 @@ private:
 
     int sa_collision;
     float lerp_speed;
-    int spring_spacing;
+
 };
 
 #endif // STRANDEDASTRONAUT_H

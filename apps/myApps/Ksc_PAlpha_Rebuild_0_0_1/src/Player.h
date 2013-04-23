@@ -129,8 +129,6 @@ static animation_t flame =
 	1	/* .frameskip		(int) - the incrementation of each frame. 1 should be set by default. If you wanted the animation to play backwards you could set this to -1, etc.	*/
 };
 
-
-
 class Player : public Astronaut {
 public:
     Player();
@@ -178,6 +176,7 @@ public:
     float camera_timer;
     ofxSpriteSheetRenderer * p1Renderer;
 
+    string gravity_type;
 
     float jumpStrength;
     float rotation_speed;
@@ -190,6 +189,8 @@ public:
     float camera_move_delay;
     int flame_rotation;
     float v_limit;
+    float v_limit_in_gravity;
+    float v_limit_in_space;
 
     bool CAN_JETPACK;
     bool TRAVERSE_MODE;
@@ -213,6 +214,7 @@ public:
     ofSoundPlayer fxDeath;
     ofSoundPlayer fxJetpackEmpty;
     ofSoundPlayer fxJetpackUse;
+    ofSoundPlayer fxJetpackLoop;
     ofSoundPlayer fxAstronautCollect;
     ofSoundPlayer fxAstronautRelease;
     //vector <ofSoundPlayer> fxJump;
@@ -223,10 +225,7 @@ public:
     float astronaut_release_timer;
     float astronaut_pickup_delay;
 protected:
-
-
 private:
-    //float G;
     bool DEBUG;
     int off_screen_limit;
     ofVec2f display_g;
@@ -238,15 +237,6 @@ private:
     float jump_strength_3;
     float jump_timer;
     float death_timer;
-    int jetpack_count;
-    int max_jetpack_count;
-
-    float rotation_timer;
-
-    /// TODO (Aaron#1#): discrete jump strength levels
-    /// TODO (Aaron#1#): Release astronauts into the sun
-
-
 };
 
 #endif // PLAYER_H
