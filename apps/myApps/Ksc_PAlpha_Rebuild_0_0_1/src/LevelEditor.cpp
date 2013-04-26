@@ -1,11 +1,9 @@
 #include "LevelEditor.h"
 
-LevelEditor::LevelEditor() : GUI() {
+LevelEditor::LevelEditor() {
     //ctor
 }
 
 LevelEditor::~LevelEditor() {
     //dtor
 }
-
-void LevelEditor::draw() {}

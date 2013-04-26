@@ -363,7 +363,7 @@ bool Player::checkOffScreen() {
         camera_timer -= dt;
     }
     if (camera_timer <= 0) {
-        if (pos.x > camera_target.x + screen_width - off_screen_limit) {
+        if (pos.x > camera_target.x + ofGetWidth() - off_screen_limit) {
             camera_move_direction = "right";
             camera_timer = camera_move_delay;
             return true;
@@ -373,7 +373,7 @@ bool Player::checkOffScreen() {
             camera_timer = camera_move_delay;
             return true;
         }
-        if (pos.y > camera_target.y + screen_height - off_screen_limit) {
+        if (pos.y > camera_target.y + ofGetHeight() - off_screen_limit) {
             camera_move_direction = "down";
             camera_timer = camera_move_delay;
             return true;

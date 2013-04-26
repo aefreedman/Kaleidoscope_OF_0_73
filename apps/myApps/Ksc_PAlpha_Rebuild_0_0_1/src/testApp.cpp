@@ -16,9 +16,9 @@ void testApp::setup(){
     ///------------------------------
     start_timer                     = 3.0;
     timer                           = start_timer;
-    currentScreen                   = &menuScreen;
-//    currentScreen                 = &gameScreen;
-    LOAD_WITH_SOUND                 = true;
+//    currentScreen                   = &menuScreen;
+    currentScreen                 = &gameScreen;
+    LOAD_WITH_SOUND                 = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE
@@ -77,9 +77,6 @@ void testApp::keyPressed(int key){
                 //currentScreen->setup();
             }
         break;
-        case 'c':
-            gameScreen.CONTINUOUS_CAMERA = !gameScreen.CONTINUOUS_CAMERA;
-        break;
         case OF_KEY_F1:
             gameScreen.ENABLE_EDITOR = true;
             currentScreen = &gameScreen;
@@ -117,7 +114,7 @@ void testApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
-
+    currentScreen->mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------
