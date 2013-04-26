@@ -45,6 +45,7 @@ void testApp::update(){
     if (timer <= 0) {
         menuScreen.fxEngineLoop.stop();
         currentScreen = &gameScreen;
+        gameScreen.ENABLE_EDITOR = false;
         gameScreen.fadeIn.ACTIVE = true;
     }
 
@@ -78,6 +79,11 @@ void testApp::keyPressed(int key){
         break;
         case 'c':
             gameScreen.CONTINUOUS_CAMERA = !gameScreen.CONTINUOUS_CAMERA;
+        break;
+        case OF_KEY_F1:
+            gameScreen.ENABLE_EDITOR = true;
+            currentScreen = &gameScreen;
+            menuScreen.fxEngineLoop.stop();
         break;
     }
 

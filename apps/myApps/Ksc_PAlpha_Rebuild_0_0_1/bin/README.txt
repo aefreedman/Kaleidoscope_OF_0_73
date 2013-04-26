@@ -4,7 +4,7 @@ Beta v.April_22_2013
 Diego Garcia, Toni Pizza, & Aaron Freedman
 
 ---ABOUT----------------------------------
-You are the captain of an ill-fated space vessel. Your crew is stranded throughout the cosmos, alone and helpless. Help them out of their lonliness by gathering them and allowing them to perish with their comrades.
+You are the captain of an ill-fated space vessel. Your crew is stranded throughout the cosmos, alone and helpless. Help them out of their loneliness by gathering them and allowing them to perish with their comrades.
 
 You'll move to a new sector once you save all the astronauts in your current sector.
 
