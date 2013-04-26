@@ -100,8 +100,6 @@ void Comet::update() {
 
 
 void Comet::draw() {
-
-
     if (ptclColor.size() > 1){
         for (int i = 0;i<ptclColor.size();i++){
             ofSetColor(ptclColor[i]);
@@ -109,23 +107,19 @@ void Comet::draw() {
             ofRect(ptclPosSize[i].x,ptclPosSize[i].y,ptclPosSize[i].z,ptclPosSize[i].z);
         }
     }
-    ///draw path with points
+}
+
+void Comet::drawPath() {
     ofPolyline line;
     for (int p = 1; p < pathPoints.size(); p++) {
-        //ofSetColor(255, 255, 255);
-        //ofNoFill();
-        //ofCircle(pathPoints[p], 3);
+        ofSetColor(255, 255, 255);
+        ofNoFill();
+        ofCircle(pathPoints[p], 3);
         line.addVertex(pathPoints[p]);
-        //ofDrawBitmapString(ofToString(p), pathPoints[p].x + 5, pathPoints[p].y + 5);
+        ofDrawBitmapString(ofToString(p), pathPoints[p].x + 5, pathPoints[p].y + 5);
     }
     line.close();
-   // line.draw();
-    ///draw comet
-    /*ofFill();
-    ofSetColor(255,20,141);
-    ofCircle(pos,10);*/
-
-
+    line.draw();
 }
 
 void Comet::spawnParticle() {

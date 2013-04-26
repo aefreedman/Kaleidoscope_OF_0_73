@@ -53,6 +53,7 @@ public:
     virtual void update();
     virtual void draw();
     virtual ~Gravitator();
+    virtual void drawPath();
 
     ofVec2f pos;
     float G;

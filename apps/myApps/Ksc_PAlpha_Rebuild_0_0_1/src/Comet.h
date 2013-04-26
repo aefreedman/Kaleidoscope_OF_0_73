@@ -13,6 +13,7 @@ public:
     void update();
     void draw();
     void drawBG();
+    void drawPath();
 
     void spawnParticle();
 

@@ -116,7 +116,6 @@ private:
         bool WON_LEVEL;
         bool LEVEL_HAS_ASTRONAUTS;
         bool MOVE_MESSAGES;
-        bool ENABLE_EDITOR;
         bool PAUSE;
         bool PLACING_SOMETHING;
         bool CAN_MOVE_CAM;
@@ -134,11 +133,6 @@ private:
         float default_view_scale;
         float view_lerp_speed;
         float map_view_scale_target;
-        bool MAP_VIEW;
-        //bool LOAD_WITH_SOUND;
-        bool WON_LEVEL;
-        bool LEVEL_HAS_ASTRONAUTS;
-        bool MOVE_MESSAGES;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;

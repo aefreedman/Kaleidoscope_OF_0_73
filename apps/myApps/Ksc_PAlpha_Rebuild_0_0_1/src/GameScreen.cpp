@@ -93,7 +93,9 @@ void GameScreen::getState() {
         PAUSE = true;
     } else {
     }
-    if (PAUSE) {}
+    if (PAUSE) {
+        CAN_MOVE_CAM = true;
+    }
     if (ENABLE_EDITOR) {
         if (USING_LEVEL_EDITOR) {
             CAN_MOVE_CAM = true;
@@ -104,7 +106,7 @@ void GameScreen::getState() {
                 PLACING_SOMETHING = true;
             }
             if (PLACING_SOMETHING) {
-                CAN_MOVE_CAM = false;
+                //CAN_MOVE_CAM = false;
             }
         }
     }
@@ -164,8 +166,8 @@ void GameScreen::update() {
 
 void GameScreen::camera() {
     /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
-    if (!USING_LEVEL_EDITOR) {
-    setCameraTarget(player.pos);
+    if (!PAUSE) {
+        setCameraTarget(player.pos);
     }
     view_scale = ofLerp(view_scale, view_scale_target, view_lerp_speed * dt);
 
@@ -264,6 +266,11 @@ void GameScreen::draw() {
 
     for (int i = 0; i < gravitator.size(); i++) {
         gravitator[i]->draw();
+        if (gravitator[i]->type == "comet") {
+            if (USING_LEVEL_EDITOR) {
+                gravitator[i]->drawPath();
+            }
+        }
     }
 
     planetRenderer -> draw();
@@ -360,7 +367,7 @@ void GameScreen::drawLevelEditorGUI() {
         if (clickState != "edit mode") {
             string mouse_text = "";
             mouse_text.append("placing: ");
-            if (clickState == "placing gravitator") {
+            if (clickState == "placing gravitators") {
                 mouse_text.append(new_gravitator_type);
             }
             if (clickState == "placing player") {
@@ -675,7 +682,7 @@ void GameScreen::mouseMoved(int x, int y ) {
 
 //--------------------------------------------------------------
 void GameScreen::mouseDragged(int x, int y, int button) {
-    if (CAN_MOVE_CAM && button == 0) {
+    if (CAN_MOVE_CAM && button == 1) {
         setCameraTarget(getGlobalPosition(ofVec2f(x, y)));
     }
 
@@ -698,57 +705,62 @@ void GameScreen::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void GameScreen::mousePressed(int x, int y, int button) {
-    if (clickState == "placing gravitators") {
-        NEW_PLANET_POS.set(0,0);
-        NEW_PLANET_R = 0;
-        NEW_PLANET_GR = 0;
-        NEW_PLANET_M = 0;
-        NEW_PLANET_POS.set(x, y);
-        clickState = "setting size";
-    }
-
-    if (clickState == "setting grav") {
-        if (NEW_PLANET_R < 1) {
-            clickState = "edit mode";
-            return;
+    if (button == 0) {
+        if (clickState == "placing gravitators") {
+            NEW_PLANET_POS.set(0,0);
+            NEW_PLANET_R = 0;
+            NEW_PLANET_GR = 0;
+            NEW_PLANET_M = 0;
+            NEW_PLANET_POS.set(x, y);
+            clickState = "setting size";
         }
-        NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
-        NEW_PLANET_M = (planet_base_m * NEW_PLANET_R) + (NEW_PLANET_GR * planet_mass_multiplier / NEW_PLANET_R);
-        addGravitator(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_GR, NEW_PLANET_M);
-        clickState = "edit mode";
+
+        if (clickState == "setting grav") {
+            if (NEW_PLANET_R < 1) {
+                clickState = "edit mode";
+                return;
+            }
+            NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
+            NEW_PLANET_M = (planet_base_m * NEW_PLANET_R) + (NEW_PLANET_GR * planet_mass_multiplier / NEW_PLANET_R);
+            addGravitator(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_GR, NEW_PLANET_M);
+            clickState = "edit mode";
+        }
+
+        if (clickState == "placing comet") {
+            NEW_COMET_POS.set (x, y);
+            clickState = "sizing comet";
+        }
+        if (clickState == "sizing comet") {
+            NEW_COMET_R = ofDist(x, y, NEW_COMET_POS.x, NEW_COMET_POS.y);
+            vector <ofVec2f> temp;
+            ofVec2f start;
+            start.set((NEW_COMET_POS + camera_pos) / view_scale);
+            temp.push_back(start);
+            gravitator.push_back(new Comet((NEW_COMET_POS + camera_pos) / view_scale, NEW_COMET_R, temp));
+            clickState = "placing path";
+        }
+        if (clickState == "placing path") {
+            gravitator[gravitator.size()-1]->pathPoints.push_back(ofVec2f((x + camera_pos.x) / view_scale, (y + camera_pos.y) / view_scale));
+        }
+        if (clickState == "placing player") {
+            player.pos.set(getGlobalPosition(ofVec2f(mouseX, mouseY)));
+            player.starting_pos.set(player.pos);
+            clickState = "edit mode";
+        }
+        if (clickState == "placing astronaut") {
+            addStrandedAstronaut(ofVec2f(mouseX, mouseY));
+        }
     }
 
-    if (clickState == "placing comet") {
-        NEW_COMET_POS.set (x, y);
-        clickState = "sizing comet";
-    }
-    if (clickState == "sizing comet") {
-        NEW_COMET_R = ofDist(x, y, NEW_COMET_POS.x, NEW_COMET_POS.y);
-        vector <ofVec2f> temp;
-        ofVec2f start;
-        start.set((NEW_COMET_POS + camera_pos) / view_scale);
-        temp.push_back(start);
-        gravitator.push_back(new Comet((NEW_COMET_POS + camera_pos) / view_scale, NEW_COMET_R, temp));
-        clickState = "placing path";
-    }
-    if (clickState == "placing path") {
-        gravitator[gravitator.size()-1]->pathPoints.push_back(ofVec2f((x + camera_pos.x) / view_scale, (y + camera_pos.y) / view_scale));
-    }
-    if (clickState == "placing player") {
-        player.pos.set(getGlobalPosition(ofVec2f(mouseX, mouseY)));
-        player.starting_pos.set(player.pos);
-        clickState = "edit mode";
-    }
-    if (clickState == "placing astronaut") {
-        addStrandedAstronaut(ofVec2f(mouseX, mouseY));
-    }
 }
 
 //--------------------------------------------------------------
 void GameScreen::mouseReleased(int x, int y, int button) {
-    if (clickState == "setting size") {
-        NEW_PLANET_R = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
-        clickState = "setting grav";
+    if (button == 0) {
+        if (clickState == "setting size") {
+            NEW_PLANET_R = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
+            clickState = "setting grav";
+        }
     }
 }
 

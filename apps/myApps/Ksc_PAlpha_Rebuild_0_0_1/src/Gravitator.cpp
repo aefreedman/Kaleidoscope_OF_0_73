@@ -34,6 +34,8 @@ void Gravitator::draw() {
 
 }
 
+void Gravitator::drawPath() {}
+
 Gravitator::~Gravitator() {
     //dtor
 }
