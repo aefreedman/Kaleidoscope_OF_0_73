@@ -76,9 +76,6 @@ void testApp::keyPressed(int key){
                 //currentScreen->setup();
             }
         break;
-        case 'c':
-            gameScreen.CONTINUOUS_CAMERA = !gameScreen.CONTINUOUS_CAMERA;
-        break;
     }
 
 
@@ -111,7 +108,7 @@ void testApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
-
+    currentScreen->mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------

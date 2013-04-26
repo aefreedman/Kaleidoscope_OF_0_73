@@ -1,8 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #define nl '\n'
-#define screen_width 1280
-#define screen_height 720
 
 #include <vector>
 #include <iostream>

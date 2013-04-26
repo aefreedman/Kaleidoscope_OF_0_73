@@ -253,6 +253,7 @@ void StrandedAstronaut::draw() {
 
     if (FOLLOWING_PLAYER || FOLLOWING_ASTRONAUT) {
         ofPushMatrix();
+        ofNoFill();
         ofSetColor(240, 206, 103, 200);
         int d = 3;
         int offset = 2;

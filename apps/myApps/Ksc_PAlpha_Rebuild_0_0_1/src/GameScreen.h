@@ -25,8 +25,6 @@
 #include "GUIOverlay.h"
 #define nl '\n'
 #define fps 60
-#define screen_width 1280
-#define screen_height 720
 
 class GameScreen : public Screen {
 public:
@@ -48,7 +46,7 @@ public:
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
 
-		void addGravitator();
+		void addGravitator(ofVec2f pos, int r, int gR, int m);
 		void addStrandedAstronaut(ofVec2f _pos);
 		void camera();
 		void reset();

@@ -3,8 +3,6 @@
 #include <fstream>
 
 #define nl '\n'
-#define screen_width 1280
-#define screen_height 720
 #define dt 1.0/60.0
 #define spacer "  >>  "
 #define bar "  ||  "
@@ -23,7 +21,7 @@ void GameScreen::setup() {
     ofEnableAlphaBlending();
     camera_pos.set(0, 0, 0);
     camera_target.set(0, 0, 0);
-    USING_LEVEL_EDITOR                  = false;
+    USING_LEVEL_EDITOR              = false;
     CAMERA_SCALING                  = false;
     WON_LEVEL                       = false;
     MAP_VIEW                        = false;
@@ -37,7 +35,7 @@ void GameScreen::setup() {
     /// YOU CAN CHANGE THESE
     ///------------------------------
 
-    player_start_pos.set(screen_width / 2, screen_height / 2);
+    player_start_pos.set(ofGetWidth() / 2, ofGetHeight() / 2);
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
@@ -87,20 +85,22 @@ void GameScreen::loadSound() {
     backgroundSound.setLoop(true);
     backgroundSound.setVolume(0.25);
     backgroundSound.play();
-
 }
 
 void GameScreen::getState() {
-    if (USING_LEVEL_EDITOR || MAP_VIEW) {
+    PAUSE = false;
+    if (MAP_VIEW) {
         PAUSE = true;
     } else {
-        PAUSE = false;
     }
     if (PAUSE) {}
     if (ENABLE_EDITOR) {
         if (USING_LEVEL_EDITOR) {
             CAN_MOVE_CAM = true;
-            if (clickState != "play mode") {
+            PAUSE = true;
+            if (clickState == "play mode" || clickState == "edit mode") {
+                PLACING_SOMETHING = false;
+            } else {
                 PLACING_SOMETHING = true;
             }
             if (PLACING_SOMETHING) {
@@ -108,8 +108,6 @@ void GameScreen::getState() {
             }
         }
     }
-
-    if (MAP_VIEW) {}
     if (LEVEL_HAS_ASTRONAUTS) {}
 }
 
@@ -182,6 +180,8 @@ void GameScreen::camera() {
 void GameScreen::setCameraTarget(ofVec2f target) {
     camera_target.x = (target.x * view_scale_target) - ofGetWidth()/2;
     camera_target.y = (target.y * view_scale_target) - ofGetHeight()/2;
+    //camera_target.x = (target.x) - ofGetWidth()/2;
+    //camera_target.y = (target.y) - ofGetHeight()/2;
 }
 
 void GameScreen::moveCameraTarget(ofVec2f direction) {
@@ -360,7 +360,9 @@ void GameScreen::drawLevelEditorGUI() {
         if (clickState != "edit mode") {
             string mouse_text = "";
             mouse_text.append("placing: ");
-            mouse_text.append(new_gravitator_type);
+            if (clickState == "placing gravitator") {
+                mouse_text.append(new_gravitator_type);
+            }
             if (clickState == "placing player") {
                 mouse_text.append("player");
             }
@@ -379,7 +381,7 @@ void GameScreen::drawLevelEditorGUI() {
         string placement_text = "";
         if (clickState == "placing gravitators") {
             placement_text.append("click & drag to make gravitator \n");
-            placement_text.append("press [UP] to cycle placement type");
+            placement_text.append("press [PAGE UP] to cycle placement type");
         } else if (clickState == "setting size") {
             placement_text = "release to set size.";
         } else if (clickState == "setting grav") {
@@ -388,6 +390,8 @@ void GameScreen::drawLevelEditorGUI() {
             placement_text = "click to set player location";
         } else if (clickState == "placing path") {
             placement_text = "[c] to stop placing path";
+        } else if (clickState == "placing astronaut") {
+            placement_text == "[a] to stop placing astronauts";
         } else placement_text = "";
         ofDrawBitmapString(placement_text, draw_pos.x, draw_y2);
 
@@ -395,7 +399,7 @@ void GameScreen::drawLevelEditorGUI() {
             int x = 50;
             int y = 100;
             string info = "";
-            info.append("[p] to place gravitators \n");
+            info.append("[g] to place gravitators \n");
             info.append("[C] to clear gravitators \n\n");
             info.append("[c] to place comet \n");
             info.append("[a] to place astronaut \n");
@@ -412,42 +416,40 @@ void GameScreen::reset() {
     fadeIn.setup();
 }
 
-void GameScreen::addGravitator() {
+void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
+    pos = getGlobalPosition(pos);
+    r = r / view_scale;
+    gR = gR / view_scale;
     if (new_gravitator_type == "planet") {
-        gravitator.push_back(new Planet((NEW_PLANET_POS + camera_pos) / view_scale, NEW_PLANET_R / view_scale, NEW_PLANET_M, NEW_PLANET_GR / view_scale));
+        gravitator.push_back(new Planet(pos, r, m, gR));
     }
     if (new_gravitator_type == "sun") {
-        gravitator.push_back(new Sun((NEW_PLANET_POS + camera_pos) / view_scale, NEW_PLANET_R / view_scale, NEW_PLANET_M, NEW_PLANET_GR / view_scale));
+        gravitator.push_back(new Sun(pos, r, m, gR));
     }
     if (new_gravitator_type == "black hole") {
-        gravitator.push_back(new BlackHole((NEW_PLANET_POS + camera_pos) / view_scale, NEW_PLANET_R / view_scale, NEW_PLANET_M, NEW_PLANET_GR / view_scale));
+        gravitator.push_back(new BlackHole(pos, r, m, gR));
     }
     new_gravitator_type = "";
 }
 
 void GameScreen::addStrandedAstronaut(ofVec2f _pos) {
-    strandedAstronaut.push_back(new StrandedAstronaut((_pos + camera_pos) / view_scale, &gravitator, &strandedAstronaut, &gui));
+    strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), &gravitator, &strandedAstronaut, &gui));
 }
 
 ofVec2f GameScreen::getLocalPosition(ofVec2f global_pos) {
-    ofVec2f local_pos = global_pos;
-    local_pos -= camera_pos;
-    local_pos *= view_scale;
+    ofVec2f local_pos;
+    local_pos = (global_pos * view_scale) - camera_pos;
     return local_pos;
 }
 
 ofVec2f GameScreen::getGlobalPosition(ofVec2f local_pos) {
-    ofVec2f global_pos = local_pos;
-    global_pos *= 1 / view_scale;
-    global_pos += camera_pos;
+    ofVec2f global_pos;
+    global_pos = (local_pos + camera_pos) / view_scale;
     return global_pos;
 }
 
 //--------------------------------------------------------------
 void GameScreen::keyPressed(int key) {
-
-    //justPressed.push_back(key);
-
     switch (key) {
     case 'i':
         if (iddqd == 0) {
@@ -482,7 +484,7 @@ void GameScreen::keyPressed(int key) {
             }
         }
         break;
-    case 'p':
+    case 'g':
         if (USING_LEVEL_EDITOR && clickState == "edit mode") {
             clickState = "placing gravitators";
             new_gravitator_type = "planet";
@@ -491,7 +493,13 @@ void GameScreen::keyPressed(int key) {
     case 'a':
         if (USING_LEVEL_EDITOR && clickState == "edit mode") {
             clickState = "placing astronaut";
+            break;
         }
+        if (clickState == "placing astronaut") {
+            clickState = "edit mode";
+            break;
+        }
+        break;
     case 'A':
         if (USING_LEVEL_EDITOR) {
             strandedAstronaut.clear();
@@ -596,14 +604,15 @@ void GameScreen::keyPressed(int key) {
         break;
     case 'm':
         if (ENABLE_EDITOR) {
-        if (!MAP_VIEW) {
-            view_scale_target = map_view_scale_target;
-        } else if (MAP_VIEW) {
-            view_scale_target = default_view_scale;
-            setCameraTarget(getGlobalPosition(ofVec2f(mouseX, mouseY)));
-        }
+            if (!MAP_VIEW) {
+                view_scale_target = map_view_scale_target;
+                setCameraTarget(player.pos);
+            } else if (MAP_VIEW) {
+                view_scale_target = default_view_scale;
+                setCameraTarget(player.pos);
+
+            }
         MAP_VIEW = !MAP_VIEW;
-        PAUSE = !PAUSE;
         }
         break;
     case 'R':
@@ -619,13 +628,6 @@ void GameScreen::keyPressed(int key) {
 
 //--------------------------------------------------------------
 void GameScreen::keyReleased(int key) {
-
-    /*for (int i = 0; i < justPressed.size(); i++){
-        if (justPressed[i] == key){
-            justPressed[i]erase();
-        }
-    }*/
-
     switch (key) {
     case 'a':
         break;
@@ -677,15 +679,14 @@ void GameScreen::mouseDragged(int x, int y, int button) {
         setCameraTarget(getGlobalPosition(ofVec2f(x, y)));
     }
 
-    if (clickState == "edit mode") {
+    if (clickState == "edit mode" && button == 1) {
         ofVec2f mouse_pos;
-        mouse_pos.set(x, y);
-        mouse_pos += camera_pos;
+        mouse_pos = getGlobalPosition(ofVec2f(x, y));
         for (int i = 0; i < gravitator.size(); i++) {
             ofVec2f g_pos;
             g_pos.set(gravitator[i]->pos / view_scale);
-            /// NOTE (Aaron#1#): This needs to be updated to account for view_scale
-            if (g_pos.x > camera_pos.x && g_pos.x < camera_pos.x + screen_width && g_pos.y > camera_pos.y && g_pos.y < camera_pos.y + screen_height) {
+            /// NOTE (Aaron#1#): This needs to be updmated to account for view_scale
+            if (g_pos.x > camera_pos.x && g_pos.x < camera_pos.x + ofGetWidth() && g_pos.y > camera_pos.y && g_pos.y < camera_pos.y + ofGetHeight()) {
                 float dist = mouse_pos.squareDistance(gravitator[i]->pos);
                 if (dist <= gravitator[i]->r * gravitator[i]->r && button == 0 && clickState == "edit mode") {
                     gravitator[i]->pos = mouse_pos;
@@ -697,10 +698,6 @@ void GameScreen::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void GameScreen::mousePressed(int x, int y, int button) {
-    if (clickState == "edit mode" && button == 2) {
-
-    }
-
     if (clickState == "placing gravitators") {
         NEW_PLANET_POS.set(0,0);
         NEW_PLANET_R = 0;
@@ -709,6 +706,7 @@ void GameScreen::mousePressed(int x, int y, int button) {
         NEW_PLANET_POS.set(x, y);
         clickState = "setting size";
     }
+
     if (clickState == "setting grav") {
         if (NEW_PLANET_R < 1) {
             clickState = "edit mode";
@@ -716,12 +714,10 @@ void GameScreen::mousePressed(int x, int y, int button) {
         }
         NEW_PLANET_GR = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
         NEW_PLANET_M = (planet_base_m * NEW_PLANET_R) + (NEW_PLANET_GR * planet_mass_multiplier / NEW_PLANET_R);
-        addGravitator();
+        addGravitator(NEW_PLANET_POS, NEW_PLANET_R, NEW_PLANET_GR, NEW_PLANET_M);
         clickState = "edit mode";
     }
-    if (clickState == "play mode") {
 
-    }
     if (clickState == "placing comet") {
         NEW_COMET_POS.set (x, y);
         clickState = "sizing comet";
@@ -739,13 +735,12 @@ void GameScreen::mousePressed(int x, int y, int button) {
         gravitator[gravitator.size()-1]->pathPoints.push_back(ofVec2f((x + camera_pos.x) / view_scale, (y + camera_pos.y) / view_scale));
     }
     if (clickState == "placing player") {
-        player.pos.set(getGlobalPosition(ofVec2f(x, y)));
+        player.pos.set(getGlobalPosition(ofVec2f(mouseX, mouseY)));
         player.starting_pos.set(player.pos);
-        clickState = "play mode";
+        clickState = "edit mode";
     }
     if (clickState == "placing astronaut") {
         addStrandedAstronaut(ofVec2f(mouseX, mouseY));
-        clickState = "edit mode";
     }
 }
 
@@ -755,7 +750,6 @@ void GameScreen::mouseReleased(int x, int y, int button) {
         NEW_PLANET_R = ofDist(x, y, NEW_PLANET_POS.x, NEW_PLANET_POS.y);
         clickState = "setting grav";
     }
-
 }
 
 //--------------------------------------------------------------
