@@ -16,9 +16,9 @@ void testApp::setup(){
     ///------------------------------
     start_timer                     = 3.0;
     timer                           = start_timer;
-    currentScreen                   = &menuScreen;
-//    currentScreen                 = &gameScreen;
-    LOAD_WITH_SOUND                 = true;
+//    currentScreen                   = &menuScreen;
+    currentScreen                 = &gameScreen;
+    LOAD_WITH_SOUND                 = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE

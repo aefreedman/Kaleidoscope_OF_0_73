@@ -51,13 +51,11 @@ public:
 		void addGravitator();
 		void addStrandedAstronaut(ofVec2f _pos);
 		void camera();
-		void checkPause();
-		void moveCamPlayer(string direction);
-		void moveCamIndependent(string direction);
-		void camPlayer();
-		void camIndependent();
 		void reset();
 		void loadSound();
+		void drawGUI();
+		ofVec2f getLocalPosition(ofVec2f global_pos);
+		ofVec2f getGlobalPosition(ofVec2f local_pos);
 
         void exportLevel();
         void importLevel();
@@ -80,6 +78,8 @@ public:
         ofxSpriteSheetRenderer * nautRenderer;
         bool CONTINUOUS_CAMERA;
 
+
+        /// Level Editor
         string clickState;
         string levelState;
         string new_gravitator_type;
@@ -101,30 +101,39 @@ public:
         GUIFadeIn fadeIn;
 protected:
 private:
+        void drawLevelEditorGUI();
+        void setCameraTarget(ofVec2f target);
+        void moveCameraTarget(ofVec2f direction);
+        void getState();
+
         int planet_base_m;
         int planet_mass_multiplier;
-        bool CAN_EDIT_LEVEL;
-        ofSoundPlayer jupiterSound;
-        ofSoundPlayer   backgroundSound;
+
+        bool USING_LEVEL_EDITOR;
         bool MOVE_CAMERA;
         bool CAMERA_SCALING;
+        bool MAP_VIEW;
+        bool WON_LEVEL;
+        bool LEVEL_HAS_ASTRONAUTS;
+        bool MOVE_MESSAGES;
+        bool ENABLE_EDITOR;
+        bool PAUSE;
+        bool PLACING_SOMETHING;
+        bool CAN_MOVE_CAM;
+
+        ofSoundPlayer jupiterSound;
+        ofSoundPlayer backgroundSound;
+
         ofVec2f player_start_pos;
 
-        float camera_lerp_speed;
-
         int iddqd;
-        bool PAUSE;
+
+        float camera_lerp_speed;
         float view_scale;
         float view_scale_target;
         float default_view_scale;
         float view_lerp_speed;
         float map_view_scale_target;
-        bool MAP_VIEW;
-        //bool LOAD_WITH_SOUND;
-        bool WON_LEVEL;
-        bool LEVEL_HAS_ASTRONAUTS;
-        bool MOVE_MESSAGES;
-        bool ENABLE_EDITOR;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;
