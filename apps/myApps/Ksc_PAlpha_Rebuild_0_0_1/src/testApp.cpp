@@ -119,7 +119,9 @@ void testApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::windowResized(int w, int h){
-
+    if (w != 1280 || h != 720) {
+        ofSetWindowShape(1280, 720);
+    }
 }
 
 //--------------------------------------------------------------

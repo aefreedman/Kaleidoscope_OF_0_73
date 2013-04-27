@@ -682,11 +682,11 @@ void GameScreen::mouseMoved(int x, int y ) {
 
 //--------------------------------------------------------------
 void GameScreen::mouseDragged(int x, int y, int button) {
-    if (CAN_MOVE_CAM && button == 1) {
+    if (CAN_MOVE_CAM && (button == 1 || button == 2)) {
         setCameraTarget(getGlobalPosition(ofVec2f(x, y)));
     }
 
-    if (clickState == "edit mode" && button == 1) {
+    if (clickState == "edit mode" && button == 0) {
         ofVec2f mouse_pos;
         mouse_pos = getGlobalPosition(ofVec2f(x, y));
         for (int i = 0; i < gravitator.size(); i++) {
