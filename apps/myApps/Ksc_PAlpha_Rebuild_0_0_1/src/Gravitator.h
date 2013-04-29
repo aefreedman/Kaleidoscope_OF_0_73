@@ -55,8 +55,13 @@ public:
     virtual ~Gravitator();
     virtual void drawPath();
 
+    void spawnParticle();
+
+    vector <ofPoint> ptcl;
+
     ofVec2f pos;
     float G;
+    int ptclCount;
     int r;
     int gR;
     int m;
@@ -64,6 +69,7 @@ public:
     bool habitable;
     string type;
     animation_t anim;
+
 
     vector <ofVec2f> pathPoints;
 

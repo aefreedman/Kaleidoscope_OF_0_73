@@ -12,6 +12,7 @@ Sun::Sun(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) 
     gR = _gR;
     G = 200;
     anim = sun;
+    Gravitator::setup();
 
 }
 
@@ -24,6 +25,7 @@ void Sun::setup() {
 }
 
 void Sun::update() {
+    Gravitator::update();
 
 }
 void Sun::draw() {
@@ -31,4 +33,5 @@ void Sun::draw() {
     ofSetColor(255, 255, 255, 255);
     ofNoFill();
     ofCircle(pos, gR);
+    Gravitator::draw();
 }

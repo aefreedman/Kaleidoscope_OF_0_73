@@ -14,6 +14,7 @@ Planet::~Planet() {
 }
 
 void Planet::setup() {
+    Gravitator::setup();
     habitable = true;
     type = "planet";
     G = 300;
@@ -21,6 +22,7 @@ void Planet::setup() {
     ofEnableAlphaBlending(); // turn on alpha blending. important!}
 }
 void Planet::update() {
+    Gravitator::update();
 
 }
 
@@ -29,5 +31,6 @@ void Planet::draw() {
     ofNoFill();
     ofSetCircleResolution(64);
     ofCircle(pos, gR);
+    Gravitator::draw();
 }
 
