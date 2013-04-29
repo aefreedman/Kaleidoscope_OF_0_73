@@ -9,7 +9,7 @@ BlackHole::BlackHole(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _
     habitable = false;
     type = "blackhole";
     G = 1000;
-
+    Gravitator::setup();
 }
 
 
@@ -21,7 +21,9 @@ BlackHole::~BlackHole()
 void BlackHole::setup() {
     habitable = false;
 }
-void BlackHole::update() {}
+void BlackHole::update() {
+    Gravitator::update();
+}
 void BlackHole::draw() {
     ofSetCircleResolution(64);
     ofFill();
@@ -31,4 +33,6 @@ void BlackHole::draw() {
     ofSetColor(255, 255, 255, 255);
     ofNoFill();
     ofCircle(pos, gR);
+
+    Gravitator::draw();
 }
