@@ -455,6 +455,7 @@ void GameScreen::addStrandedAstronaut(ofVec2f _pos, string _name = "unnamed") {
     if (_name == "tutorial one") {strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));}
     if (_name == "tutorial two") {strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));}
     if (_name == "tutorial three") {strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));}
+    strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
 }
 
 ofVec2f GameScreen::getLocalPosition(ofVec2f global_pos) {
@@ -911,6 +912,7 @@ void GameScreen::importLevel(int levelID) {
                 if (r == 1) {strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));}
                 if (r == 2) {strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));}
                 if (r == 3) {strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));}
+                strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
             }
         }
         totalCrew = strandedAstronaut.size();

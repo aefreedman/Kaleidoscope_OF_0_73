@@ -2,6 +2,7 @@
 #define MESSAGE_H
 
 #include "GUI.h"
+#include <algorithm>
 
 class Message : public GUI {
 public:
@@ -18,6 +19,17 @@ private:
     float timer;
     ofColor background;
     ofColor foreground;
+
+    ofImage topLeft;
+    ofImage topRight;
+    ofImage top;
+    ofImage left;
+    ofImage right;
+    ofImage bottomLeft;
+    ofImage bottomRight;
+    ofImage bottom;
+    ofImage center;
+    ofImage tail;
 };
 
 #endif // MESSAGE_H

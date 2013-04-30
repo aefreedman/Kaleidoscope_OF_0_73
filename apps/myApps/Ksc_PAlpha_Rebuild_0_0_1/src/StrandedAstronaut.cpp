@@ -16,7 +16,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     restitution                 = 0.5;
     oxygen                      = 100;
     message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
-    message_delay               = 2;                       ///Minimum delay between messages
+    message_delay               = 25;                       ///Minimum delay between messages
     message_display_chance      = 7;                        ///larger number makes random delay between messages higher
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
@@ -90,7 +90,12 @@ void StrandedAstronaut::update() {
     move();
     DRAW_MESSAGE = displayMessageTimer();
     if (DRAW_MESSAGE) {
-        displayMessage();
+        if (level == 28){
+            displayMessage(int(ofRandom(14,16)));
+        } else {
+            cout << "LEVEL = " + ofToString(level) + "\n";
+            displayMessage();
+        }
     }
 }
 
@@ -182,7 +187,7 @@ void StrandedAstronaut::followReset() {
 
 void StrandedAstronaut::displayMessage() {
     string message = pickMessageRandom();
-    (*gui).push_back(new Message(pos + ofVec2f(0, -15), message));
+    (*gui).push_back(new Message(pos + ofVec2f(10, -35), message));
     DRAW_MESSAGE = false;
 }
 

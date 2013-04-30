@@ -37,9 +37,9 @@
 		<message>I'm a tutorial astronaut!</message>
 	</ENUM_1>
 	<ENUM_2> <!-- TUTORIAL_TWO astronaut -->
-		<message></message>
+		<message>I'm the second tutorial astronaut!</message>
 	</ENUM_2>
 	<ENUM_3> <!-- TUTORIAL_THREE astronaut -->
-		<message></message>
+		<message>I'm the third tutorial astronaut!</message>
 	</ENUM_3>
 </dialogue>
