@@ -575,7 +575,7 @@ bool Player::die() {
             IS_DEAD = true;
             //setup();
             //releaseAllAstronauts(false);
-            displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
+            //displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
             return false;
         }
     } else return false;

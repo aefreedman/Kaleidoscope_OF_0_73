@@ -41,7 +41,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 29;
+    levelID                         = 38;
 
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
@@ -110,7 +110,25 @@ void GameScreen::getState() {
             }
         }
     }
-    if (LEVEL_HAS_ASTRONAUTS) {}
+    if (LEVEL_HAS_ASTRONAUTS) {
+        if (strandedAstronaut.size() == 0) {
+            if (player.IS_DEAD) {
+                WON_LEVEL = true;
+            }
+        } else if (player.IS_DEAD) {
+            reset();
+        }
+    }
+    if (!LEVEL_HAS_ASTRONAUTS) {
+        if (player.IS_DEAD) {
+            WON_LEVEL = true;
+        }
+    }
+    if (WON_LEVEL) {
+        levelID++;
+        importLevel(levelID);
+        fadeIn.ACTIVE = true;
+    }
 }
 
 void GameScreen::update() {
@@ -118,9 +136,6 @@ void GameScreen::update() {
     if (!PAUSE) {
         player.update();
         fadeIn.update();
-        if (player.IS_DEAD) {
-            reset();
-        }
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
         }
@@ -147,14 +162,6 @@ void GameScreen::update() {
             if ((gui[i]->pos.x > ofGetWidth() + camera_target.x - 50 || gui[i]->pos.y > ofGetHeight() + camera_target.y + 30 || gui[i]->pos.x < camera_target.x - 50 || gui[i]->pos.y < camera_target.y + 30) && camera_pos.squareDistance(camera_target) < 10) {
                 gui[i]->pos.interpolate(player.pos, 10 * dt);
             }
-        }
-        if (LEVEL_HAS_ASTRONAUTS && strandedAstronaut.size() == 0) {
-            WON_LEVEL = true;
-        }
-        if (WON_LEVEL) {
-            levelID++;
-            importLevel(levelID);
-            fadeIn.ACTIVE = true;
         }
     }
     camera();
