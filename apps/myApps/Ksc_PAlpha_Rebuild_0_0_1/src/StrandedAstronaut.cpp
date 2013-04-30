@@ -7,7 +7,7 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
     //ctor
 }
 
-StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
+StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
     pos                         = _pos;
     r                           = 20;
     m                           = 5.0;
@@ -16,7 +16,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     restitution                 = 0.5;
     oxygen                      = 100;
     message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
-    message_delay               = 25;                       ///Minimum delay between messages
+    message_delay               = 2;                       ///Minimum delay between messages
     message_display_chance      = 7;                        ///larger number makes random delay between messages higher
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
@@ -54,9 +54,33 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gr
     anim = floating;
 
 	ofEnableAlphaBlending();
+	setName(_name);
+	loadMessages();
 }
 
 StrandedAstronaut::~StrandedAstronaut() {
+}
+
+void StrandedAstronaut::setName(name _name) {
+    thisAstronautIs = _name;
+}
+
+void StrandedAstronaut::loadMessages() {
+    ofxXmlSettings dialogue;
+    if (dialogue.loadFile("data/messages/dialogue.xml")) {
+        dialogue.pushTag("dialogue");
+        dialogue.pushTag("ENUM_" + ofToString(thisAstronautIs));
+        int numberOfMessages = dialogue.getNumTags("message");
+        for (int i = 0; i < numberOfMessages; i++) {
+            string m = dialogue.getValue("message", "", i);
+            message.push_back(m);
+        }
+        dialogue.popTag();
+        dialogue.popTag();
+    }
+    else {
+        ofLogError("Dialogue file did not load!");
+    }
 }
 
 void StrandedAstronaut::update() {
@@ -124,17 +148,14 @@ void StrandedAstronaut::checkState() {
     if (FOLLOWING_ASTRONAUT) {
         getPlayerData((*strandedAstronaut)[astronaut]->pos, (*strandedAstronaut)[astronaut]->v);
         if (!(*strandedAstronaut)[astronaut]->RELEASED) {
-            //RELEASED = false;
         }
     }
     if (FOLLOWING_PLAYER) {
-        //RELEASED = false;
     }
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
         CAN_HIT_ASTRONAUTS = false;
         damp = 0.87;
     } else if (!IN_GRAVITY_WELL) {
-        //CAN_HIT_ASTRONAUTS = true;
         damp = 0.99;
     } else {
         damp = 1.0;
@@ -184,60 +205,14 @@ bool StrandedAstronaut::displayMessageTimer() {
 }
 
 string StrandedAstronaut::pickMessageRandom() {
-    int messageNumber = ofRandom(13);
-    string message = pickMessage(messageNumber);
-    return message;
+    int messageNumber = ofRandom(message.size());
+    string m = message[messageNumber];
+    return m;
 }
 
 string StrandedAstronaut::pickMessage(int messageNumber) {
-    string message = "";
-    switch (messageNumber) {
-    case 0:
-        message = "Hello there!";
-        break;
-    case 1:
-        message = "Oh no!";
-        break;
-    case 2:
-        message += "Well, this isn't exactly \n";
-        message += "what I would call a vacation.";
-        break;
-    case 3:
-        message = "Could you help me out, please?";
-        break;
-    case 4:
-        message = "Don't leave me.";
-        break;
-    case 5:
-        message = "I hate space.";
-        break;
-    case 6:
-        message = "Why am I still floating?";
-        break;
-    case 7:
-        message = "I hope I can float my way to a bathroom...";
-        break;
-    case 8:
-        message = "WHY DID YOU LET ME GO?!";
-        break;
-    case 9:
-        message = "Oops.";
-        break;
-    case 10:
-        message = "Guys...";
-        break;
-    case 11:
-        message += "If a tree falls in \n";
-        message += "space can you hear it?";
-        break;
-    case 12:
-        message = "Can we talk for a moment?";
-        break;
-    case 13:
-        message = "Hey.";
-        break;
-    }
-    return message;
+    string m = message[messageNumber];
+    return m;
 }
 
 void StrandedAstronaut::draw() {

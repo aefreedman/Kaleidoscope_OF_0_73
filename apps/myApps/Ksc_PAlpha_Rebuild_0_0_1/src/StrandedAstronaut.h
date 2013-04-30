@@ -2,7 +2,9 @@
 #define STRANDEDASTRONAUT_H
 #include "Astronaut.h"
 #include "Shell.h"
+#include "ofxXmlSettings.h"
 #include <vector>
+
 static animation_t floating =
 {	0,	/* .index			(int) - this is the index of the first animation frame. indicies start at 0 and go left to right, top to bottom by tileWidth on the spriteSheet		*/
 	0,	/* .frame			(int) - this is the current frame. It's an internal variable and should always be set to 0 at init													*/
@@ -18,8 +20,10 @@ static animation_t floating =
 
 class StrandedAstronaut : public Astronaut {
 public:
+    enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE};
+
     StrandedAstronaut();
-    StrandedAstronaut(ofVec2f _pos, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui);
+    StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui);
 
     virtual ~StrandedAstronaut();
     void update();
@@ -63,9 +67,15 @@ public:
     int spring_spacing;
     int released_spacing;
     int no_spacing;
+
+    name thisAstronautIs;
 protected:
 
 private:
+    void setName(name _name);
+
+    void loadMessages();
+
     int message_display_chance;
     int message_dieroll;
     float message_timer;
@@ -79,6 +89,7 @@ private:
     float lerp_speed;
     float release_timer;
     float release_timer_start;
+    std::vector<string> message;
 
 };
 

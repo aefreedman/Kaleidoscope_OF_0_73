@@ -47,7 +47,7 @@ public:
         void gotMessage(ofMessage msg);
 
 		void addGravitator(ofVec2f pos, int r, int gR, int m);
-		void addStrandedAstronaut(ofVec2f _pos);
+		void addStrandedAstronaut(ofVec2f _pos, string _name);
 		void camera();
 		void reset();
 		void loadSound();
@@ -76,6 +76,7 @@ public:
         ofxSpriteSheetRenderer * nautRenderer;
         bool CONTINUOUS_CAMERA;
 
+        //enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE};
 
         /// Level Editor
         string clickState;
@@ -87,6 +88,7 @@ public:
         int NEW_PLANET_GR;
         int NEW_PLANET_M;
         int NEW_COMET_R;
+        string new_astronaut_name;
         int levelID;
 
         ofVec3f camera_pos;

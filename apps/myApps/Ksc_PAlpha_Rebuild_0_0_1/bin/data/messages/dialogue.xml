@@ -1,0 +1,45 @@
+<dialogue>
+	<!-- multiline dialogue:
+	
+	<![CDATA[text here
+	second line here]]>
+	
+	-->
+	<ENUM_0> <!-- UNNAMED astronaut -->
+		<message>Hello there!</message>
+		<message>Oh no!</message>
+		<message><![CDATA[Well, this isn't exactly
+		what I would call a vacation.]]></message>
+		<message>Could you help me out, please?</message>
+		<message>Don't leave me.</message>
+		<message>I hate space.</message>
+		<message>Why am I still floating?</message>
+		<message>I hope I can float my way to a bathroom...</message>
+		<message>WHY DID YOU LET ME GO??</message>
+		<message>Oops.</message>
+		<message>Guys...</message>
+		<message><![CDATA[If a tree falls in
+		space can you hear it?]]></message>
+		<message>Can we talk for a moment?</message>
+		<message>Hey.</message>
+		<!--
+		<message></message>
+		<message></message>
+		<message></message>
+		<message></message>
+		<message></message>
+		<message></message>
+		<message></message>
+		-->
+		
+	</ENUM_0>
+	<ENUM_1> <!-- TUTORIAL_ONE astronaut -->
+		<message>I'm a tutorial astronaut!</message>
+	</ENUM_1>
+	<ENUM_2> <!-- TUTORIAL_TWO astronaut -->
+		<message></message>
+	</ENUM_2>
+	<ENUM_3> <!-- TUTORIAL_THREE astronaut -->
+		<message></message>
+	</ENUM_3>
+</dialogue>
