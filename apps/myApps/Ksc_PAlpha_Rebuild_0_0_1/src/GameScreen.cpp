@@ -441,6 +441,7 @@ void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
 
 void GameScreen::addStrandedAstronaut(ofVec2f _pos) {
     strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), &gravitator, &strandedAstronaut, &gui));
+    strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
 }
 
 ofVec2f GameScreen::getLocalPosition(ofVec2f global_pos) {
@@ -872,6 +873,7 @@ void GameScreen::importLevel(int levelID) {
                 gravitator.push_back(new Comet(ofVec2f(x, y), r, path));
             } else if (type == "strandedastronaut") {
                 strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), &gravitator, &strandedAstronaut, &gui));
+                strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
             }
         }
         totalCrew = strandedAstronaut.size();

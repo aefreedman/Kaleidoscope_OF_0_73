@@ -53,6 +53,7 @@ public:
 
     string type;
     int id;
+    int level;
     ofVec2f k;
 
     std::vector<Gravitator *> *gravitator;

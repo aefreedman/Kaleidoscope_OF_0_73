@@ -66,7 +66,12 @@ void StrandedAstronaut::update() {
     move();
     DRAW_MESSAGE = displayMessageTimer();
     if (DRAW_MESSAGE) {
-        displayMessage();
+        if (level == 28){
+            displayMessage(int(ofRandom(14,16)));
+        } else {
+            cout << "LEVEL = " + ofToString(level) + "\n";
+            displayMessage();
+        }
     }
 }
 
@@ -161,7 +166,7 @@ void StrandedAstronaut::followReset() {
 
 void StrandedAstronaut::displayMessage() {
     string message = pickMessageRandom();
-    (*gui).push_back(new Message(pos + ofVec2f(0, -15), message));
+    (*gui).push_back(new Message(pos + ofVec2f(10, -35), message));
     DRAW_MESSAGE = false;
 }
 
@@ -235,6 +240,22 @@ string StrandedAstronaut::pickMessage(int messageNumber) {
         break;
     case 13:
         message = "Hey.";
+        break;
+
+    /// MESSAGES BELOW ARE TUTORIAL ONLY
+
+    case 14:
+        message = "Hey, Captain.\n";
+        message += "Have you tried moving\n";
+        message += "LEFT or RIGHT?\n";
+        message += "I wish I had a LEFT or\n";
+        message += "RIGHT KEY on my suit.\n";
+        break;
+
+    case 15:
+        message = "Ah, SPACE. I wonder\n";
+        message +="if one can JUMP through\n";
+        message +="SPACE. hmm. SPACE. JUMP.";
         break;
     }
     return message;
