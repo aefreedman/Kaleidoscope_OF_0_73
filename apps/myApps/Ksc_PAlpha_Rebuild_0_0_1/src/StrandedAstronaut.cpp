@@ -93,7 +93,6 @@ void StrandedAstronaut::update() {
         if (level == 28){
             displayMessage(int(ofRandom(14,16)));
         } else {
-            cout << "LEVEL = " + ofToString(level) + "\n";
             displayMessage();
         }
     }

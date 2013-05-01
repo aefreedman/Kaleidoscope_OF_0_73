@@ -30,6 +30,8 @@ void GameScreen::setup() {
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
     fadeIn                          = GUIFadeIn(camera_pos);
+    level_over_timer_start          = 3.0;
+    level_over_timer                = level_over_timer_start;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -41,7 +43,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 17;
+    levelID                         = 38;
 
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
@@ -117,7 +119,16 @@ void GameScreen::getState() {
                 WON_LEVEL = true;
             }
         } else if (player.IS_DEAD) {
-            reset();
+            FREEZE_PLAYER = true;
+            level_over_timer = countdownTimer(level_over_timer);
+            cout << level_over_timer << endl;
+            if (AN_ASTRONAUT_DIED) {
+                level_over_timer = level_over_timer_start;
+                AN_ASTRONAUT_DIED = false;
+            }
+            if (level_over_timer <= 0) {
+                reset();
+            }
         }
     }
     if (!LEVEL_HAS_ASTRONAUTS) {
@@ -128,14 +139,18 @@ void GameScreen::getState() {
     if (WON_LEVEL) {
         levelID++;
         importLevel(levelID);
+        reset();
         fadeIn.ACTIVE = true;
+        FREEZE_PLAYER = false;
     }
 }
 
 void GameScreen::update() {
     getState();
     if (!PAUSE) {
-        player.update();
+        if (!FREEZE_PLAYER) {
+            player.update();
+        }
         fadeIn.update();
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
@@ -144,6 +159,7 @@ void GameScreen::update() {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
             if (strandedAstronaut[i]->IS_DEAD) {
+                AN_ASTRONAUT_DIED = true;
                 for (int j = 0; j < strandedAstronaut.size(); j++) {
                     if (strandedAstronaut[j]->astronaut == i) {
                         strandedAstronaut[j]->FOLLOWING_ASTRONAUT = false;
@@ -432,6 +448,8 @@ void GameScreen::reset() {
     player.setup();
     //fadeIn.pos.set(ofVec2f(camera_target.x, camera_target.y));
     fadeIn.setup();
+    level_over_timer = level_over_timer_start;
+    FREEZE_PLAYER = false;
 }
 
 void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
@@ -887,7 +905,8 @@ void GameScreen::importLevel(int levelID) {
         float player_start_x, player_start_y;
         input >> listSize;
         input >> player_start_x >> player_start_y;
-        player.pos.set(player_start_x, player_start_y);
+        player.starting_pos.set(player_start_x, player_start_y);
+        player.pos.set(player.starting_pos);
         for(int i = 0; i < listSize; i++) {
             float x, y;
             int r, m, gR, size;

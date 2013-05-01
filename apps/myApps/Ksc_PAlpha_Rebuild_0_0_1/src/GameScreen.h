@@ -121,6 +121,8 @@ private:
         bool PAUSE;
         bool PLACING_SOMETHING;
         bool CAN_MOVE_CAM;
+        bool AN_ASTRONAUT_DIED;
+        bool FREEZE_PLAYER;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;
@@ -135,6 +137,8 @@ private:
         float default_view_scale;
         float view_lerp_speed;
         float map_view_scale_target;
+        float level_over_timer_start;
+        float level_over_timer;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;
