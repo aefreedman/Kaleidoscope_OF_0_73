@@ -107,6 +107,8 @@ private:
         void setCameraTarget(ofVec2f target);
         void moveCameraTarget(ofVec2f direction);
         void getState();
+        void exportSessionData();
+        void exit();
 
         int planet_base_m;
         int planet_mass_multiplier;
@@ -145,7 +147,10 @@ private:
         ofVec3f bottomLeftCorner;
         ofVec3f topLeftCorner;
 
-
+        /// Metrics
+        std::vector<ofVec4f> metric_playerDeaths;
+        std::vector<string> metric_playerDeaths_cause;
+        //std::vector<int> metric_playerJetpackUses;
 };
 
 #endif // GAMESCREEN_H

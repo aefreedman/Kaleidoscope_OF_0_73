@@ -74,6 +74,8 @@ public:
     int attractor;
 
     animation_t anim;
+    string gravitator_type;
+
 protected:
 
     ofVec2f planet_pos;
@@ -82,7 +84,6 @@ protected:
     ofVec2f collision_perpendicular;
     float planet_m;
     float planet_r;
-    string gravitator_type;
     int astronaut_pickup_range;
     int astronaut_drop_range;
     int spring_strength;

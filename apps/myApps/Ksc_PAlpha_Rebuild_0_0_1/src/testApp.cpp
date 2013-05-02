@@ -133,3 +133,7 @@ void testApp::gotMessage(ofMessage msg){
 void testApp::dragEvent(ofDragInfo dragInfo){
 
 }
+
+void testApp::exit() {
+    currentScreen->exit();
+}

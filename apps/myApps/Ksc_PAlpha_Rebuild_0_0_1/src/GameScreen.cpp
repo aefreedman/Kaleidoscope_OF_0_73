@@ -121,12 +121,14 @@ void GameScreen::getState() {
         } else if (player.IS_DEAD) {
             FREEZE_PLAYER = true;
             level_over_timer = countdownTimer(level_over_timer);
-            cout << level_over_timer << endl;
             if (AN_ASTRONAUT_DIED) {
                 level_over_timer = level_over_timer_start;
                 AN_ASTRONAUT_DIED = false;
             }
             if (level_over_timer <= 0) {
+                metric_playerDeaths.push_back(ofVec4f(player.pos.x, player.pos.y, levelID, ofGetElapsedTimef()));
+                metric_playerDeaths_cause.push_back(player.gravitator_type);
+                //metric_playerJetpackUses.push_back
                 reset();
             }
         }
@@ -685,6 +687,9 @@ void GameScreen::keyPressed(int key) {
         strandedAstronaut[i]->FOLLOWING_ASTRONAUT = false;
         }
         break;
+    case OF_KEY_INSERT:
+        string filename = "screenshots/screenshot_" + ofToString(ofGetMonth()) + ofToString(ofGetWeekday()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".png";
+        ofSaveScreen(filename);
     }
 }
 
@@ -955,4 +960,31 @@ void GameScreen::importLevel(int levelID) {
         strandedAstronaut.clear();
         gui.clear();        /// NOTE (Aaron#9#): Don't forget to remove this later.
     }
+}
+
+void GameScreen::exportSessionData() {
+    ofxXmlSettings sessionData;
+    sessionData.addTag("sessionData");
+    sessionData.pushTag("sessionData");
+        sessionData.addValue("total_playtime", ofGetElapsedTimef());
+        sessionData.addTag("deaths");
+        sessionData.pushTag("deaths");
+        sessionData.addValue("total_deaths", ofToString(metric_playerDeaths.size()));
+            for (int i = 0; i < metric_playerDeaths.size(); i++) {
+                sessionData.addTag("death");
+                sessionData.pushTag("death", i);
+                    sessionData.addValue("x", ofToString(metric_playerDeaths[i].x));
+                    sessionData.addValue("y", ofToString(metric_playerDeaths[i].y));
+                    sessionData.addValue("level", ofToString(metric_playerDeaths[i].z));
+                    sessionData.addValue("elapsedTime", metric_playerDeaths[i].w);
+                    sessionData.addValue("cause", metric_playerDeaths_cause[i]);
+                sessionData.popTag();
+            }
+        sessionData.popTag();
+    sessionData.popTag();
+    sessionData.saveFile("sessionData/sessionData_" + ofToString(ofGetMonth()) + "_" + ofToString(ofGetDay()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".xml");
+}
+
+void GameScreen::exit() {
+    exportSessionData();
 }
