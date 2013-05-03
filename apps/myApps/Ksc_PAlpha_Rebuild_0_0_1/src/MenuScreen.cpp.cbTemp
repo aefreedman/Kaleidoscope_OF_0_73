@@ -177,8 +177,6 @@ void MenuScreen::update()
         piece7.y += .2;
         piece7.z += 2;
 
-
-        /// SHOULD THIS ACTIVATE THE NEXT LEVEL??? I DON'T KNOW???
         guiFadeOut.ACTIVE = true;
 
 
