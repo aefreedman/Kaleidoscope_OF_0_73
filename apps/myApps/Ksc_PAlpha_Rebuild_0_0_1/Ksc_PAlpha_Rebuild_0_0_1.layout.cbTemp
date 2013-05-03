@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="release" />
+	<File name="..\..\..\addons\stfj-ofxSpriteSheetRenderer-100b010\src\ofxSpriteSheetRenderer.h" open="0" top="0" tabpos="3">
+		<Cursor position="3396" topLine="57" />
+	</File>
+	<File name="src\Astronaut.cpp" open="1" top="0" tabpos="13">
+		<Cursor position="313" topLine="0" />
+	</File>
+	<File name="src\Astronaut.h" open="0" top="0" tabpos="8">
+		<Cursor position="1603" topLine="42" />
+	</File>
+	<File name="src\BlackHole.cpp" open="1" top="0" tabpos="12">
+		<Cursor position="432" topLine="2" />
+	</File>
+	<File name="src\BlackHole.h" open="0" top="0" tabpos="4">
+		<Cursor position="366" topLine="0" />
+	</File>
+	<File name="src\Comet.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="1968" topLine="27" />
+	</File>
+	<File name="src\Comet.h" open="0" top="0" tabpos="18">
+		<Cursor position="622" topLine="0" />
+	</File>
+	<File name="src\Decor.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="93" topLine="0" />
+	</File>
+	<File name="src\Decor.h" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\GUIFadeOut.cpp" open="1" top="0" tabpos="17">
+		<Cursor position="728" topLine="5" />
+	</File>
+	<File name="src\GameObject.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\GameObject.h" open="1" top="0" tabpos="6">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\GameScreen.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="2459" topLine="42" />
+	</File>
+	<File name="src\GameScreen.h" open="1" top="0" tabpos="10">
+		<Cursor position="1780" topLine="45" />
+	</File>
+	<File name="src\Gravitator.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="484" topLine="8" />
+	</File>
+	<File name="src\Gravitator.h" open="1" top="0" tabpos="11">
+		<Cursor position="4723" topLine="44" />
+	</File>
+	<File name="src\MenuScreen.cpp" open="1" top="0" tabpos="20">
+		<Cursor position="964" topLine="84" />
+	</File>
+	<File name="src\MenuScreen.h" open="1" top="1" tabpos="21">
+		<Cursor position="5524" topLine="83" />
+	</File>
+	<File name="src\Message.cpp" open="1" top="0" tabpos="15">
+		<Cursor position="1567" topLine="42" />
+	</File>
+	<File name="src\Message.h" open="1" top="0" tabpos="16">
+		<Cursor position="682" topLine="0" />
+	</File>
+	<File name="src\Planet.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="289" topLine="0" />
+	</File>
+	<File name="src\Planet.h" open="1" top="0" tabpos="1">
+		<Cursor position="289" topLine="0" />
+	</File>
+	<File name="src\Player.cpp" open="1" top="0" tabpos="8">
+		<Cursor position="444" topLine="51" />
+	</File>
+	<File name="src\Player.h" open="1" top="0" tabpos="19">
+		<Cursor position="2280" topLine="0" />
+	</File>
+	<File name="src\Shell.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\Shell.h" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\StrandedAstronaut.cpp" open="1" top="0" tabpos="14">
+		<Cursor position="7860" topLine="233" />
+	</File>
+	<File name="src\StrandedAstronaut.h" open="1" top="0" tabpos="18">
+		<Cursor position="2521" topLine="25" />
+	</File>
+	<File name="src\Sun.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="579" topLine="1" />
+	</File>
+	<File name="src\Sun.h" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\main.cpp" open="0" top="0" tabpos="11">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\testApp.cpp" open="0" top="0" tabpos="20">
+		<Cursor position="2038" topLine="53" />
+	</File>
+	<File name="src\testApp.h" open="0" top="0" tabpos="22">
+		<Cursor position="586" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>
