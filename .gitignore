@@ -99,7 +99,7 @@ Thumbs.db
 Desktop.ini
 *.dll
 apps/myApps/KaliedoscopeTest/bin/KaliedoscopeTest_DEBUG.exe
-apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/Ksc_PAlpha_Rebuild_0_0_1.exe
-apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/Ksc_PAlpha_Rebuild_0_0_1_DEBUG.exe
+apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/*s.exe
+apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/*.exe
 apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/data/sessiondata/
 apps/myApps/Ksc_PAlpha_Rebuild_0_0_1/bin/data/levels/saves/
