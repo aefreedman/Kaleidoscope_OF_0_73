@@ -103,7 +103,7 @@ void Player::setup() {
 }
 
 void Player::loadSound() {
-    fxDeath.loadSound("AUDIO/ksc_AUDIO_astronaut_death_002.wav");
+    fxDeath.loadSound("AUDIO/ksc_AUDIO_animation_explosion_002.wav");
     fxJetpackEmpty.loadSound("AUDIO/ksc_AUDIO_player_jetout_001.wav");
     fxJetpackUse.loadSound("AUDIO/ksc_AUDIO_player_usejet_004.wav");
     fxRotate.loadSound("AUDIO/ksc_AUDIO_player_usejet_002.wav");

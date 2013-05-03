@@ -1,27 +1,25 @@
 #include "MenuScreen.h"
+#define dt 1.0/60.0
 
-MenuScreen::MenuScreen() : Screen()
-{
+MenuScreen::MenuScreen() : Screen() {
     //ctor
 }
 
-MenuScreen::~MenuScreen()
-{
+MenuScreen::~MenuScreen() {
     //dtor
 }
 
-void MenuScreen::setup()
-{
+void MenuScreen::setup() {
 
     ofSetFrameRate(60);
     background.loadImage("ART/bg.png");
     title.loadImage("ART/title.png");
     title.setAnchorPoint(title.width/2,title.height/2);
-    EXPLODING = false;
-    MOVED = false;
-    splosionTimer = 180;
-    flashOpacity = 0;
-    flashFadeRate = 5;
+    EXPLODING                   = false;
+    MOVED                       = false;
+    splosionTimer               = 180;
+    flashOpacity                = 0;
+    flashFadeRate               = 5;
 
     menuRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 256);
     menuRenderer->loadTexture("ART/ship.png",1024,GL_NEAREST);
@@ -57,98 +55,95 @@ void MenuScreen::setup()
 
     splosion.set(shipPos.x,shipPos.y);
 
-    for (int i = 0; i<30; i++)
-    {
+    for (int i = 0; i<30; i++) {
         farStars[i].set(ofRandomWidth(),ofRandomHeight(),ofRandom(2,5));
     }
-    for (int i = 0; i<30; i++)
-    {
+    for (int i = 0; i<30; i++) {
         nearStars[i].set(ofRandomWidth(),ofRandomHeight(),ofRandom(5,8));
     }
 
     shakeCounter = 4;
 
-    if (LOAD_WITH_SOUND)
-    {
+    if (LOAD_WITH_SOUND) {
         fxEngineLoop.loadSound("AUDIO/ksc_AUDIO_ship_engineloop_001.wav");
         fxEngineLoop.setLoop(true);
         fxEngineLoop.play();
 
+        fxSmallExplosion.loadSound("AUDIO/ksc_AUDIO_ship_explosion_003.wav");
+        fxSmallExplosion.setMultiPlay(true);
+
         fxExplosion.loadSound("AUDIO/ksc_AUDIO_ship_explosion_002.wav");
         fxExplosion.setSpeed(0.5);
+
+        fxEngineAmbient.loadSound("AUDIO/ksc_AUDIO_ship_engineambient_001.wav");
+        fxEngineAmbient.setLoop(true);
+        fxEngineAmbient.play();
     }
-
-
 
     guiFadeOut = GUIFadeOut(ofVec2f(0, 0));
 
 }
 
-void MenuScreen::update()
-{
+void MenuScreen::update() {
     menuRenderer->clear();
     splosionRenderer->clear();
     menuRenderer->addCenteredTile(&anim,shipPos.x,shipPos.y,-1,F_NONE,5,255,255,255,255);
     menuRenderer->update(ofGetElapsedTimeMillis());
 
-    if (EXPLODING)
-    {
-        if(explosion.frame == 11) splosion.set(shipPos.x + ofRandom(-200,300), shipPos.y + ofRandom(-200,200));
+    if (EXPLODING) {
+        if(explosion.frame == 11) {
+            splosion.set(shipPos.x + ofRandom(-200,300), shipPos.y + ofRandom(-200,200));
+            fxSmallExplosion.setSpeed(ofRandom(0.9, 1.0));
+            fxSmallExplosion.play();
+        }
 
         splosionRenderer->addCenteredTile(&explosion, splosion.x, splosion.y, -1, F_NONE,5,255,255,255,255);
         splosionRenderer->update(ofGetElapsedTimeMillis());
 
-        if (splosionTimer > 0)
-        {
+        if (splosionTimer > 0) {
             splosionTimer --;
-        }
-        else
-        {
+        } else {
             FLASHING = true;
         }
     }
 
-    if (FLASHING){
-        if (flashOpacity > 255){
-            EXPLODING = false;
-            BROKEN = true;
-            flashFadeRate = -5;
+    if (FLASHING) {
+        if (flashOpacity >= 255) {
+            EXPLODING       = false;
+            BROKEN          = true;
+            fxExplosion.play();
+            fxEngineAmbient.stop();
+            fxEngineLoop.stop();
+            flashFadeRate   = -5;
         }
         flashOpacity += flashFadeRate;
     }
 
-    if (shakeCounter > 0)
-    {
+    if (shakeCounter > 0) {
         shakeCounter --;
-    }
-    else
-    {
+    } else {
         shipPos.set(ofRandom(395,405),ofRandom((ofGetHeight()/2)-5,(ofGetHeight()/2)+5));
         shakeCounter = 2;
     }
 
-
-
-    for(int i = 0; i<30; i++)
-    {
+    for(int i = 0; i<30; i++) {
         farStars[i].x-=15*(farStars[i].z/5);
         nearStars[i].x-=30*(nearStars[i].z/8);
-        if(farStars[i].x < 0)
-        {
+        if(farStars[i].x < 0) {
             farStars[i].x = ofGetWidth();
             farStars[i].y = ofRandomHeight();
         }
-        if(nearStars[i].x < 0)
-        {
+        if(nearStars[i].x < 0) {
             nearStars[i].x = ofGetWidth();
             nearStars[i].y = ofRandomHeight();
         }
     }
     guiFadeOut.update();
 
-
     /// LET'S ROTATE THE FLOATING PIECES YOU IDIOT
-    if(BROKEN){
+    if(BROKEN) {
+        if (!guiFadeOut.ACTIVE)
+            guiFadeOut.ACTIVE = true;
         piece1.x += -.1;
         piece1.y += -.05;
         piece1.z += .1;
@@ -177,91 +172,81 @@ void MenuScreen::update()
         piece7.y += .2;
         piece7.z += 2;
 
-
         /// SHOULD THIS ACTIVATE THE NEXT LEVEL??? I DON'T KNOW???
-        guiFadeOut.ACTIVE = true;
-
-
     }
-
 }
 
-void MenuScreen::draw()
-{
+void MenuScreen::draw() {
     ofSetColor(255,255,255);
     background.draw(0,0);
 
-    for (int i = 0; i < 30; i++)
-    {
+    for (int i = 0; i < 30; i++) {
         ofSetColor(255,255,255,180*(farStars[i].z/5));
         ofRect(farStars[i].x,farStars[i].y,farStars[i].z,farStars[i].z);
     }
-    for (int i = 0; i < 30; i++)
-    {
+    for (int i = 0; i < 30; i++) {
         ofSetColor(255,255,255,155*(farStars[i].z/8));
         ofRect(nearStars[i].x,nearStars[i].y,nearStars[i].z*(10*(nearStars[i].z/8)),nearStars[i].z/(2*(nearStars[i].z/8)));
     }
     ofSetColor(255,255,255,255);
     title.draw(ofGetWidth()/2,100);
 
-    if (!BROKEN){
-    menuRenderer->draw();
+    if (!BROKEN) {
+        menuRenderer->draw();
     } else {
         ofPushMatrix();
-            ofTranslate(piece5.x,piece5.y,0);
-            ofRotateZ(piece5.z);
-            shipPiece5.draw(0,0);
+        ofTranslate(piece5.x,piece5.y,0);
+        ofRotateZ(piece5.z);
+        shipPiece5.draw(0,0);
         ofPopMatrix();
 
         ofPushMatrix();
-            ofTranslate(piece3.x,piece3.y,0);
-            ofRotateZ(piece3.z);
-            shipPiece3.draw(0,0);
+        ofTranslate(piece3.x,piece3.y,0);
+        ofRotateZ(piece3.z);
+        shipPiece3.draw(0,0);
         ofPopMatrix();
 
         ofPushMatrix();
-            ofTranslate(piece4.x,piece4.y,0);
-            ofRotateZ(piece4.z);
-            shipPiece4.draw(0,0);
+        ofTranslate(piece4.x,piece4.y,0);
+        ofRotateZ(piece4.z);
+        shipPiece4.draw(0,0);
         ofPopMatrix();
 
         ofPushMatrix();
-            ofTranslate(piece6.x,piece6.y,0);
-            ofRotateZ(piece6.z);
-            shipPiece6.draw(0,0);
+        ofTranslate(piece6.x,piece6.y,0);
+        ofRotateZ(piece6.z);
+        shipPiece6.draw(0,0);
         ofPopMatrix();
 
         ofPushMatrix();
-            ofTranslate(piece7.x,piece7.y,0);
-            ofRotateZ(piece7.z);
-            shipPiece7.draw(0,0);
+        ofTranslate(piece7.x,piece7.y,0);
+        ofRotateZ(piece7.z);
+        shipPiece7.draw(0,0);
         ofPopMatrix();
 
         ofPushMatrix();
-            ofTranslate(piece2.x,piece2.y,0);
-            ofRotateZ(piece2.z);
-            shipPiece2.draw(0,0);
+        ofTranslate(piece2.x,piece2.y,0);
+        ofRotateZ(piece2.z);
+        shipPiece2.draw(0,0);
         ofPopMatrix();
 
         ofPushMatrix();
-            ofTranslate(piece1.x,piece1.y,0);
-            ofRotateZ(piece1.z);
-            shipPiece1.draw(0,0);
+        ofTranslate(piece1.x,piece1.y,0);
+        ofRotateZ(piece1.z);
+        shipPiece1.draw(0,0);
         ofPopMatrix();
 
 
     }
 
-
-
     splosionRenderer->draw();
 
-    ofDrawBitmapString("- SPACE TO START -", ofGetWidth()/2-75,ofGetHeight()-75);
+    ofDrawBitmapString("- SPACE TO START -", ofGetWidth()/2 - 75, ofGetHeight() - 75);
 
-    if (FLASHING == true){
-    ofSetColor(255,255,255,flashOpacity);
-    ofFill();
-    ofRect(0,0,1280,720);
+    if (FLASHING == true) {
+        ofSetColor(255,255,255, flashOpacity);
+        ofFill();
+        ofRect(0,0,1280,720);
     }
 
     guiFadeOut.draw();
@@ -269,41 +254,27 @@ void MenuScreen::draw()
 
 
 //--------------------------------------------------------------
-void MenuScreen::keyPressed(int key)
-{
-    switch (key)
-    {
-    case 32:
-        //guiFadeOut.ACTIVE = true;
-        break;
-    case 'x':
-        EXPLODING = true;
-        break;
-    }
+void MenuScreen::keyPressed(int key) {
 
 }
 
 //--------------------------------------------------------------
-void MenuScreen::keyReleased(int key)
-{
+void MenuScreen::keyReleased(int key) {
 
 }
 
 //--------------------------------------------------------------
-void MenuScreen::mouseMoved(int x, int y )
-{
+void MenuScreen::mouseMoved(int x, int y ) {
 
 }
 
 //--------------------------------------------------------------
-void MenuScreen::mouseDragged(int x, int y, int button)
-{
+void MenuScreen::mouseDragged(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void MenuScreen::mousePressed(int x, int y, int button)
-{
+void MenuScreen::mousePressed(int x, int y, int button) {
     //TEMP -- investigate start positions for broken ship pieces!
 
     //cout << ofToString(x) + ", " + ofToString(y) + "\n \n \n";
@@ -311,26 +282,22 @@ void MenuScreen::mousePressed(int x, int y, int button)
 }
 
 //--------------------------------------------------------------
-void MenuScreen::mouseReleased(int x, int y, int button)
-{
+void MenuScreen::mouseReleased(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void MenuScreen::windowResized(int w, int h)
-{
+void MenuScreen::windowResized(int w, int h) {
 
 }
 
 //--------------------------------------------------------------
-void MenuScreen::gotMessage(ofMessage msg)
-{
+void MenuScreen::gotMessage(ofMessage msg) {
 
 }
 
 //--------------------------------------------------------------
-void MenuScreen::dragEvent(ofDragInfo dragInfo)
-{
+void MenuScreen::dragEvent(ofDragInfo dragInfo) {
 
 }
 

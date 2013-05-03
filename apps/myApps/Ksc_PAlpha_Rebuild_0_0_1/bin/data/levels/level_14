@@ -1,17 +1,10 @@
-15
-500 500
-712 355 78 78990 309 planet 0 
-266 324 0 0 0 strandedastronaut 0 
-307 528 0 0 0 strandedastronaut 0 
-127 452 0 0 0 strandedastronaut 0 
-147 247 0 0 0 strandedastronaut 0 
-353 120 0 0 0 strandedastronaut 0 
-449 612 0 0 0 strandedastronaut 0 
-1101 446 0 0 0 strandedastronaut 0 
-1082 240 0 0 0 strandedastronaut 0 
-528.069 653.265 0 0 0 strandedastronaut 0 
-954.177 650.328 0 0 0 strandedastronaut 0 
-1018.18 580.329 0 0 0 strandedastronaut 0 
-1002.18 121.329 0 0 0 strandedastronaut 0 
-1110.18 151.329 0 0 0 strandedastronaut 0 
-1093.18 372.329 0 0 0 strandedastronaut 0 
+9
+0 0
+262 356 89 89415 148 planet 0 
+964 410 52 52524 109 planet 0 
+640 55 154 154384 237 sun 0 
+842.675 632.792 0 0 0 comet 10 237 96 237 96 415 264 621 421 918 246 1084 62 1197 607 620 627 46 634 31 249 
+602 465 59 59716 169 blackhole 0 
+618 284 1 1250 1 planet 0 
+620 273 33 33363 48 planet 0 
+657.076 265.781 0 0 0 strandedastronaut 0 

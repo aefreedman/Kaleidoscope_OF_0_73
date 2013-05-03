@@ -245,7 +245,7 @@ void GameScreen::drawGUI() {
     if (!MAP_VIEW) {
         ofSetColor(255, 255, 255);
         for (int i = 0; i < totalCrew; i++) {
-            if (i < strandedAstronaut.size()){
+            if (i < strandedAstronaut.size()) {
                 ofSetColor(255, 255, 255);
                 ofRect(30+(12*i) , ofGetHeight() - map.height + 34, 7,7);
             } else {
@@ -471,10 +471,18 @@ void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
 }
 
 void GameScreen::addStrandedAstronaut(ofVec2f _pos, string _name = "unnamed") {
-    if (_name == "unnamed") {strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));}
-    if (_name == "tutorial one") {strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));}
-    if (_name == "tutorial two") {strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));}
-    if (_name == "tutorial three") {strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));}
+    if (_name == "unnamed") {
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));
+    }
+    if (_name == "tutorial one") {
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));
+    }
+    if (_name == "tutorial two") {
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));
+    }
+    if (_name == "tutorial three") {
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));
+    }
     strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
 }
 
@@ -589,13 +597,16 @@ void GameScreen::keyPressed(int key) {
         }
         break;
     case OF_KEY_UP:
-        if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
-            player.jetpack(true);
-            break;
-        } else if (player.TRAVERSE_MODE) {
-            player.chargeJump();
-            break;
+        if (!player.IS_DEAD) {
+            if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
+                player.jetpack(true);
+                break;
+            } else if (player.TRAVERSE_MODE) {
+                player.chargeJump();
+                break;
+            }
         }
+        break;
     case OF_KEY_PAGE_UP:
         if (clickState == "placing gravitators") {
             if (new_gravitator_type == "") {
@@ -652,12 +663,14 @@ void GameScreen::keyPressed(int key) {
         //player.releaseAstronaut();
         break;
     case 32:
-        if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
-            player.jetpack(true);
-            break;
-        } else if (player.TRAVERSE_MODE) {
-            player.chargeJump();
-            break;
+        if (!player.IS_DEAD) {
+            if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
+                player.jetpack(true);
+                break;
+            } else if (player.TRAVERSE_MODE) {
+                player.chargeJump();
+                break;
+            }
         }
         break;
     case '=':
@@ -676,7 +689,7 @@ void GameScreen::keyPressed(int key) {
                 setCameraTarget(player.pos);
 
             }
-        MAP_VIEW = !MAP_VIEW;
+            MAP_VIEW = !MAP_VIEW;
         }
         break;
     case 'R':
@@ -684,7 +697,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 'z':
         for (int i = 0; i < strandedAstronaut.size(); i++) {
-        strandedAstronaut[i]->FOLLOWING_ASTRONAUT = false;
+            strandedAstronaut[i]->FOLLOWING_ASTRONAUT = false;
         }
         break;
     case OF_KEY_INSERT:
@@ -932,10 +945,18 @@ void GameScreen::importLevel(int levelID) {
                 }
                 gravitator.push_back(new Comet(ofVec2f(x, y), r, path));
             } else if (type == "strandedastronaut") {
-                if (r == 0) {strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));}
-                if (r == 1) {strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));}
-                if (r == 2) {strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));}
-                if (r == 3) {strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));}
+                if (r == 0) {
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));
+                }
+                if (r == 1) {
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));
+                }
+                if (r == 2) {
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));
+                }
+                if (r == 3) {
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));
+                }
                 strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
             }
         }
@@ -953,6 +974,8 @@ void GameScreen::importLevel(int levelID) {
         } else {
             LEVEL_HAS_ASTRONAUTS    = false;
         }
+        camera_pos.set(ofVec2f(player.pos.x - ofGetWidth()/2, player.pos.y - ofGetHeight()/2));
+        fadeIn.pos.set(ofVec2f(player.pos.x - ofGetWidth()/2, player.pos.y - ofGetHeight()/2));
         input.close();
     } else {
         levelState = "That level doesn't exist.";
@@ -966,21 +989,21 @@ void GameScreen::exportSessionData() {
     ofxXmlSettings sessionData;
     sessionData.addTag("sessionData");
     sessionData.pushTag("sessionData");
-        sessionData.addValue("total_playtime", ofGetElapsedTimef());
-        sessionData.addTag("deaths");
-        sessionData.pushTag("deaths");
-        sessionData.addValue("total_deaths", ofToString(metric_playerDeaths.size()));
-            for (int i = 0; i < metric_playerDeaths.size(); i++) {
-                sessionData.addTag("death");
-                sessionData.pushTag("death", i);
-                    sessionData.addValue("x", ofToString(metric_playerDeaths[i].x));
-                    sessionData.addValue("y", ofToString(metric_playerDeaths[i].y));
-                    sessionData.addValue("level", ofToString(metric_playerDeaths[i].z));
-                    sessionData.addValue("elapsedTime", metric_playerDeaths[i].w);
-                    sessionData.addValue("cause", metric_playerDeaths_cause[i]);
-                sessionData.popTag();
-            }
+    sessionData.addValue("total_playtime", ofGetElapsedTimef());
+    sessionData.addTag("deaths");
+    sessionData.pushTag("deaths");
+    sessionData.addValue("total_deaths", ofToString(metric_playerDeaths.size()));
+    for (int i = 0; i < metric_playerDeaths.size(); i++) {
+        sessionData.addTag("death");
+        sessionData.pushTag("death", i);
+        sessionData.addValue("x", ofToString(metric_playerDeaths[i].x));
+        sessionData.addValue("y", ofToString(metric_playerDeaths[i].y));
+        sessionData.addValue("level", ofToString(metric_playerDeaths[i].z));
+        sessionData.addValue("elapsedTime", metric_playerDeaths[i].w);
+        sessionData.addValue("cause", metric_playerDeaths_cause[i]);
         sessionData.popTag();
+    }
+    sessionData.popTag();
     sessionData.popTag();
     sessionData.saveFile("sessionData/sessionData_" + ofToString(ofGetMonth()) + "_" + ofToString(ofGetDay()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".xml");
 }

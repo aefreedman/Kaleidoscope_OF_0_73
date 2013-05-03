@@ -18,6 +18,7 @@ void GUIFadeOut::setup() {
     ACTIVE = false;
     max_timer = 3.0;
     timer = max_timer;
+    alpha = 255;
 }
 
 void GUIFadeOut::update() {
@@ -38,4 +39,8 @@ void GUIFadeOut::draw() {
     ofRect(pos.x, pos.y, ofGetWidth(), ofGetHeight());
     ofPopMatrix();
     }
+}
+
+int GUIFadeOut::getAlpha() {
+    return alpha;
 }

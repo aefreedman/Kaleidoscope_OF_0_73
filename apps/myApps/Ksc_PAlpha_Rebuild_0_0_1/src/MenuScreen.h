@@ -25,7 +25,7 @@ static animation_t explosion =
 	12,	/* .totalframes		(int) - the animation length in frames																												*/
 	1,	/* .width			(int) - the width of each animation frame in tiles																									*/
 	1,	/* .height			(int) - the height of each animation frame in tiles																									*/
-	50,	/* .frameduration	(unsigned int) - how many milliseconds each frame should be on screen. Less = faster																*/
+	35,	/* .frameduration	(unsigned int) - how many milliseconds each frame should be on screen. Less = faster																*/
 	0,	/* .nexttick		(unsigned int) - the next time the frame should change. based on frame duration. This is an internal variable and should always be set to 0 at init	*/
 	-1,	/* .loops			(int) - the number of loops to run. -1 equals infinite. This can be adjusted at runtime to pause animations, etc.									*/
 	-1,	/* .finalindex		(int) - the index of the final tile to draw when the animation finishes. -1 is the default so total_frames-1 will be the last frame.				*/
@@ -109,11 +109,11 @@ public:
     ofImage shipPiece6;
     ofImage shipPiece7;
 
-
-
-
 protected:
 private:
+    ofSoundPlayer fxSmallExplosion;
+    ofSoundPlayer fxEngineAmbient;
+
 };
 
 #endif // MENUSCREEN_H

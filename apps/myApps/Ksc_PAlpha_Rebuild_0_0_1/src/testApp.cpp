@@ -14,7 +14,7 @@ void testApp::setup(){
     ///------------------------------
     /// YOU CAN CHANGE THESE
     ///------------------------------
-    start_timer                     = 3.0;
+    start_timer                     = 9.0;
     timer                           = start_timer;
     currentScreen                   = &menuScreen;
 //    currentScreen                 = &gameScreen;
@@ -43,7 +43,6 @@ void testApp::update(){
         timer = countdownTimer(timer);
     }
     if (timer <= 0) {
-        menuScreen.fxEngineLoop.stop();
         currentScreen = &gameScreen;
         gameScreen.ENABLE_EDITOR = false;
         gameScreen.fadeIn.ACTIVE = true;
@@ -70,10 +69,8 @@ void testApp::keyPressed(int key){
     switch (key) {
         case 32:
             if (currentScreen == &menuScreen) {
-                menuScreen.fxExplosion.play();
+                menuScreen.EXPLODING = true;
                 STARTED = true;
-                menuScreen.guiFadeOut.max_timer = start_timer + 1;
-                menuScreen.guiFadeOut.timer = start_timer + 1;
                 //currentScreen->setup();
             }
         break;
@@ -83,9 +80,6 @@ void testApp::keyPressed(int key){
             menuScreen.fxEngineLoop.stop();
         break;
     }
-
-
-
 }
 
 //--------------------------------------------------------------
@@ -107,9 +101,7 @@ void testApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-
     currentScreen->mousePressed(x, y, button);
-
 }
 
 //--------------------------------------------------------------
