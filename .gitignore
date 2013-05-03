@@ -1,6 +1,6 @@
 # Kaleidoscope-specific
-bin/data/sessiondata/*
-bin/data/screenshots/*
+bin/data/sessiondata/*.xml
+bin/data/screenshots/*.png
 
 
 #
