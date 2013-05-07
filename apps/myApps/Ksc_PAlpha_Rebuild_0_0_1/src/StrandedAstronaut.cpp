@@ -26,7 +26,9 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     spring_spacing              = 0;
     no_spacing                  = 0;
     released_spacing            = 40;
-    v_limit                     = 600.0;
+    v_limit_in_space            = 600;
+    v_limit                     = v_limit_in_space;
+    v_limit_in_gravity          = 4 * v_limit_in_space;
     release_timer_start         = 2.0;
     release_timer               = release_timer_start;
 
@@ -106,7 +108,7 @@ void StrandedAstronaut::move() {
     v += a * dt;
     v += gravity * dt;
     if (v.length() > v_limit) {
-        v.scale(v_limit);
+        v.interpolate(v.getScaled(v_limit), 4 * dt);
     }
 
     v *= damp;
@@ -134,15 +136,10 @@ void StrandedAstronaut::bounce(int other) {
 }
 
 void StrandedAstronaut::checkState() {
-    if (HIT_GRAVITATOR) {
-    }
-    if (!HIT_GRAVITATOR) {
-    }
-    if (HIT_GRAVITATOR && ORIENT_TO_PLANET) {
-    }
-    if (IN_GRAVITY_WELL && USING_GRAVITY) {
-    }
-    if (!IN_GRAVITY_WELL) {
+    if (IN_GRAVITY_WELL) {
+        v_limit = v_limit_in_gravity;
+    } else {
+        v_limit = v_limit_in_space;
     }
     if (FOLLOWING_ASTRONAUT) {
         getPlayerData((*strandedAstronaut)[astronaut]->pos, (*strandedAstronaut)[astronaut]->v);
@@ -153,13 +150,13 @@ void StrandedAstronaut::checkState() {
     }
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
         CAN_HIT_ASTRONAUTS = false;
-        damp = 0.87;
+        damp = 0.93;
     }  else {
         damp = 1.0;
     }
     if (RELEASED) {
         //spring_spacing = released_spacing;
-        spring_strength = 5000;
+        spring_strength = 1000;
         release_timer = countdownTimer(release_timer);
         if (release_timer <= 0) {
             followReset();
@@ -193,7 +190,6 @@ void StrandedAstronaut::displayMessage(int messageNumber) {
 
 bool StrandedAstronaut::displayMessageTimer() {
     message_timer += dt;
-
     if (message_timer >= message_delay) {
         message_dieroll = ofRandom(message_display_chance);
         if (message_dieroll = message_display_chance) {
@@ -215,21 +211,11 @@ string StrandedAstronaut::pickMessage(int messageNumber) {
 }
 
 void StrandedAstronaut::draw() {
-    /*
-    ofNoFill();
-    ofSetColor(255, 255, 255);
-    ofFill();
-    ofPushMatrix();
-    glTranslatef(pos.x, pos.y, 0);
-    glRotatef(rotation,0, 0, 1);
-    ofPopMatrix();
-    */
-
     if (FOLLOWING_PLAYER || FOLLOWING_ASTRONAUT) {
         ofPushMatrix();
         ofNoFill();
         ofSetColor(240, 206, 103, 200);
-        int d = 3;
+        int d = 4;
         int offset = 2;
         ofBezier(player_pos.x, player_pos.y, player_pos.x, player_pos.y, pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
         ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
@@ -265,9 +251,6 @@ void StrandedAstronaut::detectGravitatorCollisions() {
             }
             if (gravitator_type == "sun" || gravitator_type == "comet") {
                 IS_DEAD = true;
-                FOLLOWING_ASTRONAUT = false;
-                FOLLOWING_PLAYER = false;
-                THE_END = false;
             }
             if (gravitator_type == "blackhole") {
 
@@ -284,9 +267,6 @@ void StrandedAstronaut::detectGravitatorCollisions() {
 }
 
 void StrandedAstronaut::gravitatorBounce() {
-    if (v.length() < 0.05) {
-        //v.set(0, 0);
-    }
     float a1 = v.dot(normalized_collision_normal);
     float optimizedP = (2.0 * a1) / (m + planet_m);
     ofVec2f v_prime = v - optimizedP * planet_m * normalized_collision_normal;
@@ -308,15 +288,6 @@ void StrandedAstronaut::collisionData(int collision) {
 
 void StrandedAstronaut::orientToPlanet(int collision) {
 
-}
-
-void StrandedAstronaut::followPlayer() {
-    float randomized_speed = ofRandom(lerp_speed * 0.95, lerp_speed * 1.05);
-    float dist = pos.squareDistance(player_pos);
-    if (dist > (20 * 20)){
-    //pos.interpolate(player_pos, lerp_speed);
-    //v = player_v;
-    }
 }
 
 void StrandedAstronaut::followPlayer(ofVec2f _player_pos) {

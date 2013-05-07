@@ -44,7 +44,6 @@ public:
     void followReset();
 
     void detectPlayerCollisions();
-    void followPlayer();
     void followPlayer(ofVec2f _player_pos);
     void getPlayerData(ofVec2f _other_pos, ofVec2f _other_v);
 

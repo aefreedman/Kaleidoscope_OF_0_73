@@ -61,7 +61,6 @@ public:
     float damp;
     float restitution;
     float oxygen;
-    float v_limit;
 
     int w;
     int h;
@@ -83,6 +82,10 @@ protected:
     int astronaut_pickup_range;
     int astronaut_drop_range;
     int spring_strength;
+
+    int v_limit;
+    int v_limit_in_gravity;
+    int v_limit_in_space;
 
 private:
 

@@ -178,7 +178,6 @@ void Player::move() {
     v          += gravity * dt;
     v          *= damp;
     if (v.length() > v_limit) {
-        //v.set(v.getScaled(v_limit));
         v.interpolate(v.getScaled(v_limit), 4 * dt);
     }
     pos        += v * dt;
@@ -376,10 +375,6 @@ void Player::detectAstronautCollisions() {
                     cout << "I'm Astronaut #" + ofToString(i) + " and I'm following you!" << endl;
                 }
             }
-//            if (dist > drop_range && (*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
-//                releaseAllAstronauts(true);
-//                fxAstronautRelease.play();
-//            }
             if ((*strandedAstronaut)[i]->FOLLOWING_PLAYER) {
                 (*strandedAstronaut)[i]->getPlayerData(pos, v);
                 HAVE_ASTRONAUT              = true;
@@ -620,7 +615,6 @@ void Player::jump() {
     }
 
     if (TRAVERSE_MODE) {
-        //fxJump[0].play();
         fxJump.setSpeed(ofRandom(0.9, 1.2));
         fxJump.play();
         starting_pos = pos;

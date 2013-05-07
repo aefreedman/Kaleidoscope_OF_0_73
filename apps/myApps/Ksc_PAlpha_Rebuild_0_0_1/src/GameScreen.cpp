@@ -162,6 +162,9 @@ void GameScreen::update() {
             strandedAstronaut[i]->update();
             if (strandedAstronaut[i]->IS_DEAD) {
                 AN_ASTRONAUT_DIED = true;
+                if (strandedAstronaut[i]->FOLLOWING_PLAYER) {
+                    player.releaseAllAstronauts(false);
+                }
                 for (int j = 0; j < strandedAstronaut.size(); j++) {
                     if (strandedAstronaut[j]->astronaut == i) {
                         strandedAstronaut[j]->FOLLOWING_ASTRONAUT = false;
@@ -243,6 +246,8 @@ void GameScreen::renderSprites() {
 void GameScreen::drawGUI() {
     /// Use local (screen) postions
     if (!MAP_VIEW) {
+        ofPushMatrix();
+        ofFill();
         ofSetColor(255, 255, 255);
         for (int i = 0; i < totalCrew; i++) {
             if (i < strandedAstronaut.size()) {
@@ -264,6 +269,7 @@ void GameScreen::drawGUI() {
         ofSetColor(255,255,255,255);
         O2frame.draw(ofGetWidth() - O2frame.width - 20, ofGetHeight() - O2frame.height - 20);
         map.draw(0 , ofGetHeight() - map.height);
+        ofPopMatrix();
     }
 }
 

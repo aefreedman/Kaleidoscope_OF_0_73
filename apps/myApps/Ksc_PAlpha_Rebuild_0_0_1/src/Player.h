@@ -183,9 +183,9 @@ public:
     float oxygen_depletion_speed;
     float camera_move_delay;
     int flame_rotation;
-    float v_limit;
-    float v_limit_in_gravity;
-    float v_limit_in_space;
+//    float v_limit;
+//    float v_limit_in_gravity;
+//    float v_limit_in_space;
 
     bool CAN_JETPACK;
     bool TRAVERSE_MODE;
