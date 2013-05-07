@@ -109,6 +109,7 @@ private:
         void getState();
         void exportSessionData();
         void exit();
+        void screenshot();
 
         int planet_base_m;
         int planet_mass_multiplier;

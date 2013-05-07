@@ -55,17 +55,12 @@ public:
     bool EXITED_GRAVITY_WELL;
     bool ORIENT_TO_PLANET;
     bool USING_GRAVITY;
-    bool SIMPLE_GRAVITY;
-    //bool CAN_LAND_ON_PLANET;
-    //bool TRAVERSING_PLANET;
-
     float G;
     float m;
     float rotation;
     float damp;
     float restitution;
     float oxygen;
-    float v_limit;
 
     int w;
     int h;
@@ -87,6 +82,10 @@ protected:
     int astronaut_pickup_range;
     int astronaut_drop_range;
     int spring_strength;
+
+    int v_limit;
+    int v_limit_in_gravity;
+    int v_limit_in_space;
 
 private:
 
