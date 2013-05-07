@@ -64,7 +64,7 @@ void GameScreen::setup() {
     importLevel(levelID);
 
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 128); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-    planetRenderer->loadTexture("ART/planets.png", 256, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    planetRenderer->loadTexture("ART/planets.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
     nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -226,11 +226,13 @@ void GameScreen::renderSprites() {
         if (gravitator[i]->type == "comet") {
             scaleFactor = 2;
         } else if (gravitator[i]-> type == "planet") {
+            scaleFactor = 2.0*gravitator[i]->gR/128.0;
+            planetRenderer->addCenteredTile(&gravitator[i]->anim2,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
             scaleFactor = 4.0*gravitator[i]->r/120.0;
         } else if (gravitator[i]->type == "sun") {
             scaleFactor = 2 * gravitator[i]->r/128.0;
         } else if (gravitator[i]->type == "blackhole") {
-            scaleFactor = 0;
+            scaleFactor = 2 * gravitator[i]->gR/128.0;
         }
         planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
