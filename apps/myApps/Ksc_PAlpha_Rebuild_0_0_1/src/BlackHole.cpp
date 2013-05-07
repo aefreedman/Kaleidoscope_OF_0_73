@@ -30,7 +30,7 @@ void BlackHole::draw() {
     ofSetColor(60, 0, 90, 255);
     ofCircle(pos, r);
 
-    ofSetColor(255, 255, 255, 255);
+    ofSetColor(255, 170, 255, 100);
     ofNoFill();
     ofCircle(pos, gR);
 

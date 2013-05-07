@@ -32,6 +32,36 @@ void GameScreen::setup() {
     fadeIn                          = GUIFadeIn(camera_pos);
     level_over_timer_start          = 3.0;
     level_over_timer                = level_over_timer_start;
+    for (int i = 0; i < 10000; i++) {
+        int screens_squared = 10;
+        int initial_blink_period = 200;
+        stars.push_back(ofVec4f(
+                                ofRandom(                       /// x
+                                        -ofGetWidth(),
+                                        ofGetWidth()
+                                        ) * screens_squared,
+                                ofRandom(                       /// y
+                                         -ofGetHeight(),
+                                        ofGetHeight()
+                                        ) * screens_squared,
+                                ofRandom (-10, 10),             /// z
+                                ofRandom(initial_blink_period)  /// w (used for timing)
+                                )
+                        );
+        stars_dark.push_back(ofVec4f(
+                                    ofRandom(                  /// x
+                                            -ofGetWidth(),
+                                            ofGetWidth()
+                                            ) * screens_squared,
+                                    ofRandom(                 /// y
+                                            -ofGetHeight(),
+                                            ofGetHeight()
+                                            )* screens_squared,
+                              ofRandom (-10, 10),               /// z
+                              ofRandom(initial_blink_period)    /// w (used for timing)
+                                )
+                             );
+    }
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -211,8 +241,6 @@ void GameScreen::camera() {
 void GameScreen::setCameraTarget(ofVec2f target) {
     camera_target.x = (target.x * view_scale_target) - ofGetWidth()/2;
     camera_target.y = (target.y * view_scale_target) - ofGetHeight()/2;
-    //camera_target.x = (target.x) - ofGetWidth()/2;
-    //camera_target.y = (target.y) - ofGetHeight()/2;
 }
 
 void GameScreen::moveCameraTarget(ofVec2f direction) {
@@ -274,7 +302,7 @@ void GameScreen::drawGUI() {
 }
 
 void GameScreen::draw() {
-    /// LAYER 1 -- Background (CAMERA; !ZOOM)
+    /// LAYER 0 -- Background (CAMERA; !ZOOM)
     ofPushMatrix();
     ofSetColor(255);
     ofTranslate(-camera_pos);
@@ -283,16 +311,55 @@ void GameScreen::draw() {
 
     /// LAYER 1 -- Background (CAMERA && ZOOM)
     ofPushMatrix();
-    ofTranslate(camera_target);
-    //ofRotate(50, 0, 0, 1);
+    ofTranslate(-camera_target);
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255,50);
+    ofPopMatrix();
+
+    ofPushMatrix();
+    ofTranslate(-camera_pos);
+    ofScale(view_scale, view_scale, 1);
+    for (int i = 0; i < stars.size(); i++) {
+        int blink_brightness = 25;
+        int dark_star_brightness = 125;
+        int blink_time = 10;
+        int blink_period = 200;
+        ofColor starLight(ofColor::white);
+        if (stars[i].x > camera_pos.x && stars[i].x < camera_pos.x + ofGetWidth() && stars[i].y > camera_pos.y && stars[i].y < camera_pos.y + ofGetHeight()) {
+            if (stars[i].w < blink_time) {
+                stars[i].w += 1;
+                starLight.setBrightness(blink_brightness);
+            } else if (stars[i].w >= blink_time) {
+                stars[i].w += 1;
+                starLight.setBrightness(ofRandom(200, 255));
+                if (stars[i].w > blink_period) {
+                    stars[i].w = ofRandom (blink_period);
+                }
+            }
+            ofSetColor(starLight);
+            ofRect(stars[i].x, stars[i].y, stars[i].z, 2, 2);
+        }
+        starLight.setBrightness(dark_star_brightness);
+        if (stars_dark[i].x > camera_pos.x && stars_dark[i].x < camera_pos.x + ofGetWidth() && stars_dark[i].y > camera_pos.y && stars_dark[i].y < camera_pos.y + ofGetHeight()) {
+            if (stars_dark[i].w < blink_time) {
+                stars_dark[i].w += 1;
+                starLight.setBrightness(50);
+            } else if (stars_dark[i].w >= blink_time) {
+                stars_dark[i].w += 1;
+                starLight.a = dark_star_brightness;
+                if (stars_dark[i].w > blink_period) {
+                    stars_dark[i].w = ofRandom (blink_period);
+                }
+            }
+            ofSetColor(starLight);
+            ofRect(stars_dark[i].x, stars_dark[i].y, stars_dark[i].z, 2, 2);
+        }
+    }
     ofPopMatrix();
 
     /// LAYER 2 -- GameObjects (CAMERA && ZOOM)
     ofPushMatrix();
     ofTranslate(-camera_pos);
-    //ofRotate(50, 0, 0, 1);
     ofScale(view_scale, view_scale, 1);
     ofSetColor(255,255,255);
 
@@ -306,8 +373,6 @@ void GameScreen::draw() {
             }
         }
     }
-
-
 
     for (int i = 0; i < gui.size(); i++) {
         gui[i]->draw();
@@ -454,7 +519,6 @@ void GameScreen::drawLevelEditorGUI() {
 void GameScreen::reset() {
     importLevel(levelID);
     player.setup();
-    //fadeIn.pos.set(ofVec2f(camera_target.x, camera_target.y));
     fadeIn.setup();
     level_over_timer = level_over_timer_start;
     FREEZE_PLAYER = false;
@@ -608,6 +672,10 @@ void GameScreen::keyPressed(int key) {
                 player.jetpack(true);
                 break;
             } else if (player.TRAVERSE_MODE) {
+                if (player.ROTATE_LEFT || player.ROTATE_RIGHT) {
+                    //player.ROTATE_LEFT = false;
+                    //player.ROTATE_RIGHT = false;
+                }
                 player.chargeJump();
                 break;
             }
@@ -655,13 +723,10 @@ void GameScreen::keyPressed(int key) {
             }
         }
     case OF_KEY_LEFT:
-        player.ROTATE_LEFT = true;
+        if (!player.CHARGING_JUMP) {player.ROTATE_LEFT = true;}
         break;
     case OF_KEY_RIGHT:
-        player.ROTATE_RIGHT = true;
-        break;
-    case 'x':
-        player.releaseAllAstronauts(true);
+        if (!player.CHARGING_JUMP) {player.ROTATE_RIGHT = true;}
         break;
     case 32:
         if (!player.IS_DEAD) {
@@ -700,6 +765,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 's':
         player.KILL_PLAYER = true;
+        player.releaseAllAstronauts(false);
         break;
     }
 }
@@ -728,14 +794,18 @@ void GameScreen::keyReleased(int key) {
         }
         break;
     case OF_KEY_LEFT:
-        player.ROTATE_LEFT = false;
-        player.anim = idle;
-        player.fxJetpackLoop.stop();
+        if (player.ROTATE_LEFT) {
+            player.ROTATE_LEFT = false;
+            player.anim = idle;
+            player.fxJetpackLoop.stop();
+        }
         break;
     case OF_KEY_RIGHT:
-        player.ROTATE_RIGHT = false;
-        player.anim = idle;
-        player.fxJetpackLoop.stop();
+        if (player.ROTATE_RIGHT) {
+            player.ROTATE_RIGHT = false;
+            player.anim = idle;
+            player.fxJetpackLoop.stop();
+        }
         break;
     }
 }
@@ -817,7 +887,6 @@ void GameScreen::mousePressed(int x, int y, int button) {
             addStrandedAstronaut(ofVec2f(mouseX, mouseY), new_astronaut_name);
         }
     }
-
 }
 
 //--------------------------------------------------------------

@@ -48,7 +48,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     DRAW_MESSAGE                = false;
     IS_DEAD                     = false;
     THE_END                     = false;
-    CAN_HIT_ASTRONAUTS          = true;
+    CAN_HIT_ASTRONAUTS          = false;
     RELEASED                    = false;
 
     type = "strandedastronaut";
@@ -149,7 +149,7 @@ void StrandedAstronaut::checkState() {
     if (FOLLOWING_PLAYER) {
     }
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
-        CAN_HIT_ASTRONAUTS = false;
+        //CAN_HIT_ASTRONAUTS = false;
         damp = 0.93;
     }  else {
         damp = 1.0;
@@ -316,8 +316,16 @@ void StrandedAstronaut::detectPlayerCollisions() {
                 float drop_range        = (r + other_r + astronaut_drop_range) * (r + other_r + astronaut_drop_range);
                 float collision_range   = (r + other_r) * (r + other_r);
             if (dist < collision_range) {
+                ofVec2f normal;
+                normal.set(pos - other_pos);
                 if (CAN_HIT_ASTRONAUTS) {
                     bounce(i);
+                    if (dist < collision_range) {
+                        float theta;
+                        theta = atan2(normal.y / planet_r, normal.x / other_r);
+                        pos.x = (cos(theta) * (other_r + r)) + other_pos.x;
+                        pos.y = (sin(theta) * (other_r + r)) + other_pos.y;
+                    }
                 }
             }
             if (dist < pickup_range) {

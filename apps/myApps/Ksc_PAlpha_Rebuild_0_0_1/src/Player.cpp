@@ -111,16 +111,6 @@ void Player::loadSound() {
     fxJetpackLoop.loadSound("AUDIO/ksc_AUDIO_player_jetloop_002.wav");
     fxJetpackLoop.setLoop(true);
 
-//    for (int i = 0; i < 3; i++) {
-//        fxJump.push_back(ofSoundPlayer());
-//        fxJump[i].loadSound("AUDIO/ksc_AUDIO_player_jump_00" + ofToString(i) + ".wav");
-//        fxJump[i].setVolume(0.3);
-//    }
-    //fxJump[0]->loadSound("AUDIO/ksc_AUDIO_jump_001.wav");
-    //fxJump[1]->loadSound("AUDIO/ksc_AUDIO_jump_002.wav");
-    //fxJump[2]->loadSound("AUDIO/ksc_AUDIO_jump_003.wav");
-    //fxJump[3]->loadSound("AUDIO/ksc_AUDIO_jump_004.wav");
-
     int random = ofRandom (1, 4);
     if (random == 1) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_001.wav");}
     if (random == 2) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_002.wav");}
@@ -158,8 +148,6 @@ void Player::update() {
         player_rotation += 360;
     }
     if(DEATH_ANIMATION) {
-        //flame_rotation = (-1*v).angle(ofVec2f(0,-1));
-        //cout << ofToString(flame_rotation) + "/n";
         p1Renderer->addCenterRotatedTile(&flame, pos.x, pos.y,-1, F_NONE, 2.0, flame_rotation, NULL, 255, 255, 255, 255);
     }
 
@@ -252,9 +240,14 @@ void Player::checkState() {
     ///---------------------
     if (oxygen < 0) {
         KILL_PLAYER = true;
+        releaseAllAstronauts(false);
     }
-    if (gravitator_type == "sun" || gravitator_type == "comet") {
+    if (gravitator_type == "sun") {
         KILL_PLAYER = true;
+    }
+    if (gravitator_type == "comet") {
+        KILL_PLAYER = true;
+        releaseAllAstronauts(false);
     }
     if (KILL_PLAYER) {
         DEATH_ANIMATION = die();
@@ -279,6 +272,9 @@ void Player::checkState() {
             rotateDirection(false);
         }
     } else if (TRAVERSE_MODE) {
+        if (fxJetpackLoop.getIsPlaying()) {
+            fxJetpackLoop.stop();
+        }
         if (ROTATE_LEFT) {
             traversePlanet(true);
         }
@@ -600,6 +596,7 @@ inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVe
 
 
 void Player::chargeJump() {
+    CHARGING_JUMP = true;
     if (jumpStrength == 0) {
         anim = charge;
     }
@@ -626,6 +623,7 @@ void Player::jump() {
         LEAVING_PLANET = true;
         anim = lift;
         jump_timer = 0.1;
+        CHARGING_JUMP = false;
 
         if (DEBUG_GUI) {
             cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;

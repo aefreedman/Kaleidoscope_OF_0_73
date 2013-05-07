@@ -132,6 +132,9 @@ private:
 
         ofVec2f player_start_pos;
 
+        std::vector<ofVec4f> stars;
+        std::vector<ofVec4f> stars_dark;
+
         int iddqd;
 
         float camera_lerp_speed;

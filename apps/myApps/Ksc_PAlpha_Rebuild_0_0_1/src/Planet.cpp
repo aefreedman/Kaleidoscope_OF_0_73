@@ -27,7 +27,7 @@ void Planet::update() {
 }
 
 void Planet::draw() {
-    ofSetColor(255, 255, 255, 255);
+    ofSetColor(255, 255, 255, 30);
     ofNoFill();
     ofSetCircleResolution(64);
     ofCircle(pos, gR);
