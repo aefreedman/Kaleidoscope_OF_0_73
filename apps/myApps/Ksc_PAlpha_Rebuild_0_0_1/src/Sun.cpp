@@ -30,8 +30,11 @@ void Sun::update() {
 }
 void Sun::draw() {
     ofSetCircleResolution(64);
-    ofSetColor(255, 180, 180, 100);
-    ofNoFill();
+    ofSetColor(255, 33, 102, 20);
+    ofSetCircleResolution(int(ofRandom(20,30)));
     ofCircle(pos, gR);
+//    ofSetColor(255, 120, 102, 15);
+//    ofSetCircleResolution(int(ofRandom(6,12)));
+//    ofCircle(pos, r + 10);
     Gravitator::draw();
 }

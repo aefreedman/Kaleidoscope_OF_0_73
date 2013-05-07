@@ -19,6 +19,7 @@ void Planet::setup() {
     type = "planet";
     G = 300;
     anim = planet1;
+    anim2 = atmosphere;
     ofEnableAlphaBlending(); // turn on alpha blending. important!}
 }
 void Planet::update() {
@@ -27,10 +28,7 @@ void Planet::update() {
 }
 
 void Planet::draw() {
-    ofSetColor(255, 255, 255, 30);
-    ofNoFill();
-    ofSetCircleResolution(64);
-    ofCircle(pos, gR);
+
     Gravitator::draw();
 }
 

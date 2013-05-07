@@ -12,6 +12,7 @@ public:
     Planet();
     Planet(ofVec2f _pos, int _r, int _m, int _gR);
     Planet(ofVec2f _pos, int _r, int _gR);
+
     virtual ~Planet();
     void setup();
     void draw();
