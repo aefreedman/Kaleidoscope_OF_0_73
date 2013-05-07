@@ -10,7 +10,7 @@ Sun::Sun(ofVec2f _pos, int _r, int _m, int _gR) : Gravitator(_pos, _r, _m, _gR) 
     r = _r;
     m = _m;
     gR = _gR;
-    G = 200;
+    G = 500;
     anim = sun;
     Gravitator::setup();
 

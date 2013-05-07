@@ -162,6 +162,9 @@ void GameScreen::update() {
             strandedAstronaut[i]->update();
             if (strandedAstronaut[i]->IS_DEAD) {
                 AN_ASTRONAUT_DIED = true;
+                if (strandedAstronaut[i]->FOLLOWING_PLAYER) {
+                    player.releaseAllAstronauts(false);
+                }
                 for (int j = 0; j < strandedAstronaut.size(); j++) {
                     if (strandedAstronaut[j]->astronaut == i) {
                         strandedAstronaut[j]->FOLLOWING_ASTRONAUT = false;
@@ -243,6 +246,8 @@ void GameScreen::renderSprites() {
 void GameScreen::drawGUI() {
     /// Use local (screen) postions
     if (!MAP_VIEW) {
+        ofPushMatrix();
+        ofFill();
         ofSetColor(255, 255, 255);
         for (int i = 0; i < totalCrew; i++) {
             if (i < strandedAstronaut.size()) {
@@ -264,6 +269,7 @@ void GameScreen::drawGUI() {
         ofSetColor(255,255,255,255);
         O2frame.draw(ofGetWidth() - O2frame.width - 20, ofGetHeight() - O2frame.height - 20);
         map.draw(0 , ofGetHeight() - map.height);
+        ofPopMatrix();
     }
 }
 
@@ -648,19 +654,14 @@ void GameScreen::keyPressed(int key) {
                 break;
             }
         }
-    case OF_KEY_DOWN:
-        break;
     case OF_KEY_LEFT:
         player.ROTATE_LEFT = true;
         break;
     case OF_KEY_RIGHT:
         player.ROTATE_RIGHT = true;
         break;
-    case 'w':
-        break;
     case 'x':
         player.releaseAllAstronauts(true);
-        //player.releaseAstronaut();
         break;
     case 32:
         if (!player.IS_DEAD) {
@@ -672,12 +673,6 @@ void GameScreen::keyPressed(int key) {
                 break;
             }
         }
-        break;
-    case '=':
-        player.damp += 0.01;
-        break;
-    case '-':
-        player.damp -= 0.01;
         break;
     case 'm':
         if (ENABLE_EDITOR) {
@@ -701,18 +696,17 @@ void GameScreen::keyPressed(int key) {
         }
         break;
     case OF_KEY_INSERT:
-        string filename = "screenshots/screenshot_" + ofToString(ofGetMonth()) + ofToString(ofGetWeekday()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".png";
-        ofSaveScreen(filename);
+        screenshot();
+        break;
+    case 's':
+        player.KILL_PLAYER = true;
+        break;
     }
 }
 
 //--------------------------------------------------------------
 void GameScreen::keyReleased(int key) {
     switch (key) {
-    case 'a':
-        break;
-    case 'd':
-        break;
     case OF_KEY_UP:
         if (player.TRAVERSE_MODE) {
             player.jump();
@@ -744,7 +738,6 @@ void GameScreen::keyReleased(int key) {
         player.fxJetpackLoop.stop();
         break;
     }
-
 }
 
 //--------------------------------------------------------------
@@ -1010,4 +1003,9 @@ void GameScreen::exportSessionData() {
 
 void GameScreen::exit() {
     exportSessionData();
+}
+
+void GameScreen::screenshot() {
+    string filename = "screenshots/screenshot_" + ofToString(ofGetMonth()) + ofToString(ofGetWeekday()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".png";
+    ofSaveScreen(filename);
 }
