@@ -55,10 +55,6 @@ public:
     bool EXITED_GRAVITY_WELL;
     bool ORIENT_TO_PLANET;
     bool USING_GRAVITY;
-    bool SIMPLE_GRAVITY;
-    //bool CAN_LAND_ON_PLANET;
-    //bool TRAVERSING_PLANET;
-
     float G;
     float m;
     float rotation;

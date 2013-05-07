@@ -136,7 +136,6 @@ public:
     void setup();
     void update();
     void draw();
-    void drawGUI();
     void drawDebugGUI();
     void move();
     void jump();
@@ -147,7 +146,6 @@ public:
     void detectGravitatorCollisions();
     void collisionData(int collision);
     bool detectCollisions();
-    bool checkOffScreen();
     void checkState();
     bool die();
     void orientToPlanet(int collision);
@@ -191,11 +189,8 @@ public:
 
     bool CAN_JETPACK;
     bool TRAVERSE_MODE;
-    bool USING_GRAVITY;
     bool HIT_GRAVITATOR;
-    bool OFF_SCREEN_CHECK;
     bool DEBUG_GUI;
-    bool OFF_SCREEN;
     bool GOD_MODE;
     bool LEAVING_PLANET;
     bool DEATH_ANIMATION;
@@ -224,7 +219,6 @@ public:
 protected:
 private:
     bool DEBUG;
-    int off_screen_limit;
     ofVec2f display_g;
     ofVec2f display_a;
     ofVec2f display_f;

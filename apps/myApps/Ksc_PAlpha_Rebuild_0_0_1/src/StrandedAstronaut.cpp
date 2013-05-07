@@ -42,7 +42,6 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     EXITED_GRAVITY_WELL         = false;
     ORIENT_TO_PLANET            = true;
     USING_GRAVITY               = true;
-    SIMPLE_GRAVITY              = true;
     CAN_TALK                    = true;
     DRAW_MESSAGE                = false;
     IS_DEAD                     = false;
@@ -90,11 +89,7 @@ void StrandedAstronaut::update() {
     move();
     DRAW_MESSAGE = displayMessageTimer();
     if (DRAW_MESSAGE) {
-        if (level == 28){
-            displayMessage(int(ofRandom(14,16)));
-        } else {
-            displayMessage();
-        }
+        displayMessage();
     }
 }
 
@@ -159,18 +154,18 @@ void StrandedAstronaut::checkState() {
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
         CAN_HIT_ASTRONAUTS = false;
         damp = 0.87;
-    } else if (!IN_GRAVITY_WELL) {
-        damp = 0.99;
-    } else {
+    }  else {
         damp = 1.0;
     }
     if (RELEASED) {
-        spring_spacing = released_spacing;
+        //spring_spacing = released_spacing;
+        spring_strength = 5000;
         release_timer = countdownTimer(release_timer);
         if (release_timer <= 0) {
             followReset();
         }
     } else if (!RELEASED) {
+        spring_strength = 15000;
         spring_spacing = no_spacing;
         release_timer = release_timer_start;
     }
@@ -236,16 +231,8 @@ void StrandedAstronaut::draw() {
         ofSetColor(240, 206, 103, 200);
         int d = 3;
         int offset = 2;
-        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
         ofBezier(player_pos.x, player_pos.y, player_pos.x, player_pos.y, pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
         ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
-        d = 4;
-        ofSetColor(240, 106, 103, 200);
-        //ofBezier(player_pos.x, player_pos.y, player_pos.x, player_pos.y, pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
-        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
-        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
-        //ofBezier(player_pos.x, player_pos.y, player_pos.x + (player_v.x / d), player_pos.y + (player_v.y / d), pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
-        //ofLine(pos, player_pos);
         ofPopMatrix();
     }
 }
@@ -269,6 +256,12 @@ void StrandedAstronaut::detectGravitatorCollisions() {
             collisionData(i);
             if (gravitator_type == "planet") {
                 gravitatorBounce();
+                if (dist < collision_range - (r/2)) {
+                    float theta;
+                    theta = atan2(collision_normal.y / planet_r, collision_normal.x / planet_r);
+                    pos.x = (cos(theta) * (planet_r + r)) + planet_pos.x;
+                    pos.y = (sin(theta) * (planet_r + r)) + planet_pos.y;
+                }
             }
             if (gravitator_type == "sun" || gravitator_type == "comet") {
                 IS_DEAD = true;
@@ -285,11 +278,7 @@ void StrandedAstronaut::detectGravitatorCollisions() {
             HIT_GRAVITATOR = false;
         }
         if (dist < gravity_range && USING_GRAVITY && !HIT_GRAVITATOR) {
-            if (SIMPLE_GRAVITY) {
-                gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
-            } else {
-                gravity               += planet_G * (m * planet_mass) / (dist) * planet_to_player_normal.normalized();
-            }
+            gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
         }
     }
 }
@@ -355,8 +344,10 @@ void StrandedAstronaut::detectPlayerCollisions() {
                 float pickup_range      = (r + other_r + astronaut_pickup_range) * (r + other_r + astronaut_pickup_range);
                 float drop_range        = (r + other_r + astronaut_drop_range) * (r + other_r + astronaut_drop_range);
                 float collision_range   = (r + other_r) * (r + other_r);
-            if (dist < collision_range && CAN_HIT_ASTRONAUTS) {
-                bounce(i);
+            if (dist < collision_range) {
+                if (CAN_HIT_ASTRONAUTS) {
+                    bounce(i);
+                }
             }
             if (dist < pickup_range) {
                 if (FOLLOWING_PLAYER) {

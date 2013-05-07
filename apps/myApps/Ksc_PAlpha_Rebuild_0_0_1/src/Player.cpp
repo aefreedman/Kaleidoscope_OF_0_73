@@ -54,8 +54,6 @@ void Player::setup() {
     ROTATE_LEFT             = false;
     ROTATE_RIGHT            = false;
     HAVE_ASTRONAUT          = false;
-    OFF_SCREEN_CHECK        = true;
-    SIMPLE_GRAVITY          = true;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -80,7 +78,6 @@ void Player::setup() {
     jump_strength_2         = 1000000.0;
     jump_strength_3         = 2000000.0;
     restitution             = 0.50;         /// Used to calculate the amount of momentum conserved when bouncing off a planet
-    off_screen_limit        = 0;           /// If this is too large & camera moves by whole screens, camera will freak out
     rotation_speed          = 4.0;          /// This is the speed of your rotation in space
     speed_on_planet         = 150.0;
     jetpack_power           = 8.0 * 100000.0;
@@ -149,10 +146,6 @@ void Player::update() {
     display_g.set(gravity);
     move();
 
-    if (OFF_SCREEN_CHECK) {
-        OFF_SCREEN = checkOffScreen();
-    }
-
     p1Renderer->clear(); // clear the sheet
     p1Renderer->update(ofGetElapsedTimeMillis());
 
@@ -201,26 +194,14 @@ void Player::move() {
 }
 
 void Player::draw() {
-    ofSetColor(0, 255, 240);
-    ofFill();
-    ofPushMatrix();
-    glTranslatef(pos.x, pos.y, 0);
-    glRotatef(rotation,0, 0, 1);
-    //ofCircle(0, 0, r);
-    //ofLine(ofPoint(0, 0), ofPoint(50, 0));
-    ofPopMatrix();
-
-    drawGUI();
-
     if (DEBUG_GUI) {
         drawDebugGUI();
     }
+    if (DEATH_ANIMATION && anim.frame == 13) {
 
-    p1Renderer->draw();
-}
-
-void Player::drawGUI() {
-
+    } else {
+        p1Renderer->draw();
+    }
 }
 
 void Player::drawDebugGUI() {
@@ -231,11 +212,7 @@ void Player::drawDebugGUI() {
     string info = "";
     info += "DEBUG MENU" + nl;
     info += "f: " + ofToString(display_f, precision) + nl;
-    if (SIMPLE_GRAVITY) {
-        info += "g: " + ofToString(display_g, precision) + " (simple)" + nl;
-    } else {
-        info += "g: " + ofToString(display_g, precision) + " (realistic)" + nl;
-    }
+    info += "g: " + ofToString(display_g, precision) + " (simple)" + nl;
     info += "a: " + ofToString(display_a, precision) + nl;
     info += "v: " + ofToString(v, precision) + nl;
     info += "pos: " + ofToString(pos, precision) + nl;
@@ -278,9 +255,6 @@ void Player::checkState() {
     }
     if (gravitator_type == "sun" || gravitator_type == "comet") {
         DEATH_ANIMATION = die();
-    }
-    if (OFF_SCREEN) {
-        //DEATH_ANIMATION = die();
     }
 
     ///---------------------
@@ -356,34 +330,6 @@ void Player::checkState() {
     if (!IN_GRAVITY_WELL) {
         display_g.set(0);
     }
-}
-
-bool Player::checkOffScreen() {
-    if (camera_timer > 0) {
-        camera_timer -= dt;
-    }
-    if (camera_timer <= 0) {
-        if (pos.x > camera_target.x + ofGetWidth() - off_screen_limit) {
-            camera_move_direction = "right";
-            camera_timer = camera_move_delay;
-            return true;
-        }
-        if (pos.x < camera_target.x + off_screen_limit) {
-            camera_move_direction = "left";
-            camera_timer = camera_move_delay;
-            return true;
-        }
-        if (pos.y > camera_target.y + ofGetHeight() - off_screen_limit) {
-            camera_move_direction = "down";
-            camera_timer = camera_move_delay;
-            return true;
-        }
-        if (pos.y < camera_target.y + off_screen_limit) {
-            camera_move_direction = "up";
-            camera_timer = camera_move_delay;
-            return true;
-        } else return false;
-    } else return false;
 }
 
 void Player::soundPlayer(string sound) {
@@ -536,14 +482,7 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
             if (dist < (planet_gravity_range + r) * (planet_gravity_range + r) && USING_GRAVITY) {
                 IN_GRAVITY_WELL = true;
                 gravity_type = gravitator_type;
-                if (SIMPLE_GRAVITY) {
-                    gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
-                } else {
-                    gravity               += planet_G * (m * planet_mass) / (dist) * planet_to_player_normal.normalized();
-                }
-                if (gravitator_type == "blackhole") {
-                    //gravity               += planet_G * (m * planet_mass) / (dist) * planet_to_player_normal.normalized();
-                }
+                gravity               += planet_G * planet_to_player_normal.normalized() / planet_to_player_normal.length() * planet_to_player_normal.length();
             }
         }
         if (TRAVERSE_MODE) {
@@ -573,9 +512,6 @@ bool Player::die() {
         }
         if (death_timer <= 0) {
             IS_DEAD = true;
-            //setup();
-            //releaseAllAstronauts(false);
-            //displayMessage(starting_pos, "You died.", (*gui)[0]->dark_grey, (*gui)[0]->red);
             return false;
         }
     } else return false;
@@ -611,13 +547,6 @@ void Player::collisionData(int collision) {
     left                                = collision_perpendicular;
     right                               = -collision_perpendicular;
     gravitator_type                     = (*gravitator)[collision]->type;
-
-    if (!SIMPLE_GRAVITY) {
-        jump_strength_3 = jump_multiplier * planet_m;
-    }
-    if (DEBUG_GUI) {
-        //cout << ofToString(planet_m) << endl;
-    }
 }
 
 void Player::orientToPlanet(int collision) {
