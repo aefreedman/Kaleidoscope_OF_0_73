@@ -54,6 +54,7 @@ void Player::setup() {
     ROTATE_LEFT             = false;
     ROTATE_RIGHT            = false;
     HAVE_ASTRONAUT          = false;
+    KILL_PLAYER             = false;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -250,9 +251,12 @@ void Player::checkState() {
     /// DEATH
     ///---------------------
     if (oxygen < 0) {
-        DEATH_ANIMATION = die();
+        KILL_PLAYER = true;
     }
     if (gravitator_type == "sun" || gravitator_type == "comet") {
+        KILL_PLAYER = true;
+    }
+    if (KILL_PLAYER) {
         DEATH_ANIMATION = die();
     }
 

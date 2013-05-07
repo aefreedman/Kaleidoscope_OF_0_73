@@ -202,6 +202,7 @@ public:
     bool CAN_HIT_ASTRONAUTS;
     bool CAN_PICKUP_ASTRONAUTS;
     bool IS_DEAD;
+    bool KILL_PLAYER;
 
     ofSoundPlayer fxDeath;
     ofSoundPlayer fxJetpackEmpty;
