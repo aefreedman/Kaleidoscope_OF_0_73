@@ -55,6 +55,7 @@ void Player::setup() {
     ROTATE_RIGHT            = false;
     HAVE_ASTRONAUT          = false;
     KILL_PLAYER             = false;
+    CHARGING_JUMP           = false;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -185,10 +186,14 @@ void Player::draw() {
     if (DEBUG_GUI) {
         drawDebugGUI();
     }
-    if (DEATH_ANIMATION && anim.frame == 13) {
-
-    } else {
+    if (!DEATH_ANIMATION) {
         p1Renderer->draw();
+    } else {
+         if (anim.frame >= 13) {
+
+        } else {
+            p1Renderer->draw();
+        }
     }
 }
 
@@ -623,13 +628,14 @@ void Player::jump() {
         LEAVING_PLANET = true;
         anim = lift;
         jump_timer = 0.1;
-        CHARGING_JUMP = false;
+
 
         if (DEBUG_GUI) {
             cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;
         }
     }
     jumpStrength = 0;
+    CHARGING_JUMP = false;
 }
 
 void Player::jetpack(bool JETPACK_FORWARD) {

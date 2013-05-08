@@ -25,6 +25,7 @@
 #include "GUIOverlay.h"
 #define nl '\n'
 #define fps 60
+#define number_of_stars 10000
 
 class GameScreen : public Screen {
 public:
@@ -110,6 +111,7 @@ private:
         void exportSessionData();
         void exit();
         void screenshot();
+        void generateStars();
 
         int planet_base_m;
         int planet_mass_multiplier;

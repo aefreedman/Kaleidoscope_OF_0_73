@@ -338,8 +338,9 @@ void StrandedAstronaut::detectPlayerCollisions() {
                     if (!FOLLOWING_ASTRONAUT && (*strandedAstronaut)[i]->THE_END) {
                         (*strandedAstronaut)[i]->THE_END = false;
                         THE_END = true;
-                        FOLLOWING_ASTRONAUT = true;
                         astronaut = i;
+                        FOLLOWING_ASTRONAUT = true;
+                        getPlayerData((*strandedAstronaut)[astronaut]->pos, (*strandedAstronaut)[astronaut]->v);
                     }
                 }
             }

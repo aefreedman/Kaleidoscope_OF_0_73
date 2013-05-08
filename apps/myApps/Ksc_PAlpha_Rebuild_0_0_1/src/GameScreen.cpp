@@ -19,6 +19,7 @@ void GameScreen::setup() {
     ///------------------------------
     ofSetFrameRate(60);
     ofEnableAlphaBlending();
+    generateStars();
     camera_pos.set(0, 0, 0);
     camera_target.set(0, 0, 0);
     USING_LEVEL_EDITOR              = false;
@@ -32,36 +33,6 @@ void GameScreen::setup() {
     fadeIn                          = GUIFadeIn(camera_pos);
     level_over_timer_start          = 3.0;
     level_over_timer                = level_over_timer_start;
-    for (int i = 0; i < 10000; i++) {
-        int screens_squared = 10;
-        int initial_blink_period = 200;
-        stars.push_back(ofVec4f(
-                                ofRandom(                       /// x
-                                        -ofGetWidth(),
-                                        ofGetWidth()
-                                        ) * screens_squared,
-                                ofRandom(                       /// y
-                                         -ofGetHeight(),
-                                        ofGetHeight()
-                                        ) * screens_squared,
-                                ofRandom (-10, 10),             /// z
-                                ofRandom(initial_blink_period)  /// w (used for timing)
-                                )
-                        );
-        stars_dark.push_back(ofVec4f(
-                                    ofRandom(                  /// x
-                                            -ofGetWidth(),
-                                            ofGetWidth()
-                                            ) * screens_squared,
-                                    ofRandom(                 /// y
-                                            -ofGetHeight(),
-                                            ofGetHeight()
-                                            )* screens_squared,
-                              ofRandom (-10, 10),               /// z
-                              ofRandom(initial_blink_period)    /// w (used for timing)
-                                )
-                             );
-    }
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -107,6 +78,40 @@ void GameScreen::setup() {
     O2bar.loadImage("ART/O2_bar.png");
     map.loadImage("ART/map3.png");
 
+}
+
+void GameScreen::generateStars() {
+    stars.clear();
+    for (int i = 0; i < number_of_stars; i++) {
+        int screens_squared = 10;
+        int initial_blink_period = 200;
+        stars.push_back(ofVec4f(
+                                ofRandom(                       /// x
+                                        -ofGetWidth(),
+                                        ofGetWidth()
+                                        ) * screens_squared,
+                                ofRandom(                       /// y
+                                         -ofGetHeight(),
+                                        ofGetHeight()
+                                        ) * screens_squared,
+                                ofRandom (-10, 10),             /// z
+                                ofRandom(initial_blink_period)  /// w (used for timing)
+                                )
+                        );
+        stars_dark.push_back(ofVec4f(
+                                    ofRandom(                  /// x
+                                            -ofGetWidth(),
+                                            ofGetWidth()
+                                            ) * screens_squared,
+                                    ofRandom(                 /// y
+                                            -ofGetHeight(),
+                                            ofGetHeight()
+                                            )* screens_squared,
+                              ofRandom (-10, 10),               /// z
+                              ofRandom(initial_blink_period)    /// w (used for timing)
+                                )
+                             );
+    }
 }
 
 void GameScreen::loadSound() {
@@ -174,6 +179,7 @@ void GameScreen::getState() {
         reset();
         fadeIn.ACTIVE = true;
         FREEZE_PLAYER = false;
+        generateStars();
     }
 }
 
@@ -326,6 +332,8 @@ void GameScreen::draw() {
         int dark_star_brightness = 125;
         int blink_time = 10;
         int blink_period = 200;
+        int num_redGiants = 30;
+        int num_dwarves = 30;
         ofColor starLight(ofColor::white);
         if (stars[i].x > camera_pos.x && stars[i].x < camera_pos.x + ofGetWidth() && stars[i].y > camera_pos.y && stars[i].y < camera_pos.y + ofGetHeight()) {
             if (stars[i].w < blink_time) {
@@ -337,6 +345,16 @@ void GameScreen::draw() {
                 if (stars[i].w > blink_period) {
                     stars[i].w = ofRandom (blink_period);
                 }
+            }
+            if (i < num_redGiants) {
+                starLight.r = 255;
+                starLight.g = 125;
+                starLight.b = 0;
+            }
+            if (i > num_redGiants && i < num_redGiants + num_dwarves) {
+                starLight.r = 0;
+                starLight.g = 231;
+                starLight.b = 255;
             }
             ofSetColor(starLight);
             ofRect(stars[i].x, stars[i].y, stars[i].z, 2, 2);
@@ -789,25 +807,28 @@ void GameScreen::keyReleased(int key) {
     case 32:
         if (player.TRAVERSE_MODE) {
             player.jump();
+            if (!ENABLE_EDITOR) {
+                exportLevel();
+            }
             break;
         } else {
             player.CAN_JETPACK = true;
+            player.CHARGING_JUMP = false;
             break;
         }
-        break;
     case OF_KEY_LEFT:
-        if (player.ROTATE_LEFT) {
-            player.ROTATE_LEFT = false;
+        if (player.ROTATE_LEFT && !player.DEATH_ANIMATION) {
             player.anim = idle;
             player.fxJetpackLoop.stop();
         }
+            player.ROTATE_LEFT = false;
         break;
     case OF_KEY_RIGHT:
-        if (player.ROTATE_RIGHT) {
-            player.ROTATE_RIGHT = false;
+        if (player.ROTATE_RIGHT && !player.DEATH_ANIMATION) {
             player.anim = idle;
             player.fxJetpackLoop.stop();
         }
+            player.ROTATE_RIGHT = false;
         break;
     }
 }
