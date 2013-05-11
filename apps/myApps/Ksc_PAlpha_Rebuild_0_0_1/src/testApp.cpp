@@ -47,6 +47,9 @@ void testApp::update(){
         gameScreen.ENABLE_EDITOR = false;
         gameScreen.fadeIn.ACTIVE = true;
     }
+    if (gameScreen.isGameOver()) {
+        currentScreen = &menuScreen;
+    }
 
 }
 

@@ -46,6 +46,9 @@ public:
         void windowResized(int w, int h);
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
+        bool isGameOver();
+        int getLevel();
+        void setLevel(int level_number);
 
 		void addGravitator(ofVec2f pos, int r, int gR, int m);
 		void addStrandedAstronaut(ofVec2f _pos, string _name);
@@ -90,20 +93,19 @@ public:
         int NEW_PLANET_M;
         int NEW_COMET_R;
         string new_astronaut_name;
-        int levelID;
 
         ofVec3f camera_pos;
         ofVec3f camera_target;
         ofVec3f camera_independent_target;
         ofVec3f camera_target_save;
 
-        int justPressed[100];
-        int wasPressed[];
         GUIFadeIn fadeIn;
         bool ENABLE_EDITOR;
 
 protected:
 private:
+        int levelID;
+
         void drawLevelEditorGUI();
         void setCameraTarget(ofVec2f target);
         void moveCameraTarget(ofVec2f direction);
@@ -128,6 +130,7 @@ private:
         bool CAN_MOVE_CAM;
         bool AN_ASTRONAUT_DIED;
         bool FREEZE_PLAYER;
+        bool GAME_OVER;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;

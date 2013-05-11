@@ -7,7 +7,7 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
     //ctor
 }
 
-StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
+StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut) {
     pos                         = _pos;
     r                           = 20;
     m                           = 5.0;
@@ -57,6 +57,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
 	ofEnableAlphaBlending();
 	setName(_name);
 	loadMessages();
+	dialogueBubble = new Message(pos, "");
 }
 
 StrandedAstronaut::~StrandedAstronaut() {
@@ -93,6 +94,7 @@ void StrandedAstronaut::update() {
     if (DRAW_MESSAGE) {
         displayMessage();
     }
+    dialogueBubble->update();
 }
 
 void StrandedAstronaut::move() {
@@ -113,6 +115,7 @@ void StrandedAstronaut::move() {
 
     v *= damp;
     pos += v * dt;
+    dialogueBubble->pos.set((pos + ofVec2f(10, -35)));
 
     f.set(0, 0);
     gravity.set(0, 0);
@@ -177,14 +180,14 @@ void StrandedAstronaut::followReset() {
 }
 
 void StrandedAstronaut::displayMessage() {
-    string message = pickMessageRandom();
-    (*gui).push_back(new Message(pos + ofVec2f(10, -35), message));
+    string _message = pickMessageRandom();
+    dialogueBubble->changeMessage(_message);
     DRAW_MESSAGE = false;
 }
 
 void StrandedAstronaut::displayMessage(int messageNumber) {
-    string message = pickMessage(messageNumber);
-    (*gui).push_back(new Message(pos + ofVec2f(0, -15), message));
+    string _message = pickMessage(messageNumber);
+    dialogueBubble->changeMessage(_message);
     DRAW_MESSAGE = false;
 }
 
@@ -221,6 +224,7 @@ void StrandedAstronaut::draw() {
         ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
         ofPopMatrix();
     }
+    dialogueBubble->draw();
 }
 
 void StrandedAstronaut::detectGravitatorCollisions() {

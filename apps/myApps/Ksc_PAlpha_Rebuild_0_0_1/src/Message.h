@@ -12,6 +12,7 @@ public:
     virtual ~Message();
     void update();
     void draw();
+    void changeMessage(string _message);
 protected:
 private:
     string message;

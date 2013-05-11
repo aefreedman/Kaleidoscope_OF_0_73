@@ -174,12 +174,16 @@ void GameScreen::getState() {
         }
     }
     if (WON_LEVEL) {
-        levelID++;
-        importLevel(levelID);
-        reset();
-        fadeIn.ACTIVE = true;
-        FREEZE_PLAYER = false;
-        generateStars();
+        if (!GAME_OVER) {
+            levelID++;
+            importLevel(levelID);
+            reset();
+            fadeIn.ACTIVE = true;
+            FREEZE_PLAYER = false;
+            generateStars();
+        } else {
+
+        }
     }
 }
 
@@ -562,16 +566,16 @@ void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
 
 void GameScreen::addStrandedAstronaut(ofVec2f _pos, string _name = "unnamed") {
     if (_name == "unnamed") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut));
     }
     if (_name == "tutorial one") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut));
     }
     if (_name == "tutorial two") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut));
     }
     if (_name == "tutorial three") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut));
     }
     strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
 }
@@ -991,6 +995,18 @@ void GameScreen::importLevel(int levelID) {
     if (!input.good()) {
         levelName = "data/levels/level_" + ofToString(levelID);
         input.open(levelName.c_str());
+        if (!input.good()) {
+            if (!ENABLE_EDITOR) {
+                GAME_OVER = true;
+                return;
+            } else {
+                levelName = "data/levels/level_" + ofToString(levelID + 1);
+                std::ofstream output(levelName.c_str());
+                output << 0 << std::endl;
+                output << 0 << ' ' << 0 << std::endl;
+                input.open(levelName.c_str());
+            }
+        }
     }
 
     if (input.good()) {
@@ -1031,16 +1047,16 @@ void GameScreen::importLevel(int levelID) {
                 gravitator.push_back(new Comet(ofVec2f(x, y), r, path));
             } else if (type == "strandedastronaut") {
                 if (r == 0) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut));
                 }
                 if (r == 1) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut));
                 }
                 if (r == 2) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut));
                 }
                 if (r == 3) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut));
                 }
                 strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
             }
@@ -1100,4 +1116,16 @@ void GameScreen::exit() {
 void GameScreen::screenshot() {
     string filename = "screenshots/screenshot_" + ofToString(ofGetMonth()) + ofToString(ofGetWeekday()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".png";
     ofSaveScreen(filename);
+}
+
+bool GameScreen::isGameOver() {
+    return GAME_OVER;
+}
+
+int GameScreen::getLevel() {
+    return levelID;
+}
+
+void GameScreen::setLevel(int level_number) {
+    levelID = level_number;
 }
