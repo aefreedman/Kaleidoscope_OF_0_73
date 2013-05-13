@@ -84,6 +84,15 @@ void MenuScreen::setup() {
 
 }
 
+void MenuScreen::reset() {
+    BROKEN = false;
+    EXPLODING = false;
+    MOVED = false;
+    anim = ship;
+    fadeIn.setTimer(3.0);
+    fadeIn.setActive(true);
+}
+
 void MenuScreen::update() {
     menuRenderer->clear();
     splosionRenderer->clear();
@@ -142,8 +151,8 @@ void MenuScreen::update() {
 
     /// LET'S ROTATE THE FLOATING PIECES YOU IDIOT
     if(BROKEN) {
-        if (!guiFadeOut.ACTIVE)
-            guiFadeOut.ACTIVE = true;
+        if (!guiFadeOut.getActive())
+            guiFadeOut.setActive(true);
         piece1.x += -.1;
         piece1.y += -.05;
         piece1.z += .1;

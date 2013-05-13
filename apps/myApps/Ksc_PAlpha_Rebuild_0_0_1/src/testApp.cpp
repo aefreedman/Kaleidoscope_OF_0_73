@@ -45,12 +45,15 @@ void testApp::update(){
     if (timer <= 0) {
         currentScreen = &gameScreen;
         gameScreen.ENABLE_EDITOR = false;
-        gameScreen.fadeIn.ACTIVE = true;
+        gameScreen.fadeIn.setActive(true);
     }
     if (gameScreen.isGameOver()) {
+        STARTED = false;
+        timer = start_timer;
+        menuScreen.reset();
         currentScreen = &menuScreen;
+        gameScreen.setGameOver(false);
     }
-
 }
 
 //--------------------------------------------------------------

@@ -13,11 +13,12 @@ public:
     void setup();
     void update();
     void draw();
+    void setTimer(float fade_time);
 
 protected:
 private:
     float timer;
-    float max_timer;
+    float init_timer;
     int alpha;
 
 };

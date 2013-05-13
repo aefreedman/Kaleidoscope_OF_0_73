@@ -11,9 +11,11 @@ public:
     virtual void update();
     virtual void draw();
     void setupColors();
+    void setActive(bool _ACTIVE);
+    bool getActive();
 
     ofVec2f pos;
-    bool ACTIVE;
+
 
     ofColor white;
     ofColor black;
@@ -23,8 +25,9 @@ public:
     ofColor dark_grey;
     ofColor light_blue;
 protected:
-
+    bool ACTIVE;
 private:
+
 };
 
 #endif // GUI_H

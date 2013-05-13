@@ -46,9 +46,10 @@ public:
         void windowResized(int w, int h);
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
-        bool isGameOver();
-        int getLevel();
+        bool isGameOver() const;
+        int getLevel() const;
         void setLevel(int level_number);
+        void setGameOver(bool _gameOver);
 
 		void addGravitator(ofVec2f pos, int r, int gR, int m);
 		void addStrandedAstronaut(ofVec2f _pos, string _name);
@@ -145,7 +146,7 @@ private:
         float camera_lerp_speed;
         float view_scale;
         float view_scale_target;
-        float default_view_scale;
+        static const float default_view_scale = 1.0;
         float view_lerp_speed;
         float map_view_scale_target;
         float level_over_timer_start;

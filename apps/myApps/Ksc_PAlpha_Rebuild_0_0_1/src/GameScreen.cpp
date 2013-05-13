@@ -26,7 +26,8 @@ void GameScreen::setup() {
     CAMERA_SCALING                  = false;
     WON_LEVEL                       = false;
     MAP_VIEW                        = false;
-    default_view_scale              = 1;
+    GAME_OVER                       = false;
+//    const float default_view_scale              = 1.0;
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
@@ -44,7 +45,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 1;
+    levelID                         = 20;
 
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
@@ -178,11 +179,11 @@ void GameScreen::getState() {
             levelID++;
             importLevel(levelID);
             reset();
-            fadeIn.ACTIVE = true;
+            fadeIn.setActive(true);
             FREEZE_PLAYER = false;
             generateStars();
         } else {
-
+            PAUSE = true;
         }
     }
 }
@@ -217,10 +218,6 @@ void GameScreen::update() {
         }
         for (int i = 0; i < gui.size(); i++) {
             gui[i]->update();
-            if (!gui[i]->ACTIVE) {
-                //delete gui[i];
-                //gui.erase(gui.begin()+i);
-            }
             if ((gui[i]->pos.x > ofGetWidth() + camera_target.x - 50 || gui[i]->pos.y > ofGetHeight() + camera_target.y + 30 || gui[i]->pos.x < camera_target.x - 50 || gui[i]->pos.y < camera_target.y + 30) && camera_pos.squareDistance(camera_target) < 10) {
                 gui[i]->pos.interpolate(player.pos, 10 * dt);
             }
@@ -546,6 +543,7 @@ void GameScreen::reset() {
     fadeIn.setup();
     level_over_timer = level_over_timer_start;
     FREEZE_PLAYER = false;
+    GAME_OVER = false;
 }
 
 void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
@@ -1118,14 +1116,18 @@ void GameScreen::screenshot() {
     ofSaveScreen(filename);
 }
 
-bool GameScreen::isGameOver() {
+bool GameScreen::isGameOver() const {
     return GAME_OVER;
 }
 
-int GameScreen::getLevel() {
+int GameScreen::getLevel() const {
     return levelID;
 }
 
 void GameScreen::setLevel(int level_number) {
     levelID = level_number;
+}
+
+void GameScreen::setGameOver(bool _gameOver) {
+    GAME_OVER = _gameOver;
 }

@@ -4,6 +4,7 @@
 #include "Screen.h"
 #include "ofxSpriteSheetRenderer.h"
 #include "GUIFadeOut.h"
+#include "GUIFadeIn.h"
 #include "StrandedAstronaut.h"
 
 static animation_t ship =
@@ -54,6 +55,7 @@ public:
     void setup();
     void update();
     void draw();
+    void reset();
 
     void keyPressed(int key);
     void keyReleased(int key);
@@ -113,6 +115,8 @@ protected:
 private:
     ofSoundPlayer fxSmallExplosion;
     ofSoundPlayer fxEngineAmbient;
+
+    GUIFadeIn fadeIn;
 
 };
 
