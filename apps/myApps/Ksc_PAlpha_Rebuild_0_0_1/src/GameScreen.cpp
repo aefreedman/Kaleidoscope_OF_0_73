@@ -45,7 +45,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 20;
+    levelID                         = 1;
 
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
@@ -189,6 +189,7 @@ void GameScreen::getState() {
 }
 
 void GameScreen::update() {
+    astronautsFollowing = 0;
     getState();
     if (!PAUSE) {
         if (!FREEZE_PLAYER) {
@@ -199,8 +200,11 @@ void GameScreen::update() {
             gravitator[i]->update();
         }
         for (int i = 0; i < strandedAstronaut.size(); i++) {
+            if (strandedAstronaut[i]->FOLLOWING_PLAYER || strandedAstronaut[i]->FOLLOWING_ASTRONAUT) astronautsFollowing++;
+
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
+
             if (strandedAstronaut[i]->IS_DEAD) {
                 AN_ASTRONAUT_DIED = true;
                 if (strandedAstronaut[i]->FOLLOWING_PLAYER) {
@@ -228,7 +232,9 @@ void GameScreen::update() {
     renderSprites();
     player.camera_pos = camera_pos;
     player.camera_target = camera_target;
+
 }
+
 
 void GameScreen::camera() {
     /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
@@ -593,6 +599,9 @@ ofVec2f GameScreen::getGlobalPosition(ofVec2f local_pos) {
 //--------------------------------------------------------------
 void GameScreen::keyPressed(int key) {
     switch (key) {
+    case 'Q':
+        setGameOver(true);
+        break;
     case 'i':
         if (iddqd == 0) {
             iddqd = 1;

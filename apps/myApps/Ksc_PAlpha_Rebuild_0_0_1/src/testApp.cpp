@@ -68,6 +68,23 @@ float testApp::countdownTimer(float time) {
     return time;
 }
 
+void testApp::deleteSaves() {
+    struct dirent *next_file;
+    DIR *dir;
+
+    char filepath[256];
+
+    dir = opendir("data/levels/saves");
+
+    while ( next_file = readdir(dir) )
+    {
+        // build the full path for each file in the folder
+        sprintf(filepath, "%s/%s", "data/levels/saves", next_file->d_name);
+        remove(filepath);
+    }
+    return;
+}
+
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
@@ -75,6 +92,7 @@ void testApp::keyPressed(int key){
     switch (key) {
         case 32:
             if (currentScreen == &menuScreen) {
+                deleteSaves();
                 menuScreen.EXPLODING = true;
                 STARTED = true;
                 //currentScreen->setup();
