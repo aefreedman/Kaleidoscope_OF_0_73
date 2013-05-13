@@ -304,6 +304,12 @@
 		<Unit filename="src\Sun.h">
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
+		<Unit filename="src\introScreen.cpp">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="src\introScreen.h">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
 		<Unit filename="src\main.cpp">
 			<Option virtualFolder="src" />
 		</Unit>

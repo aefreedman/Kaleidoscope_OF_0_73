@@ -14,7 +14,7 @@ void testApp::setup(){
     ///------------------------------
     /// YOU CAN CHANGE THESE
     ///------------------------------
-    start_timer                     = 9.0;
+    start_timer                     = 2.0;
     timer                           = start_timer;
     currentScreen                   = &menuScreen;
 //    currentScreen                 = &gameScreen;
@@ -39,10 +39,12 @@ void testApp::update(){
 
     currentScreen->update();
 
-    if (STARTED) {
-        timer = countdownTimer(timer);
+    if (currentScreen == &menuScreen && menuScreen.flashOpacity >= 255){
+        menuScreen.fxEngineLoop.stop();
+        currentScreen = &introScreen;
     }
-    if (timer <= 0) {
+
+    if (currentScreen == &introScreen && introScreen.fadeOutOpacity >= 255){
         currentScreen = &gameScreen;
         gameScreen.ENABLE_EDITOR = false;
         gameScreen.fadeIn.setActive(true);
@@ -94,7 +96,6 @@ void testApp::keyPressed(int key){
             if (currentScreen == &menuScreen) {
                 deleteSaves();
                 menuScreen.EXPLODING = true;
-                STARTED = true;
                 //currentScreen->setup();
             }
         break;

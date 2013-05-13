@@ -3,6 +3,7 @@
 #include "Screen.h"
 #include "GameScreen.h"
 #include "MenuScreen.h"
+#include "IntroScreen.h"
 #include <stdio.h>
 #include <dirent.h>
 
@@ -29,6 +30,7 @@ public:
     Screen * currentScreen;
     GameScreen gameScreen;
     MenuScreen menuScreen;
+		IntroScreen introScreen;
 
     bool STARTED;
     float start_timer;
