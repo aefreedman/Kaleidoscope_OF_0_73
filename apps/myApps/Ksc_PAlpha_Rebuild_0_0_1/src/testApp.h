@@ -3,6 +3,7 @@
 #include "Screen.h"
 #include "GameScreen.h"
 #include "MenuScreen.h"
+#include "IntroScreen.h"
 
 class testApp : public ofBaseApp {
 
@@ -27,6 +28,7 @@ class testApp : public ofBaseApp {
 		Screen * currentScreen;
 		GameScreen gameScreen;
 		MenuScreen menuScreen;
+		IntroScreen introScreen;
 
 		bool STARTED;
 		float start_timer;

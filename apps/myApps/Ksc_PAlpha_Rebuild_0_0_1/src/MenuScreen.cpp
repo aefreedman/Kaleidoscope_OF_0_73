@@ -108,14 +108,14 @@ void MenuScreen::update() {
     }
 
     if (FLASHING) {
-        if (flashOpacity >= 255) {
-            EXPLODING       = false;
-            BROKEN          = true;
-            fxExplosion.play();
-            fxEngineAmbient.stop();
-            fxEngineLoop.stop();
-            flashFadeRate   = -5;
-        }
+        //if (flashOpacity >= 255) {
+            //EXPLODING       = false;
+            //BROKEN          = true;
+            //fxExplosion.play();
+            //fxEngineAmbient.stop();
+            //fxEngineLoop.stop();
+            //flashFadeRate   = -5;
+        //}
         flashOpacity += flashFadeRate;
     }
 

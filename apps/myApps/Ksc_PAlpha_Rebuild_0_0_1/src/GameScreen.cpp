@@ -75,7 +75,7 @@ void GameScreen::setup() {
 
     O2frame.loadImage("ART/O2_frame.png");
     O2bar.loadImage("ART/O2_bar.png");
-    map.loadImage("ART/map3.png");
+    text.loadFont("fonts/pixelmix.ttf",12);
 
 }
 
@@ -250,14 +250,16 @@ void GameScreen::drawGUI() {
     if (!MAP_VIEW) {
         ofPushMatrix();
         ofFill();
+        ofSetColor(255, 171, 0);
+        text.drawString("Missing Crew:",30,ofGetHeight()-75);
         ofSetColor(255, 255, 255);
         for (int i = 0; i < totalCrew; i++) {
             if (i < strandedAstronaut.size()) {
                 ofSetColor(255, 255, 255);
-                ofRect(30+(12*i) , ofGetHeight() - map.height + 34, 7,7);
+                ofRect(30+(12*i) , ofGetHeight() - 50, 7,7);
             } else {
                 ofSetColor(223, 42, 99);
-                ofRect(30+(12*i) ,  ofGetHeight() - map.height + 34, 7,7);
+                ofRect(30+(12*i) ,  ofGetHeight() - 50, 7,7);
             }
         }
         int x = ofGetWidth() - 53;
@@ -270,7 +272,6 @@ void GameScreen::drawGUI() {
 
         ofSetColor(255,255,255,255);
         O2frame.draw(ofGetWidth() - O2frame.width - 20, ofGetHeight() - O2frame.height - 20);
-        map.draw(0 , ofGetHeight() - map.height);
         ofPopMatrix();
     }
 }

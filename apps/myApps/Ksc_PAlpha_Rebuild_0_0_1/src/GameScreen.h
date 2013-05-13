@@ -70,7 +70,7 @@ public:
         //HUD ASSETS
             ofImage O2frame;
             ofImage O2bar;
-            ofImage map;
+            ofTrueTypeFont text;
 
         ofxSpriteSheetRenderer * planetRenderer;
         ofxSpriteSheetRenderer * nautRenderer;
