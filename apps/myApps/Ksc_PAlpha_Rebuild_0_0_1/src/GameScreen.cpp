@@ -295,12 +295,12 @@ void GameScreen::drawGUI() {
         text.drawString("Missing Crew:",30,ofGetHeight()-75);
         ofSetColor(255, 255, 255);
         for (int i = 0; i < totalCrew; i++) {
-            if (i < strandedAstronaut.size()) {
-                ofSetColor(255, 255, 255);
-                ofRect(30+(12*i) , ofGetHeight() - 50, 7,7);
-            } else {
+            if (i < astronautsFollowing) {
                 ofSetColor(223, 42, 99);
-                ofRect(30+(12*i) ,  ofGetHeight() - 50, 7,7);
+                ofRect(30+(20*i) , ofGetHeight() - 60, 12,12);
+            } else {
+                ofSetColor(255, 255, 255);
+                ofRect(30+(20*i) ,  ofGetHeight() - 60, 12,12);
             }
         }
         int x = ofGetWidth() - 53;
