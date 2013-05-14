@@ -54,8 +54,11 @@ void MenuScreen::reset() {
 void MenuScreen::loadResources() {
     background.loadImage("ART/bg.png");
     title.loadImage("ART/title.png");
+
     title.setAnchorPoint(title.width/2,title.height/2);
     guiFadeOut = GUIFadeOut(ofVec2f(0, 0));
+
+    font.loadFont("fonts/pixelmix.ttf", 8);
 
     menuRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 256);
     menuRenderer->loadTexture("ART/ship.png",1024,GL_NEAREST);
@@ -258,6 +261,8 @@ void MenuScreen::draw() {
     }
 
     guiFadeOut.draw();
+
+    font.drawString("Created by: \n     Aaron Freedman\n     Diego Garcia\n     Toni Pizza", 20, ofGetHeight() - 50);
 }
 
 

@@ -47,6 +47,7 @@ void testApp::update() {
     if (gameScreen.isGameOver() && currentScreen == &gameScreen) {
         currentScreen = &endScreen;
         endScreen.fadeIn.setActive(true);
+        gameScreen.exportSessionData();
         resetAllScreens();
     }
     if (endScreen.GetLeaveScreen()) {
@@ -158,5 +159,5 @@ void testApp::dragEvent(ofDragInfo dragInfo) {
 }
 
 void testApp::exit() {
-    currentScreen->exit();
+    gameScreen.exit();
 }

@@ -50,6 +50,8 @@ public:
         int getLevel() const;
         void setLevel(int level_number);
         void setGameOver(bool _gameOver);
+        void exportSessionData();
+        void exit();
 
 		void addGravitator(ofVec2f pos, int r, int gR, int m);
 		void addStrandedAstronaut(ofVec2f _pos, string _name);
@@ -112,11 +114,10 @@ private:
         void setCameraTarget(ofVec2f target);
         void moveCameraTarget(ofVec2f direction);
         void getState();
-        void exportSessionData();
-        void exit();
         void screenshot();
         void generateStars();
         void loadResources();
+        void clearMetrics();
 
         int planet_base_m;
         int planet_mass_multiplier;

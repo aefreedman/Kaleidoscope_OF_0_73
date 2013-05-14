@@ -78,13 +78,13 @@ void StrandedAstronaut::loadMessages() {
     ofxXmlSettings dialogue;
     if (dialogue.loadFile("data/messages/dialogue.xml")) {
         dialogue.pushTag("dialogue");
-        dialogue.pushTag("ENUM_" + ofToString(thisAstronautIs));
-        int numberOfMessages = dialogue.getNumTags("message");
-        for (int i = 0; i < numberOfMessages; i++) {
-            string m = dialogue.getValue("message", "", i);
-            message.push_back(m);
-        }
-        dialogue.popTag();
+            dialogue.pushTag("ENUM_" + ofToString(thisAstronautIs));
+                int numberOfMessages = dialogue.getNumTags("message");
+                for (int i = 0; i < numberOfMessages; i++) {
+                    string m = dialogue.getValue("message", "", i);
+                    message.push_back(m);
+                }
+            dialogue.popTag();
         dialogue.popTag();
     }
     else {

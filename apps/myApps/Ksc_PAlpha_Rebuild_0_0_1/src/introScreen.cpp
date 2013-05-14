@@ -85,8 +85,8 @@ void IntroScreen::draw(){
             ofRect(0,0,ofGetWidth(),ofGetHeight());
             fadeOutOpacity += 5;
         }
-
-
+    ofSetColor(ofColor::white);
+    nautFont.drawString("Press space to advance", ofGetWidth() / 2 - 90, 410);
 }
 
 void IntroScreen::keyPressed(int key){

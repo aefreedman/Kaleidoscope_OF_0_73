@@ -44,7 +44,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4;
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 18;
+    levelID                         = 1;
 
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
@@ -1114,6 +1114,7 @@ void GameScreen::exportSessionData() {
     sessionData.popTag();
     sessionData.popTag();
     sessionData.saveFile("sessionData/sessionData_" + ofToString(ofGetMonth()) + "_" + ofToString(ofGetDay()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".xml");
+    clearMetrics();
 }
 
 void GameScreen::exit() {
@@ -1139,4 +1140,9 @@ void GameScreen::setLevel(int level_number) {
 
 void GameScreen::setGameOver(bool _gameOver) {
     GAME_OVER = _gameOver;
+}
+
+void GameScreen::clearMetrics() {
+    metric_playerDeaths.clear();
+    metric_playerDeaths_cause.clear();
 }

@@ -73,6 +73,8 @@ public:
     ofxSpriteSheetRenderer * splosionRenderer;
     ofxSpriteSheetRenderer * nautRenderer;
     animation_t anim;
+    ofTrueTypeFont font;
+
     int shakeCounter;
     GUIFadeOut guiFadeOut;
 
