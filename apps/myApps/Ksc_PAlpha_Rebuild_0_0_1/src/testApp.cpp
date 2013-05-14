@@ -9,6 +9,7 @@ void testApp::setup() {
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
     ofEnableAlphaBlending();
+    ofHideCursor();
 
     ///------------------------------
     /// YOU CAN CHANGE THESE

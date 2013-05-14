@@ -27,12 +27,14 @@ void GameScreen::setup() {
     WON_LEVEL                       = false;
     MAP_VIEW                        = false;
     GAME_OVER                       = false;
+    HIT_PAUSE                       = false;
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
     fadeIn                          = GUIFadeIn(camera_pos);
     level_over_timer_start          = 3.0;
     level_over_timer                = level_over_timer_start;
+    hit_pause_timer                 = hit_pause_timer_init;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -129,6 +131,16 @@ void GameScreen::loadSound() {
 
 void GameScreen::getState() {
     PAUSE = false;
+    if (HIT_PAUSE) {
+        hit_pause_timer = countdownTimer(hit_pause_timer);
+        if (hit_pause_timer > 0) {
+            PAUSE = true;
+        }
+        if (hit_pause_timer <= 0) {
+            HIT_PAUSE = false;
+            hit_pause_timer = hit_pause_timer_init;
+        }
+    }
     if (MAP_VIEW) {
         PAUSE = true;
     } else {
@@ -192,10 +204,21 @@ void GameScreen::getState() {
 void GameScreen::update() {
     astronautsFollowing = 0;
     getState();
+    if (HIT_PAUSE) {
+        if (!player.IS_DEAD && player.KILL_PLAYER) {
+            player.update();
+        }
+        for (int i = 0; i < gravitator.size(); i++) {
+            gravitator[i]->update();
+        }
+    }
     if (!PAUSE) {
         if (!FREEZE_PLAYER) {
             player.update();
+            if ((player.gravitator_type == "sun" || player.gravitator_type == "comet") && !player.KILL_PLAYER)
+                HIT_PAUSE = true;
         }
+
         fadeIn.update();
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
@@ -208,6 +231,7 @@ void GameScreen::update() {
 
             if (strandedAstronaut[i]->IS_DEAD) {
                 AN_ASTRONAUT_DIED = true;
+                HIT_PAUSE = true;
                 if (strandedAstronaut[i]->FOLLOWING_PLAYER) {
                     player.releaseAllAstronauts(false);
                 }

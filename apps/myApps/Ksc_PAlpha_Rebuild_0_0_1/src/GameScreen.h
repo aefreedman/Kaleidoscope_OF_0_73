@@ -135,6 +135,7 @@ private:
         bool AN_ASTRONAUT_DIED;
         bool FREEZE_PLAYER;
         bool GAME_OVER;
+        bool HIT_PAUSE;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;
@@ -154,6 +155,8 @@ private:
         float map_view_scale_target;
         float level_over_timer_start;
         float level_over_timer;
+        float hit_pause_timer;
+        static const float hit_pause_timer_init = 0.4;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;
