@@ -195,6 +195,12 @@
 		<Unit filename="src\Decor.h">
 			<Option virtualFolder="src\DECOR\" />
 		</Unit>
+		<Unit filename="src\EndScreen.cpp">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
+		<Unit filename="src\EndScreen.h">
+			<Option virtualFolder="src\SCREENS\" />
+		</Unit>
 		<Unit filename="src\GUI.cpp">
 			<Option virtualFolder="src\SHELL\GUI\" />
 		</Unit>
