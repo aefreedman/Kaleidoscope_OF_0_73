@@ -15,9 +15,16 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     damp                        = 1.0;
     restitution                 = 0.5;
     oxygen                      = 100;
-    message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
-    message_delay               = 25;                       ///Minimum delay between messages
-    message_display_chance      = 7;                        ///larger number makes random delay between messages higher
+
+    if (_name == UNNAMED) {
+        message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
+        message_delay               = 25;                       ///Minimum delay between messages
+        message_display_chance      = 7;                        ///larger number makes random delay between messages higher
+    } else {
+        message_timer           = ofRandom(0.0, 5.0);
+        message_delay           = 10;
+        message_display_chance  = 3;
+    }
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
     spring_strength             = 15000;

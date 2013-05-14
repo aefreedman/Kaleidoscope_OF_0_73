@@ -71,7 +71,7 @@ void Player::setup() {
     w                       = 10;
     h                       = 10;
     r                       = 10;
-    oxygen                  = 100.0;        /// TODO (Aaron#1#): Add lose condition to running out of o2
+    oxygen                  = 100.0;
     max_oxygen              = oxygen;
     damp                    = 1.00;
     m                       = 1.0;
@@ -670,32 +670,7 @@ void Player::jetpack(bool JETPACK_FORWARD) {
 }
 
 void Player::keyPressed(ofKeyEventArgs& args) {
-    /// TODO (Aaron#9#): Determine why player key listener doesn't apply input (it registers key presses)
-    switch (args.key) {
-    case 'g':
-        break;
-    }
-
-    if (!HIT_GRAVITATOR) {
-        switch (args.key) {
-        case OF_KEY_UP:
-            chargeJump();
-            break;
-        case OF_KEY_LEFT:
-
-            break;
-        case OF_KEY_RIGHT:
-
-            break;
-        case OF_KEY_DOWN:
-
-            cout << "impulsed at " + nl;
-
-            break;
-        case 32:
-            break;
-        }
-    }
+/// TODO (Aaron#1#): move player controls into player
 }
 
 void Player::keyReleased(ofKeyEventArgs& args) {

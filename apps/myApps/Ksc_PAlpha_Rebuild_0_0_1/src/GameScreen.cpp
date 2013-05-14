@@ -27,7 +27,6 @@ void GameScreen::setup() {
     WON_LEVEL                       = false;
     MAP_VIEW                        = false;
     GAME_OVER                       = false;
-//    const float default_view_scale              = 1.0;
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
@@ -42,7 +41,7 @@ void GameScreen::setup() {
     player_start_pos.set(ofGetWidth() / 2, ofGetHeight() / 2);
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
-    camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
+    camera_lerp_speed               = 4;
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
     levelID                         = 1;
@@ -237,7 +236,6 @@ void GameScreen::update() {
 
 
 void GameScreen::camera() {
-    /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
     if (!PAUSE) {
         setCameraTarget(player.pos);
     }
@@ -343,7 +341,7 @@ void GameScreen::draw() {
         int num_redGiants = 30;
         int num_dwarves = 30;
         ofColor starLight(ofColor::white);
-        if (stars[i].x > camera_pos.x && stars[i].x < camera_pos.x + ofGetWidth() && stars[i].y > camera_pos.y && stars[i].y < camera_pos.y + ofGetHeight()) {
+        if (stars[i].x > camera_pos.x / view_scale && stars[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars[i].y > camera_pos.y / view_scale && stars[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
             if (stars[i].w < blink_time) {
                 stars[i].w += 1;
                 starLight.setBrightness(blink_brightness);
@@ -368,7 +366,7 @@ void GameScreen::draw() {
             ofRect(stars[i].x, stars[i].y, stars[i].z, 2, 2);
         }
         starLight.setBrightness(dark_star_brightness);
-        if (stars_dark[i].x > camera_pos.x && stars_dark[i].x < camera_pos.x + ofGetWidth() && stars_dark[i].y > camera_pos.y && stars_dark[i].y < camera_pos.y + ofGetHeight()) {
+        if (stars_dark[i].x > camera_pos.x / view_scale && stars_dark[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars_dark[i].y > camera_pos.y / view_scale && stars_dark[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
             if (stars_dark[i].w < blink_time) {
                 stars_dark[i].w += 1;
                 starLight.setBrightness(50);

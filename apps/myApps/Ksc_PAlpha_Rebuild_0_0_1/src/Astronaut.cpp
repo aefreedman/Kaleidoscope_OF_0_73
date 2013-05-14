@@ -49,7 +49,6 @@ void Astronaut::gravitatorBounce() {
     v_prime *= restitution;
     v.set(v_prime);
 
-    /// NOTE (Aaron#4#): StrandedAstronauts needs an update to their controller.
 
 }
 
