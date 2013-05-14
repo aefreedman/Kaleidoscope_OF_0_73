@@ -11,8 +11,8 @@ public:
     virtual void update();
     virtual void draw();
     void setupColors();
-    void setActive(bool _ACTIVE);
-    bool getActive();
+    void setActive(bool _ACTIVE) {ACTIVE = _ACTIVE;}
+    bool getActive() {return ACTIVE;}
 
     ofVec2f pos;
 

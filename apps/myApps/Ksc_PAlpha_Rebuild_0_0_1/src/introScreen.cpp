@@ -12,8 +12,12 @@ IntroScreen::~IntroScreen()
     //dtor
 }
 
-void IntroScreen::setup(){
+void IntroScreen::setup() {
+    loadResources();
+    reset();
+}
 
+void IntroScreen::reset() {
     ofBackground(0,0,0);
 
     currentFrame = 0;
@@ -30,14 +34,14 @@ void IntroScreen::setup(){
     nautSpeech = "";
     nautSpeechPos.set(350,70);
 
+    anim = shipExplode;
+}
+
+void IntroScreen::loadResources() {
     nautFont.loadFont("fonts/pixelmix.ttf",8);
     capFont.loadFont("fonts/pixelmix.ttf",12);
-
-    anim = shipExplode;
-
     introRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 322);
     introRenderer->loadTexture("ART/introSheet.png",3542,GL_NEAREST);
-
 }
 
 void IntroScreen::update(){

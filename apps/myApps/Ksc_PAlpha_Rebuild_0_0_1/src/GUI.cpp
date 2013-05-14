@@ -16,14 +16,6 @@ GUI::~GUI() {
 void GUI::update() {}
 void GUI::draw() {}
 
-void GUI::setActive(bool _ACTIVE) {
-    ACTIVE = _ACTIVE;
-}
-
-bool GUI::getActive() {
-    return ACTIVE;
-}
-
 void GUI::setupColors() {
     ///OfColor blank template
     //color.r           = 0;

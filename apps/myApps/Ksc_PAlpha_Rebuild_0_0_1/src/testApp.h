@@ -4,6 +4,7 @@
 #include "GameScreen.h"
 #include "MenuScreen.h"
 #include "IntroScreen.h"
+#include "EndScreen.h"
 #include <stdio.h>
 #include <dirent.h>
 
@@ -28,16 +29,16 @@ public:
 
     ofSoundPlayer fx;
     Screen * currentScreen;
-    GameScreen gameScreen;
-    MenuScreen menuScreen;
-		IntroScreen introScreen;
+    GameScreen  gameScreen;
+    MenuScreen  menuScreen;
+    IntroScreen introScreen;
+    EndScreen   endScreen;
 
-    bool STARTED;
-    float start_timer;
-    float timer;
     bool LOAD_WITH_SOUND;
 
 private:
     void deleteSaves();
+    void resetAllScreens();
+    void setupAllScreens();
 
 };

@@ -44,7 +44,7 @@ void GameScreen::setup() {
     camera_lerp_speed               = 4;
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
-    levelID                         = 1;
+    levelID                         = 18;
 
     CONTINUOUS_CAMERA               = true;
     MOVE_MESSAGES                   = false;
@@ -114,6 +114,8 @@ void GameScreen::generateStars() {
     }
 }
 
+void GameScreen::loadResources() {}
+
 void GameScreen::loadSound() {
     jupiterSound.loadSound("AUDIO/ksc_AUDIO_background_music_001.mp3");
     jupiterSound.setLoop(true);
@@ -174,15 +176,15 @@ void GameScreen::getState() {
         }
     }
     if (WON_LEVEL) {
+        levelID++;
+        importLevel(levelID);
         if (!GAME_OVER) {
-            levelID++;
-            importLevel(levelID);
             reset();
             fadeIn.setActive(true);
             FREEZE_PLAYER = false;
             generateStars();
         } else {
-            PAUSE = true;
+            //PAUSE = true;
         }
     }
 }
@@ -409,7 +411,7 @@ void GameScreen::draw() {
     player.draw();
     nautRenderer -> draw();
 
-    fadeIn.draw();/// TODO (Aaron#1#): FadeIn needs to scale
+    fadeIn.draw();
     ofPopMatrix();
 
     /// LAYER 3 -- GUI (!CAMERA && !ZOOM)
@@ -861,7 +863,6 @@ void GameScreen::mouseDragged(int x, int y, int button) {
         for (int i = 0; i < gravitator.size(); i++) {
             ofVec2f g_pos;
             g_pos.set(gravitator[i]->pos / view_scale);
-            /// NOTE (Aaron#1#): This needs to be updmated to account for view_scale
             if (g_pos.x > camera_pos.x && g_pos.x < camera_pos.x + ofGetWidth() && g_pos.y > camera_pos.y && g_pos.y < camera_pos.y + ofGetHeight()) {
                 float dist = mouse_pos.squareDistance(gravitator[i]->pos);
                 if (dist <= gravitator[i]->r * gravitator[i]->r && button == 0 && clickState == "edit mode") {

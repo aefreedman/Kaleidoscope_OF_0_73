@@ -116,6 +116,7 @@ private:
         void exit();
         void screenshot();
         void generateStars();
+        void loadResources();
 
         int planet_base_m;
         int planet_mass_multiplier;

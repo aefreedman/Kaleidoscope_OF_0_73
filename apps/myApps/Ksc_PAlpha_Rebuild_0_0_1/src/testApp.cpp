@@ -2,22 +2,18 @@
 #define dt 1.0/60.0
 
 //--------------------------------------------------------------
-void testApp::setup(){
+void testApp::setup() {
     ///------------------------------
     /// DON'T CHANGE THESE
     ///------------------------------
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
     ofEnableAlphaBlending();
-    STARTED                         = false;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
     ///------------------------------
-    start_timer                     = 2.0;
-    timer                           = start_timer;
     currentScreen                   = &menuScreen;
-//    currentScreen                 = &gameScreen;
     LOAD_WITH_SOUND                 = true;
 
     ///------------------------------
@@ -30,36 +26,51 @@ void testApp::setup(){
         menuScreen.LOAD_WITH_SOUND = true;
         gameScreen.LOAD_WITH_SOUND = true;
     }
-    gameScreen.setup();
-    currentScreen->setup();
+    setupAllScreens();
 }
-
 //--------------------------------------------------------------
-void testApp::update(){
+void testApp::update() {
 
     currentScreen->update();
 
-    if (currentScreen == &menuScreen && menuScreen.flashOpacity >= 255){
+    if (currentScreen == &menuScreen && menuScreen.flashOpacity >= 255) {
         menuScreen.fxEngineLoop.stop();
         currentScreen = &introScreen;
+        menuScreen.reset();
     }
-
-    if (currentScreen == &introScreen && introScreen.fadeOutOpacity >= 255){
+    if (currentScreen == &introScreen && introScreen.fadeOutOpacity >= 255) {
         currentScreen = &gameScreen;
+        introScreen.reset();
         gameScreen.ENABLE_EDITOR = false;
         gameScreen.fadeIn.setActive(true);
     }
-    if (gameScreen.isGameOver()) {
-        STARTED = false;
-        timer = start_timer;
-        menuScreen.reset();
+    if (gameScreen.isGameOver() && currentScreen == &gameScreen) {
+        currentScreen = &endScreen;
+        endScreen.fadeIn.setActive(true);
+        resetAllScreens();
+    }
+    if (endScreen.GetLeaveScreen()) {
         currentScreen = &menuScreen;
-        gameScreen.setGameOver(false);
+        endScreen.reset();
     }
 }
 
+void testApp::setupAllScreens() {
+    menuScreen.setup();
+    endScreen.setup();
+    gameScreen.setup();
+    introScreen.setup();
+}
+void testApp::resetAllScreens() {
+    menuScreen.reset();
+    endScreen.reset();
+    gameScreen.setLevel(1);
+    gameScreen.reset();
+    introScreen.reset();
+}
+
 //--------------------------------------------------------------
-void testApp::draw(){
+void testApp::draw() {
 
     currentScreen->draw();
 
@@ -78,9 +89,7 @@ void testApp::deleteSaves() {
 
     dir = opendir("data/levels/saves");
 
-    while ( next_file = readdir(dir) )
-    {
-        // build the full path for each file in the folder
+    while ( next_file = readdir(dir) ) {
         sprintf(filepath, "%s/%s", "data/levels/saves", next_file->d_name);
         remove(filepath);
     }
@@ -89,65 +98,62 @@ void testApp::deleteSaves() {
 
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key){
+void testApp::keyPressed(int key) {
     currentScreen->keyPressed(key);
     switch (key) {
-        case 32:
-            if (currentScreen == &menuScreen) {
-                deleteSaves();
-                menuScreen.EXPLODING = true;
-                //currentScreen->setup();
-            }
+    case 32:
+        if (currentScreen == &menuScreen) {
+            deleteSaves();
+            menuScreen.EXPLODING = true;
+        }
         break;
-        case OF_KEY_F1:
-            gameScreen.ENABLE_EDITOR = true;
-            currentScreen = &gameScreen;
-            menuScreen.fxEngineLoop.stop();
+    case OF_KEY_F1:
+        gameScreen.ENABLE_EDITOR = true;
+        currentScreen = &gameScreen;
+        menuScreen.fxEngineLoop.stop();
         break;
     }
 }
 
 //--------------------------------------------------------------
-void testApp::keyReleased(int key){
-
+void testApp::keyReleased(int key) {
     currentScreen->keyReleased(key);
-
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y ){
+void testApp::mouseMoved(int x, int y ) {
     currentScreen->mouseMoved(x, y);
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button){
+void testApp::mouseDragged(int x, int y, int button) {
     currentScreen->mouseDragged(x, y, button);
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button){
+void testApp::mousePressed(int x, int y, int button) {
     currentScreen->mousePressed(x, y, button);
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button){
+void testApp::mouseReleased(int x, int y, int button) {
     currentScreen->mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------
-void testApp::windowResized(int w, int h){
+void testApp::windowResized(int w, int h) {
     if (w != 1280 || h != 720) {
         ofSetWindowShape(1280, 720);
     }
 }
 
 //--------------------------------------------------------------
-void testApp::gotMessage(ofMessage msg){
+void testApp::gotMessage(ofMessage msg) {
 
 }
 
 //--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo){
+void testApp::dragEvent(ofDragInfo dragInfo) {
 
 }
 

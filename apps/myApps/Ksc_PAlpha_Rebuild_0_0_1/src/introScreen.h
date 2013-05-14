@@ -141,6 +141,8 @@ class IntroScreen : public Screen
         void update();
         void draw();
         void keyPressed(int key);
+        void loadResources();
+        void reset();
 
         ofTrueTypeFont nautFont;
         ofTrueTypeFont capFont;

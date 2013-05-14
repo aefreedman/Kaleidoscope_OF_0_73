@@ -117,7 +117,7 @@ private:
     ofSoundPlayer fxEngineAmbient;
 
     GUIFadeIn fadeIn;
-
+    void loadResources();
 };
 
 #endif // MENUSCREEN_H
