@@ -16,14 +16,14 @@ GUIFadeIn::~GUIFadeIn() {
 
 void GUIFadeIn::setup() {
     ACTIVE = false;
-    max_timer = 2.0;
-    timer = max_timer;
+    init_timer = 2.0;
+    timer = init_timer;
 }
 
 void GUIFadeIn::update() {
     if (ACTIVE) {
         timer -= dt;
-        alpha = (timer / max_timer) * 255;
+        alpha = (timer / init_timer) * 255;
     }
     if (timer <= 0) {
         ACTIVE = false;
@@ -38,4 +38,9 @@ void GUIFadeIn::draw() {
     ofRect(pos.x, pos.y, ofGetWidth(), ofGetHeight());
     ofPopMatrix();
     }
+}
+
+void GUIFadeIn::setTimer(float fade_time) {
+    init_timer = fade_time;
+    timer = init_timer;
 }

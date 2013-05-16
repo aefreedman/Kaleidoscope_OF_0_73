@@ -3,7 +3,8 @@
 
 #include "ofBaseApp.h"
 #include "ofMain.h"
-
+#include "GUIFadeIn.h"
+#include "GUIFadeOut.h"
 
 class Screen : public ofBaseApp {
 public:
@@ -26,7 +27,10 @@ public:
 
     bool LOAD_WITH_SOUND;
 protected:
+    virtual void loadResources() = 0;
 private:
+    GUIFadeIn fadeIn;
+    GUIFadeOut fadeOut;
 };
 
 #endif // SCREEN_H

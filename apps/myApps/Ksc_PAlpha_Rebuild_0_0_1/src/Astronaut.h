@@ -21,8 +21,6 @@ public:
     virtual void update() = 0;
     virtual void draw() = 0;
     virtual void move() = 0;
-/// TODO (Aaron#1#): Astronaut gravity and movement can be moved to Astronaut, but needs to handle the Gravitator vector first.
-/// TODO (Aaron#1#): Different collision conditions for objects
     virtual void detectGravitatorCollisions();
     virtual void collisionData(int collision);
     virtual void orientToPlanet(int collision);
@@ -31,6 +29,11 @@ public:
     virtual void drawGUIOverlay(ofVec2f _pos, string text);
     virtual void displayMessage(ofVec2f _pos, string text);
     float countdownTimer(float timer);
+
+    /// Getters & Setters
+    ofVec2f getVelocity() const { return v; }
+    int getVelocityLimit() const { return v_limit_in_space; }
+    ofVec2f getNormalizedCollisionNormal() const { return normalized_collision_normal; }
 
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;

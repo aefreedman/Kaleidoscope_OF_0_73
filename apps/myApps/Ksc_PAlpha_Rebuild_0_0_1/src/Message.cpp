@@ -9,7 +9,7 @@ Message::Message(ofVec2f _pos, string _message) : GUI(_pos) {
     pos                     = _pos;
     message                 = _message;
     message_life            = 5;
-    ACTIVE                  = true;
+    ACTIVE                  = false;
     background              = dark_grey;
     foreground              = light_blue;
 
@@ -31,7 +31,7 @@ Message::Message(ofVec2f _pos, string _message, ofColor _background, ofColor _fo
     pos                     = _pos;
     message                 = _message;
     message_life            = 5;
-    ACTIVE                  = true;
+    ACTIVE                  = false;
     background              = _background;
     foreground              = _foreground;
 }
@@ -45,10 +45,15 @@ void Message::update() {
         timer += dt;
         if (timer >= message_life) {
             ACTIVE = false;
+            timer = 0;
         }
     }
 }
 
+void Message::changeMessage(string _message) {
+    message = _message;
+    ACTIVE = true;
+}
 
 void Message::draw() {
 

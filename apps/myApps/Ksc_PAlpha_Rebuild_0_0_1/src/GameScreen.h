@@ -25,6 +25,7 @@
 #include "GUIOverlay.h"
 #define nl '\n'
 #define fps 60
+#define number_of_stars 10000
 
 class GameScreen : public Screen {
 public:
@@ -46,22 +47,33 @@ public:
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
 
+        void exportSessionData();
+        void exit();
+
 		void addGravitator(ofVec2f pos, int r, int gR, int m);
 		void addStrandedAstronaut(ofVec2f _pos, string _name);
 		void camera();
 		void reset();
 		void loadSound();
 		void drawGUI();
-		ofVec2f getLocalPosition(ofVec2f global_pos);
-		ofVec2f getGlobalPosition(ofVec2f local_pos);
 
         void exportLevel();
         void importLevel();
         void importLevel(int levelID);
 
+        /// Getters & Setters
+		ofVec2f getLocalPosition(ofVec2f global_pos);
+		ofVec2f getGlobalPosition(ofVec2f local_pos);
+        bool isGameOver() const;
+        int getLevel() const;
+        void setLevel(int level_number);
+        void setGameOver(bool _gameOver);
+        void setCameraLerpSpeed(int speed) { camera_lerp_speed = speed; }
+
         std::vector<Gravitator *> gravitator;
         std::vector<StrandedAstronaut *> strandedAstronaut;
         std::vector<GUI *> gui;
+        int astronautsFollowing;
         Player player;
         int totalCrew;
 
@@ -70,13 +82,11 @@ public:
         //HUD ASSETS
             ofImage O2frame;
             ofImage O2bar;
-            ofImage map;
+            ofTrueTypeFont text;
 
         ofxSpriteSheetRenderer * planetRenderer;
         ofxSpriteSheetRenderer * nautRenderer;
         bool CONTINUOUS_CAMERA;
-
-        //enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE};
 
         /// Level Editor
         string clickState;
@@ -89,27 +99,28 @@ public:
         int NEW_PLANET_M;
         int NEW_COMET_R;
         string new_astronaut_name;
-        int levelID;
 
         ofVec3f camera_pos;
         ofVec3f camera_target;
         ofVec3f camera_independent_target;
         ofVec3f camera_target_save;
 
-        int justPressed[100];
-        int wasPressed[];
         GUIFadeIn fadeIn;
         bool ENABLE_EDITOR;
 
 protected:
 private:
+        int levelID;
+
         void drawLevelEditorGUI();
         void setCameraTarget(ofVec2f target);
         void moveCameraTarget(ofVec2f direction);
         void getState();
-        void exportSessionData();
-        void exit();
         void screenshot();
+        void generateStars();
+        void loadResources();
+        void clearMetrics();
+        ofVec2f getPlayerDirection();
 
         int planet_base_m;
         int planet_mass_multiplier;
@@ -126,22 +137,34 @@ private:
         bool CAN_MOVE_CAM;
         bool AN_ASTRONAUT_DIED;
         bool FREEZE_PLAYER;
+        bool GAME_OVER;
+        bool HIT_PAUSE;
+        bool SCREEN_SHAKE;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;
 
         ofVec2f player_start_pos;
 
+        std::vector<ofVec4f> stars;
+        std::vector<ofVec4f> stars_dark;
+
         int iddqd;
 
         float camera_lerp_speed;
+        static const float camera_lerp_speed_init = 4;
         float view_scale;
         float view_scale_target;
-        float default_view_scale;
+        static const float default_view_scale = 1.0;
         float view_lerp_speed;
         float map_view_scale_target;
         float level_over_timer_start;
         float level_over_timer;
+        float hit_pause_timer;
+        static const float hit_pause_timer_init = 0.4;
+        float screen_shake_timer;
+        static const float screen_shake_timer_init = 0.10;
+        static const float screen_shake_max = 150.0;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;

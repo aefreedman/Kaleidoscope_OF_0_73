@@ -23,7 +23,7 @@ public:
     enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE};
 
     StrandedAstronaut();
-    StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui);
+    StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut);
 
     virtual ~StrandedAstronaut();
     void update();
@@ -60,7 +60,6 @@ public:
     ofVec2f k;
 
     std::vector<Gravitator *> *gravitator;
-    std::vector<GUI *> *gui;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
     bool IS_DEAD;
     int astronaut;
@@ -90,6 +89,8 @@ private:
     float release_timer;
     float release_timer_start;
     std::vector<string> message;
+
+    Message * dialogueBubble;
 
 };
 

@@ -19,19 +19,24 @@ void GameScreen::setup() {
     ///------------------------------
     ofSetFrameRate(60);
     ofEnableAlphaBlending();
+    generateStars();
     camera_pos.set(0, 0, 0);
     camera_target.set(0, 0, 0);
     USING_LEVEL_EDITOR              = false;
     CAMERA_SCALING                  = false;
     WON_LEVEL                       = false;
     MAP_VIEW                        = false;
-    default_view_scale              = 1;
+    GAME_OVER                       = false;
+    HIT_PAUSE                       = false;
+    SCREEN_SHAKE                    = false;
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
     fadeIn                          = GUIFadeIn(camera_pos);
     level_over_timer_start          = 3.0;
     level_over_timer                = level_over_timer_start;
+    hit_pause_timer                 = hit_pause_timer_init;
+    screen_shake_timer              = screen_shake_timer_init;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -40,7 +45,7 @@ void GameScreen::setup() {
     player_start_pos.set(ofGetWidth() / 2, ofGetHeight() / 2);
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
-    camera_lerp_speed               = 4; /// NOTE (Aaron#9#): This should change depending on player velocity
+    camera_lerp_speed               = camera_lerp_speed_init;
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
     levelID                         = 1;
@@ -64,7 +69,7 @@ void GameScreen::setup() {
     importLevel(levelID);
 
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 128); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-    planetRenderer->loadTexture("ART/planets.png", 256, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    planetRenderer->loadTexture("ART/planets.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
     nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -75,9 +80,45 @@ void GameScreen::setup() {
 
     O2frame.loadImage("ART/O2_frame.png");
     O2bar.loadImage("ART/O2_bar.png");
-    map.loadImage("ART/map3.png");
+    text.loadFont("fonts/pixelmix.ttf",12);
 
 }
+
+void GameScreen::generateStars() {
+    stars.clear();
+    for (int i = 0; i < number_of_stars; i++) {
+        int screens_squared = 10;
+        int initial_blink_period = 200;
+        stars.push_back(ofVec4f(
+                                ofRandom(                       /// x
+                                        -ofGetWidth(),
+                                        ofGetWidth()
+                                        ) * screens_squared,
+                                ofRandom(                       /// y
+                                         -ofGetHeight(),
+                                        ofGetHeight()
+                                        ) * screens_squared,
+                                ofRandom (-10, 10),             /// z
+                                ofRandom(initial_blink_period)  /// w (used for timing)
+                                )
+                        );
+        stars_dark.push_back(ofVec4f(
+                                    ofRandom(                  /// x
+                                            -ofGetWidth(),
+                                            ofGetWidth()
+                                            ) * screens_squared,
+                                    ofRandom(                 /// y
+                                            -ofGetHeight(),
+                                            ofGetHeight()
+                                            )* screens_squared,
+                              ofRandom (-10, 10),               /// z
+                              ofRandom(initial_blink_period)    /// w (used for timing)
+                                )
+                             );
+    }
+}
+
+void GameScreen::loadResources() {}
 
 void GameScreen::loadSound() {
     jupiterSound.loadSound("AUDIO/ksc_AUDIO_background_music_001.mp3");
@@ -92,6 +133,31 @@ void GameScreen::loadSound() {
 
 void GameScreen::getState() {
     PAUSE = false;
+    if (HIT_PAUSE) {
+        hit_pause_timer = countdownTimer(hit_pause_timer);
+        if (hit_pause_timer > 0) {
+            PAUSE = true;
+            SCREEN_SHAKE = true;
+        }
+        if (hit_pause_timer <= 0) {
+            HIT_PAUSE = false;
+            hit_pause_timer = hit_pause_timer_init;
+        }
+    }
+    if (SCREEN_SHAKE) {
+        screen_shake_timer = countdownTimer(screen_shake_timer);
+        if (screen_shake_timer > 0) {
+            SCREEN_SHAKE = true;
+        }
+        if (screen_shake_timer <= 0) {
+            SCREEN_SHAKE = false;
+            screen_shake_timer = screen_shake_timer_init;
+        }
+    }
+    if (player.getScreenShake()) {
+        SCREEN_SHAKE = true;
+        player.setScreenShake(false);
+    }
     if (MAP_VIEW) {
         PAUSE = true;
     } else {
@@ -141,27 +207,48 @@ void GameScreen::getState() {
     if (WON_LEVEL) {
         levelID++;
         importLevel(levelID);
-        reset();
-        fadeIn.ACTIVE = true;
-        FREEZE_PLAYER = false;
+        if (!GAME_OVER) {
+            reset();
+            fadeIn.setActive(true);
+            FREEZE_PLAYER = false;
+            generateStars();
+        } else {
+            //PAUSE = true;
+        }
     }
 }
 
 void GameScreen::update() {
+    astronautsFollowing = 0;
     getState();
+    if (HIT_PAUSE) {
+        if (!player.IS_DEAD && player.KILL_PLAYER) {
+            player.update();
+        }
+        for (int i = 0; i < gravitator.size(); i++) {
+            gravitator[i]->update();
+        }
+    }
     if (!PAUSE) {
         if (!FREEZE_PLAYER) {
             player.update();
+            if ((player.gravitator_type == "sun" || player.gravitator_type == "comet") && !player.KILL_PLAYER)
+                HIT_PAUSE = true;
         }
+
         fadeIn.update();
         for (int i = 0; i < gravitator.size(); i++) {
             gravitator[i]->update();
         }
         for (int i = 0; i < strandedAstronaut.size(); i++) {
+            if (strandedAstronaut[i]->FOLLOWING_PLAYER || strandedAstronaut[i]->FOLLOWING_ASTRONAUT) astronautsFollowing++;
+
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
+
             if (strandedAstronaut[i]->IS_DEAD) {
                 AN_ASTRONAUT_DIED = true;
+                HIT_PAUSE = true;
                 if (strandedAstronaut[i]->FOLLOWING_PLAYER) {
                     player.releaseAllAstronauts(false);
                 }
@@ -177,10 +264,6 @@ void GameScreen::update() {
         }
         for (int i = 0; i < gui.size(); i++) {
             gui[i]->update();
-            if (!gui[i]->ACTIVE) {
-                //delete gui[i];
-                //gui.erase(gui.begin()+i);
-            }
             if ((gui[i]->pos.x > ofGetWidth() + camera_target.x - 50 || gui[i]->pos.y > ofGetHeight() + camera_target.y + 30 || gui[i]->pos.x < camera_target.x - 50 || gui[i]->pos.y < camera_target.y + 30) && camera_pos.squareDistance(camera_target) < 10) {
                 gui[i]->pos.interpolate(player.pos, 10 * dt);
             }
@@ -191,12 +274,24 @@ void GameScreen::update() {
     renderSprites();
     player.camera_pos = camera_pos;
     player.camera_target = camera_target;
+
 }
 
+
 void GameScreen::camera() {
-    /// TODO (Aaron#1#): Map view needs to account for camera position when scaling
     if (!PAUSE) {
         setCameraTarget(player.pos);
+        if (SCREEN_SHAKE) {
+            setCameraLerpSpeed(2);
+            ofVec2f direction;
+            direction.set(-player.getNormalizedCollisionNormal());
+            ofVec2f playerVel;
+            playerVel.set(getPlayerDirection());
+            float magnitude = playerVel.length() / player.getVelocityLimit();
+            setCameraTarget(player.pos - direction * magnitude * magnitude);
+        } else {
+            setCameraLerpSpeed(camera_lerp_speed_init);
+        }
     }
     view_scale = ofLerp(view_scale, view_scale_target, view_lerp_speed * dt);
 
@@ -211,8 +306,6 @@ void GameScreen::camera() {
 void GameScreen::setCameraTarget(ofVec2f target) {
     camera_target.x = (target.x * view_scale_target) - ofGetWidth()/2;
     camera_target.y = (target.y * view_scale_target) - ofGetHeight()/2;
-    //camera_target.x = (target.x) - ofGetWidth()/2;
-    //camera_target.y = (target.y) - ofGetHeight()/2;
 }
 
 void GameScreen::moveCameraTarget(ofVec2f direction) {
@@ -226,11 +319,13 @@ void GameScreen::renderSprites() {
         if (gravitator[i]->type == "comet") {
             scaleFactor = 2;
         } else if (gravitator[i]-> type == "planet") {
+            scaleFactor = 2.0*gravitator[i]->gR/128.0;
+            planetRenderer->addCenteredTile(&gravitator[i]->anim2,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
             scaleFactor = 4.0*gravitator[i]->r/120.0;
         } else if (gravitator[i]->type == "sun") {
             scaleFactor = 2 * gravitator[i]->r/128.0;
         } else if (gravitator[i]->type == "blackhole") {
-            scaleFactor = 0;
+            scaleFactor = 2 * gravitator[i]->gR/128.0;
         }
         planetRenderer->addCenteredTile(&gravitator[i]->anim,gravitator[i]->pos.x,gravitator[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
@@ -248,14 +343,16 @@ void GameScreen::drawGUI() {
     if (!MAP_VIEW) {
         ofPushMatrix();
         ofFill();
+        ofSetColor(255, 171, 0);
+        text.drawString("Missing Crew:",30,ofGetHeight()-75);
         ofSetColor(255, 255, 255);
         for (int i = 0; i < totalCrew; i++) {
-            if (i < strandedAstronaut.size()) {
-                ofSetColor(255, 255, 255);
-                ofRect(30+(12*i) , ofGetHeight() - map.height + 34, 7,7);
-            } else {
+            if (i < astronautsFollowing) {
                 ofSetColor(223, 42, 99);
-                ofRect(30+(12*i) ,  ofGetHeight() - map.height + 34, 7,7);
+                ofRect(30+(20*i) , ofGetHeight() - 60, 12,12);
+            } else {
+                ofSetColor(255, 255, 255);
+                ofRect(30+(20*i) ,  ofGetHeight() - 60, 12,12);
             }
         }
         int x = ofGetWidth() - 53;
@@ -268,13 +365,12 @@ void GameScreen::drawGUI() {
 
         ofSetColor(255,255,255,255);
         O2frame.draw(ofGetWidth() - O2frame.width - 20, ofGetHeight() - O2frame.height - 20);
-        map.draw(0 , ofGetHeight() - map.height);
         ofPopMatrix();
     }
 }
 
 void GameScreen::draw() {
-    /// LAYER 1 -- Background (CAMERA; !ZOOM)
+    /// LAYER 0 -- Background (CAMERA; !ZOOM)
     ofPushMatrix();
     ofSetColor(255);
     ofTranslate(-camera_pos);
@@ -283,47 +379,113 @@ void GameScreen::draw() {
 
     /// LAYER 1 -- Background (CAMERA && ZOOM)
     ofPushMatrix();
-    ofTranslate(camera_target);
-    //ofRotate(50, 0, 0, 1);
-    ofScale(view_scale, view_scale, 1);
-    ofSetColor(255,255,255,50);
-    ofPopMatrix();
+    if (SCREEN_SHAKE) {
+        ofVec2f playerVel;
+        playerVel.set(getPlayerDirection());
+        float magnitude = playerVel.length() / player.getVelocityLimit();
+        float x = ofLerp(0, ofRandom(5.0, 15.0 * magnitude), 0.5);
+        float y = ofLerp(0, ofRandom(5.0, 15.0 * magnitude), 0.5);
+        ofTranslate(ofPoint(x, y));
+    }
 
-    /// LAYER 2 -- GameObjects (CAMERA && ZOOM)
-    ofPushMatrix();
-    ofTranslate(-camera_pos);
-    //ofRotate(50, 0, 0, 1);
-    ofScale(view_scale, view_scale, 1);
-    ofSetColor(255,255,255);
+        ofPushMatrix();
+        ofTranslate(-camera_target);
+        ofScale(view_scale, view_scale, 1);
+        ofSetColor(255,255,255,50);
+        ofPopMatrix();
 
-    planetRenderer -> draw();
-
-    for (int i = 0; i < gravitator.size(); i++) {
-        gravitator[i]->draw();
-        if (gravitator[i]->type == "comet") {
-            if (USING_LEVEL_EDITOR) {
-                gravitator[i]->drawPath();
+        ofPushMatrix();
+        ofTranslate(-camera_pos);
+        ofScale(view_scale, view_scale, 1);
+        for (int i = 0; i < stars.size(); i++) {
+            int blink_brightness = 25;
+            int dark_star_brightness = 125;
+            int blink_time = 10;
+            int blink_period = 200;
+            int num_redGiants = 30;
+            int num_dwarves = 30;
+            ofColor starLight(ofColor::white);
+            if (stars[i].x > camera_pos.x / view_scale && stars[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars[i].y > camera_pos.y / view_scale && stars[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
+                if (stars[i].w < blink_time) {
+                    stars[i].w += 1;
+                    starLight.setBrightness(blink_brightness);
+                } else if (stars[i].w >= blink_time) {
+                    stars[i].w += 1;
+                    starLight.setBrightness(ofRandom(200, 255));
+                    if (stars[i].w > blink_period) {
+                        stars[i].w = ofRandom (blink_period);
+                    }
+                }
+                if (i < num_redGiants) {
+                    starLight.r = 255;
+                    starLight.g = 125;
+                    starLight.b = 0;
+                }
+                if (i > num_redGiants && i < num_redGiants + num_dwarves) {
+                    starLight.r = 0;
+                    starLight.g = 231;
+                    starLight.b = 255;
+                }
+                ofSetColor(starLight);
+                ofRect(stars[i].x, stars[i].y, stars[i].z, 2, 2);
+            }
+            starLight.setBrightness(dark_star_brightness);
+            if (stars_dark[i].x > camera_pos.x / view_scale && stars_dark[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars_dark[i].y > camera_pos.y / view_scale && stars_dark[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
+                if (stars_dark[i].w < blink_time) {
+                    stars_dark[i].w += 1;
+                    starLight.setBrightness(50);
+                } else if (stars_dark[i].w >= blink_time) {
+                    stars_dark[i].w += 1;
+                    starLight.a = dark_star_brightness;
+                    if (stars_dark[i].w > blink_period) {
+                        stars_dark[i].w = ofRandom (blink_period);
+                    }
+                }
+                ofSetColor(starLight);
+                ofRect(stars_dark[i].x, stars_dark[i].y, stars_dark[i].z, 2, 2);
             }
         }
-    }
+        ofPopMatrix();
 
+        /// LAYER 2 -- GameObjects (CAMERA && ZOOM)
+        ofPushMatrix();
+        ofTranslate(-camera_pos);
+        ofScale(view_scale, view_scale, 1);
+        ofSetColor(255,255,255);
 
+        planetRenderer -> draw();
 
-    for (int i = 0; i < gui.size(); i++) {
-        gui[i]->draw();
-    }
-    for (int i = 0; i < strandedAstronaut.size(); i++) {
-        strandedAstronaut[i]->draw();
-    }
-    player.draw();
-    nautRenderer -> draw();
+        for (int i = 0; i < gravitator.size(); i++) {
+            gravitator[i]->draw();
+            if (gravitator[i]->type == "comet") {
+                if (USING_LEVEL_EDITOR) {
+                    gravitator[i]->drawPath();
+                }
+            }
+        }
 
-    fadeIn.draw();/// TODO (Aaron#1#): FadeIn needs to scale
+        for (int i = 0; i < gui.size(); i++) {
+            gui[i]->draw();
+        }
+        for (int i = 0; i < strandedAstronaut.size(); i++) {
+            strandedAstronaut[i]->draw();
+        }
+        player.draw();
+        nautRenderer -> draw();
+
+        fadeIn.draw();
+        ofPopMatrix();
     ofPopMatrix();
 
     /// LAYER 3 -- GUI (!CAMERA && !ZOOM)
     drawGUI();
     drawLevelEditorGUI();
+}
+
+ofVec2f GameScreen::getPlayerDirection() {
+    ofVec2f playerDirection;
+    playerDirection.set(player.getPreCollisionVelocity());
+    return playerDirection;
 }
 
 void GameScreen::drawLevelEditorGUI() {
@@ -454,10 +616,10 @@ void GameScreen::drawLevelEditorGUI() {
 void GameScreen::reset() {
     importLevel(levelID);
     player.setup();
-    //fadeIn.pos.set(ofVec2f(camera_target.x, camera_target.y));
     fadeIn.setup();
     level_over_timer = level_over_timer_start;
     FREEZE_PLAYER = false;
+    GAME_OVER = false;
 }
 
 void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
@@ -478,16 +640,16 @@ void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
 
 void GameScreen::addStrandedAstronaut(ofVec2f _pos, string _name = "unnamed") {
     if (_name == "unnamed") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut));
     }
     if (_name == "tutorial one") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut));
     }
     if (_name == "tutorial two") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut));
     }
     if (_name == "tutorial three") {
-        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));
+        strandedAstronaut.push_back(new StrandedAstronaut(getGlobalPosition(_pos), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut));
     }
     strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
 }
@@ -507,6 +669,9 @@ ofVec2f GameScreen::getGlobalPosition(ofVec2f local_pos) {
 //--------------------------------------------------------------
 void GameScreen::keyPressed(int key) {
     switch (key) {
+    case 'Q':
+        setGameOver(true);
+        break;
     case 'i':
         if (iddqd == 0) {
             iddqd = 1;
@@ -602,17 +767,6 @@ void GameScreen::keyPressed(int key) {
             gravitator.clear();
         }
         break;
-    case OF_KEY_UP:
-        if (!player.IS_DEAD) {
-            if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
-                player.jetpack(true);
-                break;
-            } else if (player.TRAVERSE_MODE) {
-                player.chargeJump();
-                break;
-            }
-        }
-        break;
     case OF_KEY_PAGE_UP:
         if (clickState == "placing gravitators") {
             if (new_gravitator_type == "") {
@@ -655,16 +809,13 @@ void GameScreen::keyPressed(int key) {
             }
         }
     case OF_KEY_LEFT:
-        player.ROTATE_LEFT = true;
+        if (!player.CHARGING_JUMP) {player.ROTATE_LEFT = true;}
         break;
     case OF_KEY_RIGHT:
-        player.ROTATE_RIGHT = true;
-        break;
-    case 'x':
-        player.releaseAllAstronauts(true);
+        if (!player.CHARGING_JUMP) {player.ROTATE_RIGHT = true;}
         break;
     case 32:
-        if (!player.IS_DEAD) {
+        if (!player.KILL_PLAYER) {
             if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
                 player.jetpack(true);
                 break;
@@ -700,6 +851,7 @@ void GameScreen::keyPressed(int key) {
         break;
     case 's':
         player.KILL_PLAYER = true;
+        player.releaseAllAstronauts(false);
         break;
     }
 }
@@ -707,35 +859,24 @@ void GameScreen::keyPressed(int key) {
 //--------------------------------------------------------------
 void GameScreen::keyReleased(int key) {
     switch (key) {
-    case OF_KEY_UP:
-        if (player.TRAVERSE_MODE) {
-            player.jump();
-            if (!ENABLE_EDITOR) {
-                exportLevel();
-            }
-            break;
-        } else {
-            player.CAN_JETPACK = true;
-            break;
-        }
     case 32:
-        if (player.TRAVERSE_MODE) {
-            player.jump();
-            break;
-        } else {
-            player.CAN_JETPACK = true;
-            break;
-        }
+        player.jump();
+        player.CAN_JETPACK = true;
+        player.CHARGING_JUMP = false;
         break;
     case OF_KEY_LEFT:
-        player.ROTATE_LEFT = false;
-        player.anim = idle;
-        player.fxJetpackLoop.stop();
+        if (player.ROTATE_LEFT && !player.DEATH_ANIMATION) {
+            player.anim = idle;
+            player.fxJetpackLoop.stop();
+        }
+            player.ROTATE_LEFT = false;
         break;
     case OF_KEY_RIGHT:
-        player.ROTATE_RIGHT = false;
-        player.anim = idle;
-        player.fxJetpackLoop.stop();
+        if (player.ROTATE_RIGHT && !player.DEATH_ANIMATION) {
+            player.anim = idle;
+            player.fxJetpackLoop.stop();
+        }
+            player.ROTATE_RIGHT = false;
         break;
     }
 }
@@ -758,7 +899,6 @@ void GameScreen::mouseDragged(int x, int y, int button) {
         for (int i = 0; i < gravitator.size(); i++) {
             ofVec2f g_pos;
             g_pos.set(gravitator[i]->pos / view_scale);
-            /// NOTE (Aaron#1#): This needs to be updmated to account for view_scale
             if (g_pos.x > camera_pos.x && g_pos.x < camera_pos.x + ofGetWidth() && g_pos.y > camera_pos.y && g_pos.y < camera_pos.y + ofGetHeight()) {
                 float dist = mouse_pos.squareDistance(gravitator[i]->pos);
                 if (dist <= gravitator[i]->r * gravitator[i]->r && button == 0 && clickState == "edit mode") {
@@ -817,7 +957,6 @@ void GameScreen::mousePressed(int x, int y, int button) {
             addStrandedAstronaut(ofVec2f(mouseX, mouseY), new_astronaut_name);
         }
     }
-
 }
 
 //--------------------------------------------------------------
@@ -899,6 +1038,18 @@ void GameScreen::importLevel(int levelID) {
     if (!input.good()) {
         levelName = "data/levels/level_" + ofToString(levelID);
         input.open(levelName.c_str());
+        if (!input.good()) {
+            if (!ENABLE_EDITOR) {
+                GAME_OVER = true;
+                return;
+            } else {
+                levelName = "data/levels/level_" + ofToString(levelID + 1);
+                std::ofstream output(levelName.c_str());
+                output << 0 << std::endl;
+                output << 0 << ' ' << 0 << std::endl;
+                input.open(levelName.c_str());
+            }
+        }
     }
 
     if (input.good()) {
@@ -939,16 +1090,16 @@ void GameScreen::importLevel(int levelID) {
                 gravitator.push_back(new Comet(ofVec2f(x, y), r, path));
             } else if (type == "strandedastronaut") {
                 if (r == 0) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::UNNAMED, &gravitator, &strandedAstronaut));
                 }
                 if (r == 1) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_ONE, &gravitator, &strandedAstronaut));
                 }
                 if (r == 2) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_TWO, &gravitator, &strandedAstronaut));
                 }
                 if (r == 3) {
-                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut, &gui));
+                    strandedAstronaut.push_back(new StrandedAstronaut(ofVec2f(x, y), StrandedAstronaut::TUTORIAL_THREE, &gravitator, &strandedAstronaut));
                 }
                 strandedAstronaut[strandedAstronaut.size()-1]->level = levelID;
             }
@@ -999,6 +1150,7 @@ void GameScreen::exportSessionData() {
     sessionData.popTag();
     sessionData.popTag();
     sessionData.saveFile("sessionData/sessionData_" + ofToString(ofGetMonth()) + "_" + ofToString(ofGetDay()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".xml");
+    clearMetrics();
 }
 
 void GameScreen::exit() {
@@ -1008,4 +1160,25 @@ void GameScreen::exit() {
 void GameScreen::screenshot() {
     string filename = "screenshots/screenshot_" + ofToString(ofGetMonth()) + ofToString(ofGetWeekday()) + "_" + ofToString(ofGetHours()) + "_" + ofToString(ofGetMinutes()) + ".png";
     ofSaveScreen(filename);
+}
+
+bool GameScreen::isGameOver() const {
+    return GAME_OVER;
+}
+
+int GameScreen::getLevel() const {
+    return levelID;
+}
+
+void GameScreen::setLevel(int level_number) {
+    levelID = level_number;
+}
+
+void GameScreen::setGameOver(bool _gameOver) {
+    GAME_OVER = _gameOver;
+}
+
+void GameScreen::clearMetrics() {
+    metric_playerDeaths.clear();
+    metric_playerDeaths_cause.clear();
 }

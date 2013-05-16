@@ -13,7 +13,6 @@ public:
     void draw();
     virtual ~BlackHole();
 
-    // TODO (Aaron#1#): blackhole should have super strong gravity
 protected:
 private:
 };

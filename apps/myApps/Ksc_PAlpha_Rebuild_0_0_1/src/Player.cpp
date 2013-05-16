@@ -55,6 +55,8 @@ void Player::setup() {
     ROTATE_RIGHT            = false;
     HAVE_ASTRONAUT          = false;
     KILL_PLAYER             = false;
+    CHARGING_JUMP           = false;
+    CAN_SCREEN_SHAKE        = true;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -70,7 +72,7 @@ void Player::setup() {
     w                       = 10;
     h                       = 10;
     r                       = 10;
-    oxygen                  = 100.0;        /// TODO (Aaron#1#): Add lose condition to running out of o2
+    oxygen                  = 100.0;
     max_oxygen              = oxygen;
     damp                    = 1.00;
     m                       = 1.0;
@@ -111,16 +113,6 @@ void Player::loadSound() {
     fxJetpackLoop.loadSound("AUDIO/ksc_AUDIO_player_jetloop_002.wav");
     fxJetpackLoop.setLoop(true);
 
-//    for (int i = 0; i < 3; i++) {
-//        fxJump.push_back(ofSoundPlayer());
-//        fxJump[i].loadSound("AUDIO/ksc_AUDIO_player_jump_00" + ofToString(i) + ".wav");
-//        fxJump[i].setVolume(0.3);
-//    }
-    //fxJump[0]->loadSound("AUDIO/ksc_AUDIO_jump_001.wav");
-    //fxJump[1]->loadSound("AUDIO/ksc_AUDIO_jump_002.wav");
-    //fxJump[2]->loadSound("AUDIO/ksc_AUDIO_jump_003.wav");
-    //fxJump[3]->loadSound("AUDIO/ksc_AUDIO_jump_004.wav");
-
     int random = ofRandom (1, 4);
     if (random == 1) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_001.wav");}
     if (random == 2) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_002.wav");}
@@ -158,8 +150,6 @@ void Player::update() {
         player_rotation += 360;
     }
     if(DEATH_ANIMATION) {
-        //flame_rotation = (-1*v).angle(ofVec2f(0,-1));
-        //cout << ofToString(flame_rotation) + "/n";
         p1Renderer->addCenterRotatedTile(&flame, pos.x, pos.y,-1, F_NONE, 2.0, flame_rotation, NULL, 255, 255, 255, 255);
     }
 
@@ -197,10 +187,14 @@ void Player::draw() {
     if (DEBUG_GUI) {
         drawDebugGUI();
     }
-    if (DEATH_ANIMATION && anim.frame == 13) {
-
-    } else {
+    if (!DEATH_ANIMATION) {
         p1Renderer->draw();
+    } else {
+         if (anim.frame >= 13) {
+
+        } else {
+            p1Renderer->draw();
+        }
     }
 }
 
@@ -252,9 +246,14 @@ void Player::checkState() {
     ///---------------------
     if (oxygen < 0) {
         KILL_PLAYER = true;
+        releaseAllAstronauts(false);
     }
-    if (gravitator_type == "sun" || gravitator_type == "comet") {
+    if (gravitator_type == "sun") {
         KILL_PLAYER = true;
+    }
+    if (gravitator_type == "comet") {
+        KILL_PLAYER = true;
+        releaseAllAstronauts(false);
     }
     if (KILL_PLAYER) {
         DEATH_ANIMATION = die();
@@ -279,6 +278,9 @@ void Player::checkState() {
             rotateDirection(false);
         }
     } else if (TRAVERSE_MODE) {
+        if (fxJetpackLoop.getIsPlaying()) {
+            fxJetpackLoop.stop();
+        }
         if (ROTATE_LEFT) {
             traversePlanet(true);
         }
@@ -326,6 +328,7 @@ void Player::checkState() {
         if (jump_timer < 0) {
             LEAVING_PLANET = false;
             TRAVERSE_MODE = false;
+            CAN_SCREEN_SHAKE = true;
         }
     }
     if (HIT_GRAVITATOR && ORIENT_TO_PLANET) {
@@ -463,10 +466,16 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
                 if (gravitator_type == "planet") {
                     orientToPlanet(i);
                     gravitatorBounce();
+                    preCollisionVel = v;
                     v.set(0, 0);
                     f.set(0, 0);
                     USING_GRAVITY       = false;
                     TRAVERSE_MODE       = true;
+
+                    if (CAN_SCREEN_SHAKE) {
+                        setScreenShake(true);
+                        CAN_SCREEN_SHAKE = false;
+                    }
                 }
 
                 HIT_GRAVITATOR          = true;
@@ -588,18 +597,8 @@ void Player::rotateDirection(bool rotate_left) {
     }
 }
 
-inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v) {
-    float x = angular_v.x;
-    float y = angular_v.y;
-    float z = 0.0;
-    ofQuaternion q;
-    //spin.x 0.5 * ofQuaternion( 0, x, y, z ) * orientation;
-    q.set(0, x, y, z);
-    //return 0.5 * q * orientation;
-}
-
-
 void Player::chargeJump() {
+    CHARGING_JUMP = true;
     if (jumpStrength == 0) {
         anim = charge;
     }
@@ -619,7 +618,7 @@ void Player::jump() {
     }
 
     if (TRAVERSE_MODE) {
-        fxJump.setSpeed(ofRandom(0.9, 1.2));
+        fxJump.setSpeed(ofRandom(0.9, 1.1));
         fxJump.play();
         starting_pos = pos;
         f += jumpStrength;
@@ -627,11 +626,13 @@ void Player::jump() {
         anim = lift;
         jump_timer = 0.1;
 
+
         if (DEBUG_GUI) {
             cout << "Jumped with " + ofToString(jumpStrength) + "N" << endl;
         }
     }
     jumpStrength = 0;
+    CHARGING_JUMP = false;
 }
 
 void Player::jetpack(bool JETPACK_FORWARD) {
@@ -666,32 +667,7 @@ void Player::jetpack(bool JETPACK_FORWARD) {
 }
 
 void Player::keyPressed(ofKeyEventArgs& args) {
-    /// TODO (Aaron#9#): Determine why player key listener doesn't apply input (it registers key presses)
-    switch (args.key) {
-    case 'g':
-        break;
-    }
-
-    if (!HIT_GRAVITATOR) {
-        switch (args.key) {
-        case OF_KEY_UP:
-            chargeJump();
-            break;
-        case OF_KEY_LEFT:
-
-            break;
-        case OF_KEY_RIGHT:
-
-            break;
-        case OF_KEY_DOWN:
-
-            cout << "impulsed at " + nl;
-
-            break;
-        case 32:
-            break;
-        }
-    }
+/// TODO (Aaron#1#): move player controls into player
 }
 
 void Player::keyReleased(ofKeyEventArgs& args) {

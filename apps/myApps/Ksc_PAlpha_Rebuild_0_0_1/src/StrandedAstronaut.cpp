@@ -7,7 +7,7 @@ StrandedAstronaut::StrandedAstronaut() : Astronaut() {
     //ctor
 }
 
-StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut, std::vector<GUI *> *gui) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut), gui(gui) {
+StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut) : Astronaut(_pos), gravitator(gravitator), strandedAstronaut(strandedAstronaut) {
     pos                         = _pos;
     r                           = 20;
     m                           = 5.0;
@@ -15,9 +15,16 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     damp                        = 1.0;
     restitution                 = 0.5;
     oxygen                      = 100;
-    message_timer               = ofRandom(0.0, 15.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
-    message_delay               = 25;                       ///Minimum delay between messages
-    message_display_chance      = 7;                        ///larger number makes random delay between messages higher
+
+    if (_name == UNNAMED) {
+        message_timer               = ofRandom(0.0, 10.0);      ///Increase this to decrease the time to see first message (if higher than message_delay, will auto-display message)
+        message_delay               = 15;                       ///Minimum delay between messages
+        message_display_chance      = 7;                        ///larger number makes random delay between messages higher
+    } else {
+        message_timer           = ofRandom(0.0, 5.0);
+        message_delay           = 10;
+        message_display_chance  = 3;
+    }
     lerp_speed                  = 0.15;
     astronaut_pickup_range      = 30;
     spring_strength             = 15000;
@@ -48,7 +55,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     DRAW_MESSAGE                = false;
     IS_DEAD                     = false;
     THE_END                     = false;
-    CAN_HIT_ASTRONAUTS          = true;
+    CAN_HIT_ASTRONAUTS          = false;
     RELEASED                    = false;
 
     type = "strandedastronaut";
@@ -57,6 +64,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
 	ofEnableAlphaBlending();
 	setName(_name);
 	loadMessages();
+	dialogueBubble = new Message(pos, "");
 }
 
 StrandedAstronaut::~StrandedAstronaut() {
@@ -70,13 +78,13 @@ void StrandedAstronaut::loadMessages() {
     ofxXmlSettings dialogue;
     if (dialogue.loadFile("data/messages/dialogue.xml")) {
         dialogue.pushTag("dialogue");
-        dialogue.pushTag("ENUM_" + ofToString(thisAstronautIs));
-        int numberOfMessages = dialogue.getNumTags("message");
-        for (int i = 0; i < numberOfMessages; i++) {
-            string m = dialogue.getValue("message", "", i);
-            message.push_back(m);
-        }
-        dialogue.popTag();
+            dialogue.pushTag("ENUM_" + ofToString(thisAstronautIs));
+                int numberOfMessages = dialogue.getNumTags("message");
+                for (int i = 0; i < numberOfMessages; i++) {
+                    string m = dialogue.getValue("message", "", i);
+                    message.push_back(m);
+                }
+            dialogue.popTag();
         dialogue.popTag();
     }
     else {
@@ -93,6 +101,7 @@ void StrandedAstronaut::update() {
     if (DRAW_MESSAGE) {
         displayMessage();
     }
+    dialogueBubble->update();
 }
 
 void StrandedAstronaut::move() {
@@ -113,6 +122,7 @@ void StrandedAstronaut::move() {
 
     v *= damp;
     pos += v * dt;
+    dialogueBubble->pos.set((pos + ofVec2f(10, -35)));
 
     f.set(0, 0);
     gravity.set(0, 0);
@@ -149,7 +159,7 @@ void StrandedAstronaut::checkState() {
     if (FOLLOWING_PLAYER) {
     }
     if (FOLLOWING_ASTRONAUT || FOLLOWING_PLAYER) {
-        CAN_HIT_ASTRONAUTS = false;
+        //CAN_HIT_ASTRONAUTS = false;
         damp = 0.93;
     }  else {
         damp = 1.0;
@@ -177,14 +187,14 @@ void StrandedAstronaut::followReset() {
 }
 
 void StrandedAstronaut::displayMessage() {
-    string message = pickMessageRandom();
-    (*gui).push_back(new Message(pos + ofVec2f(10, -35), message));
+    string _message = pickMessageRandom();
+    dialogueBubble->changeMessage(_message);
     DRAW_MESSAGE = false;
 }
 
 void StrandedAstronaut::displayMessage(int messageNumber) {
-    string message = pickMessage(messageNumber);
-    (*gui).push_back(new Message(pos + ofVec2f(0, -15), message));
+    string _message = pickMessage(messageNumber);
+    dialogueBubble->changeMessage(_message);
     DRAW_MESSAGE = false;
 }
 
@@ -221,6 +231,7 @@ void StrandedAstronaut::draw() {
         ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
         ofPopMatrix();
     }
+    dialogueBubble->draw();
 }
 
 void StrandedAstronaut::detectGravitatorCollisions() {
@@ -316,8 +327,16 @@ void StrandedAstronaut::detectPlayerCollisions() {
                 float drop_range        = (r + other_r + astronaut_drop_range) * (r + other_r + astronaut_drop_range);
                 float collision_range   = (r + other_r) * (r + other_r);
             if (dist < collision_range) {
+                ofVec2f normal;
+                normal.set(pos - other_pos);
                 if (CAN_HIT_ASTRONAUTS) {
                     bounce(i);
+                    if (dist < collision_range) {
+                        float theta;
+                        theta = atan2(normal.y / planet_r, normal.x / other_r);
+                        pos.x = (cos(theta) * (other_r + r)) + other_pos.x;
+                        pos.y = (sin(theta) * (other_r + r)) + other_pos.y;
+                    }
                 }
             }
             if (dist < pickup_range) {
@@ -330,8 +349,9 @@ void StrandedAstronaut::detectPlayerCollisions() {
                     if (!FOLLOWING_ASTRONAUT && (*strandedAstronaut)[i]->THE_END) {
                         (*strandedAstronaut)[i]->THE_END = false;
                         THE_END = true;
-                        FOLLOWING_ASTRONAUT = true;
                         astronaut = i;
+                        FOLLOWING_ASTRONAUT = true;
+                        getPlayerData((*strandedAstronaut)[astronaut]->pos, (*strandedAstronaut)[astronaut]->v);
                     }
                 }
             }

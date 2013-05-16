@@ -10,34 +10,17 @@ MenuScreen::~MenuScreen() {
 }
 
 void MenuScreen::setup() {
+    loadResources();
+    reset();
+}
 
-    ofSetFrameRate(60);
-    background.loadImage("ART/bg.png");
-    title.loadImage("ART/title.png");
-    title.setAnchorPoint(title.width/2,title.height/2);
+void MenuScreen::reset() {
     EXPLODING                   = false;
     MOVED                       = false;
+    FLASHING                    = false;
     splosionTimer               = 180;
     flashOpacity                = 0;
     flashFadeRate               = 5;
-
-    menuRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 256);
-    menuRenderer->loadTexture("ART/ship.png",1024,GL_NEAREST);
-
-    splosionRenderer = new ofxSpriteSheetRenderer(1, 1000, 0, 42);
-    splosionRenderer->loadTexture("ART/explosion_sheet.png",462,GL_NEAREST);
-
-    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-    nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);
-
-    ///LOAD SHIP IMAGES
-    shipPiece1.loadImage("ART/brokenShip/shipPiece_1.png");
-    shipPiece2.loadImage("ART/brokenShip/shipPiece_2.png");
-    shipPiece3.loadImage("ART/brokenShip/shipPiece_3.png");
-    shipPiece4.loadImage("ART/brokenShip/shipPiece_4.png");
-    shipPiece5.loadImage("ART/brokenShip/shipPiece_5.png");
-    shipPiece6.loadImage("ART/brokenShip/shipPiece_6.png");
-    shipPiece7.loadImage("ART/brokenShip/shipPiece_7.png");
 
     ///SET START POINTS FOR BROKEN SHIP PIECES! Hoorah.
     piece1.set(329,228,0);
@@ -64,6 +47,37 @@ void MenuScreen::setup() {
 
     shakeCounter = 4;
 
+    fadeIn.setTimer(3.0);
+    fadeIn.setActive(true);
+}
+
+void MenuScreen::loadResources() {
+    background.loadImage("ART/bg.png");
+    title.loadImage("ART/title.png");
+
+    title.setAnchorPoint(title.width/2,title.height/2);
+    guiFadeOut = GUIFadeOut(ofVec2f(0, 0));
+
+    font.loadFont("fonts/pixelmix.ttf", 8);
+
+    menuRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 256);
+    menuRenderer->loadTexture("ART/ship.png",1024,GL_NEAREST);
+
+    splosionRenderer = new ofxSpriteSheetRenderer(1, 1000, 0, 42);
+    splosionRenderer->loadTexture("ART/explosion_sheet.png",462,GL_NEAREST);
+
+    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
+    nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);
+
+    ///LOAD SHIP IMAGES
+    shipPiece1.loadImage("ART/brokenShip/shipPiece_1.png");
+    shipPiece2.loadImage("ART/brokenShip/shipPiece_2.png");
+    shipPiece3.loadImage("ART/brokenShip/shipPiece_3.png");
+    shipPiece4.loadImage("ART/brokenShip/shipPiece_4.png");
+    shipPiece5.loadImage("ART/brokenShip/shipPiece_5.png");
+    shipPiece6.loadImage("ART/brokenShip/shipPiece_6.png");
+    shipPiece7.loadImage("ART/brokenShip/shipPiece_7.png");
+
     if (LOAD_WITH_SOUND) {
         fxEngineLoop.loadSound("AUDIO/ksc_AUDIO_ship_engineloop_001.wav");
         fxEngineLoop.setLoop(true);
@@ -79,9 +93,6 @@ void MenuScreen::setup() {
         fxEngineAmbient.setLoop(true);
         fxEngineAmbient.play();
     }
-
-    guiFadeOut = GUIFadeOut(ofVec2f(0, 0));
-
 }
 
 void MenuScreen::update() {
@@ -108,14 +119,14 @@ void MenuScreen::update() {
     }
 
     if (FLASHING) {
-        if (flashOpacity >= 255) {
-            EXPLODING       = false;
-            BROKEN          = true;
-            fxExplosion.play();
-            fxEngineAmbient.stop();
-            fxEngineLoop.stop();
-            flashFadeRate   = -5;
-        }
+        //if (flashOpacity >= 255) {
+            //EXPLODING       = false;
+            //BROKEN          = true;
+            //fxExplosion.play();
+            //fxEngineAmbient.stop();
+            //fxEngineLoop.stop();
+            //flashFadeRate   = -5;
+        //}
         flashOpacity += flashFadeRate;
     }
 
@@ -142,8 +153,8 @@ void MenuScreen::update() {
 
     /// LET'S ROTATE THE FLOATING PIECES YOU IDIOT
     if(BROKEN) {
-        if (!guiFadeOut.ACTIVE)
-            guiFadeOut.ACTIVE = true;
+        if (!guiFadeOut.getActive())
+            guiFadeOut.setActive(true);
         piece1.x += -.1;
         piece1.y += -.05;
         piece1.z += .1;
@@ -250,6 +261,8 @@ void MenuScreen::draw() {
     }
 
     guiFadeOut.draw();
+
+    font.drawString("Created by: \n     Aaron Freedman\n     Diego Garcia\n     Toni Pizza", 20, ofGetHeight() - 50);
 }
 
 
@@ -275,9 +288,6 @@ void MenuScreen::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void MenuScreen::mousePressed(int x, int y, int button) {
-    //TEMP -- investigate start positions for broken ship pieces!
-
-    //cout << ofToString(x) + ", " + ofToString(y) + "\n \n \n";
 
 }
 

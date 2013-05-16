@@ -53,7 +53,6 @@ void Gravitator::update() {
         }
 
 
-    //ptcl[i] -= testVec;
     }
 
 }

@@ -4,6 +4,7 @@
 #include "Screen.h"
 #include "ofxSpriteSheetRenderer.h"
 #include "GUIFadeOut.h"
+#include "GUIFadeIn.h"
 #include "StrandedAstronaut.h"
 
 static animation_t ship =
@@ -54,6 +55,7 @@ public:
     void setup();
     void update();
     void draw();
+    void reset();
 
     void keyPressed(int key);
     void keyReleased(int key);
@@ -71,6 +73,8 @@ public:
     ofxSpriteSheetRenderer * splosionRenderer;
     ofxSpriteSheetRenderer * nautRenderer;
     animation_t anim;
+    ofTrueTypeFont font;
+
     int shakeCounter;
     GUIFadeOut guiFadeOut;
 
@@ -114,6 +118,8 @@ private:
     ofSoundPlayer fxSmallExplosion;
     ofSoundPlayer fxEngineAmbient;
 
+    GUIFadeIn fadeIn;
+    void loadResources();
 };
 
 #endif // MENUSCREEN_H
