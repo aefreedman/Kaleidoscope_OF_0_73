@@ -266,12 +266,10 @@ void GameScreen::update() {
                 gui[i]->pos.interpolate(player.pos, 10 * dt);
             }
         }
-    }
     camera();
-    renderSprites();
-    player.camera_pos = camera_pos;
-    player.camera_target = camera_target;
 
+    }
+    renderSprites();
 }
 
 
@@ -298,9 +296,9 @@ void GameScreen::camera() {
         CAMERA_SCALING = true;
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
-//    fadeIn.pos.interpolate(camera_target, camera_lerp_speed * dt);
     fadeIn.pos.set(camera_pos);
-
+    player.camera_pos = camera_pos;
+    player.camera_target = camera_target;
 }
 
 void GameScreen::setCameraTarget(ofVec2f target) {
@@ -619,6 +617,8 @@ void GameScreen::reset() {
     level_over_timer = level_over_timer_start;
     FREEZE_PLAYER = false;
     GAME_OVER = false;
+    HIT_PAUSE = false;
+    SCREEN_SHAKE = false;
 }
 
 void GameScreen::addGravitator(ofVec2f pos, int r, int gR, int m) {
