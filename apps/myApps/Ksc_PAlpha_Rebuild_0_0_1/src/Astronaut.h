@@ -30,6 +30,11 @@ public:
     virtual void displayMessage(ofVec2f _pos, string text);
     float countdownTimer(float timer);
 
+    /// Getters & Setters
+    ofVec2f getVelocity() const { return v; }
+    int getVelocityLimit() const { return v_limit_in_space; }
+    ofVec2f getNormalizedCollisionNormal() const { return normalized_collision_normal; }
+
     std::vector<Gravitator *> *gravitator;
     std::vector<GUI *> *gui;
 

@@ -28,6 +28,7 @@ void GameScreen::setup() {
     MAP_VIEW                        = false;
     GAME_OVER                       = false;
     HIT_PAUSE                       = false;
+    SCREEN_SHAKE                    = false;
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
@@ -35,6 +36,7 @@ void GameScreen::setup() {
     level_over_timer_start          = 3.0;
     level_over_timer                = level_over_timer_start;
     hit_pause_timer                 = hit_pause_timer_init;
+    screen_shake_timer              = screen_shake_timer_init;
 
     ///------------------------------
     /// YOU CAN CHANGE THESE
@@ -43,7 +45,7 @@ void GameScreen::setup() {
     player_start_pos.set(ofGetWidth() / 2, ofGetHeight() / 2);
     planet_base_m                   = 1000;
     planet_mass_multiplier          = 250;
-    camera_lerp_speed               = 4;
+    camera_lerp_speed               = camera_lerp_speed_init;
     view_lerp_speed                 = 4;
     map_view_scale_target           = .25;
     levelID                         = 1;
@@ -135,11 +137,26 @@ void GameScreen::getState() {
         hit_pause_timer = countdownTimer(hit_pause_timer);
         if (hit_pause_timer > 0) {
             PAUSE = true;
+            SCREEN_SHAKE = true;
         }
         if (hit_pause_timer <= 0) {
             HIT_PAUSE = false;
             hit_pause_timer = hit_pause_timer_init;
         }
+    }
+    if (SCREEN_SHAKE) {
+        screen_shake_timer = countdownTimer(screen_shake_timer);
+        if (screen_shake_timer > 0) {
+            SCREEN_SHAKE = true;
+        }
+        if (screen_shake_timer <= 0) {
+            SCREEN_SHAKE = false;
+            screen_shake_timer = screen_shake_timer_init;
+        }
+    }
+    if (player.getScreenShake()) {
+        SCREEN_SHAKE = true;
+        player.setScreenShake(false);
     }
     if (MAP_VIEW) {
         PAUSE = true;
@@ -264,6 +281,17 @@ void GameScreen::update() {
 void GameScreen::camera() {
     if (!PAUSE) {
         setCameraTarget(player.pos);
+        if (SCREEN_SHAKE) {
+            setCameraLerpSpeed(2);
+            ofVec2f direction;
+            direction.set(-player.getNormalizedCollisionNormal());
+            ofVec2f playerVel;
+            playerVel.set(getPlayerDirection());
+            float magnitude = playerVel.length() / player.getVelocityLimit();
+            setCameraTarget(player.pos - direction * magnitude * magnitude);
+        } else {
+            setCameraLerpSpeed(camera_lerp_speed_init);
+        }
     }
     view_scale = ofLerp(view_scale, view_scale_target, view_lerp_speed * dt);
 
@@ -351,96 +379,113 @@ void GameScreen::draw() {
 
     /// LAYER 1 -- Background (CAMERA && ZOOM)
     ofPushMatrix();
-    ofTranslate(-camera_target);
-    ofScale(view_scale, view_scale, 1);
-    ofSetColor(255,255,255,50);
-    ofPopMatrix();
+    if (SCREEN_SHAKE) {
+        ofVec2f playerVel;
+        playerVel.set(getPlayerDirection());
+        float magnitude = playerVel.length() / player.getVelocityLimit();
+        float x = ofLerp(0, ofRandom(5.0, 15.0 * magnitude), 0.5);
+        float y = ofLerp(0, ofRandom(5.0, 15.0 * magnitude), 0.5);
+        ofTranslate(ofPoint(x, y));
+    }
 
-    ofPushMatrix();
-    ofTranslate(-camera_pos);
-    ofScale(view_scale, view_scale, 1);
-    for (int i = 0; i < stars.size(); i++) {
-        int blink_brightness = 25;
-        int dark_star_brightness = 125;
-        int blink_time = 10;
-        int blink_period = 200;
-        int num_redGiants = 30;
-        int num_dwarves = 30;
-        ofColor starLight(ofColor::white);
-        if (stars[i].x > camera_pos.x / view_scale && stars[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars[i].y > camera_pos.y / view_scale && stars[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
-            if (stars[i].w < blink_time) {
-                stars[i].w += 1;
-                starLight.setBrightness(blink_brightness);
-            } else if (stars[i].w >= blink_time) {
-                stars[i].w += 1;
-                starLight.setBrightness(ofRandom(200, 255));
-                if (stars[i].w > blink_period) {
-                    stars[i].w = ofRandom (blink_period);
+        ofPushMatrix();
+        ofTranslate(-camera_target);
+        ofScale(view_scale, view_scale, 1);
+        ofSetColor(255,255,255,50);
+        ofPopMatrix();
+
+        ofPushMatrix();
+        ofTranslate(-camera_pos);
+        ofScale(view_scale, view_scale, 1);
+        for (int i = 0; i < stars.size(); i++) {
+            int blink_brightness = 25;
+            int dark_star_brightness = 125;
+            int blink_time = 10;
+            int blink_period = 200;
+            int num_redGiants = 30;
+            int num_dwarves = 30;
+            ofColor starLight(ofColor::white);
+            if (stars[i].x > camera_pos.x / view_scale && stars[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars[i].y > camera_pos.y / view_scale && stars[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
+                if (stars[i].w < blink_time) {
+                    stars[i].w += 1;
+                    starLight.setBrightness(blink_brightness);
+                } else if (stars[i].w >= blink_time) {
+                    stars[i].w += 1;
+                    starLight.setBrightness(ofRandom(200, 255));
+                    if (stars[i].w > blink_period) {
+                        stars[i].w = ofRandom (blink_period);
+                    }
+                }
+                if (i < num_redGiants) {
+                    starLight.r = 255;
+                    starLight.g = 125;
+                    starLight.b = 0;
+                }
+                if (i > num_redGiants && i < num_redGiants + num_dwarves) {
+                    starLight.r = 0;
+                    starLight.g = 231;
+                    starLight.b = 255;
+                }
+                ofSetColor(starLight);
+                ofRect(stars[i].x, stars[i].y, stars[i].z, 2, 2);
+            }
+            starLight.setBrightness(dark_star_brightness);
+            if (stars_dark[i].x > camera_pos.x / view_scale && stars_dark[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars_dark[i].y > camera_pos.y / view_scale && stars_dark[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
+                if (stars_dark[i].w < blink_time) {
+                    stars_dark[i].w += 1;
+                    starLight.setBrightness(50);
+                } else if (stars_dark[i].w >= blink_time) {
+                    stars_dark[i].w += 1;
+                    starLight.a = dark_star_brightness;
+                    if (stars_dark[i].w > blink_period) {
+                        stars_dark[i].w = ofRandom (blink_period);
+                    }
+                }
+                ofSetColor(starLight);
+                ofRect(stars_dark[i].x, stars_dark[i].y, stars_dark[i].z, 2, 2);
+            }
+        }
+        ofPopMatrix();
+
+        /// LAYER 2 -- GameObjects (CAMERA && ZOOM)
+        ofPushMatrix();
+        ofTranslate(-camera_pos);
+        ofScale(view_scale, view_scale, 1);
+        ofSetColor(255,255,255);
+
+        planetRenderer -> draw();
+
+        for (int i = 0; i < gravitator.size(); i++) {
+            gravitator[i]->draw();
+            if (gravitator[i]->type == "comet") {
+                if (USING_LEVEL_EDITOR) {
+                    gravitator[i]->drawPath();
                 }
             }
-            if (i < num_redGiants) {
-                starLight.r = 255;
-                starLight.g = 125;
-                starLight.b = 0;
-            }
-            if (i > num_redGiants && i < num_redGiants + num_dwarves) {
-                starLight.r = 0;
-                starLight.g = 231;
-                starLight.b = 255;
-            }
-            ofSetColor(starLight);
-            ofRect(stars[i].x, stars[i].y, stars[i].z, 2, 2);
         }
-        starLight.setBrightness(dark_star_brightness);
-        if (stars_dark[i].x > camera_pos.x / view_scale && stars_dark[i].x < (camera_pos.x + ofGetWidth()) / view_scale && stars_dark[i].y > camera_pos.y / view_scale && stars_dark[i].y < (camera_pos.y + ofGetHeight()) / view_scale) {
-            if (stars_dark[i].w < blink_time) {
-                stars_dark[i].w += 1;
-                starLight.setBrightness(50);
-            } else if (stars_dark[i].w >= blink_time) {
-                stars_dark[i].w += 1;
-                starLight.a = dark_star_brightness;
-                if (stars_dark[i].w > blink_period) {
-                    stars_dark[i].w = ofRandom (blink_period);
-                }
-            }
-            ofSetColor(starLight);
-            ofRect(stars_dark[i].x, stars_dark[i].y, stars_dark[i].z, 2, 2);
+
+        for (int i = 0; i < gui.size(); i++) {
+            gui[i]->draw();
         }
-    }
-    ofPopMatrix();
-
-    /// LAYER 2 -- GameObjects (CAMERA && ZOOM)
-    ofPushMatrix();
-    ofTranslate(-camera_pos);
-    ofScale(view_scale, view_scale, 1);
-    ofSetColor(255,255,255);
-
-    planetRenderer -> draw();
-
-    for (int i = 0; i < gravitator.size(); i++) {
-        gravitator[i]->draw();
-        if (gravitator[i]->type == "comet") {
-            if (USING_LEVEL_EDITOR) {
-                gravitator[i]->drawPath();
-            }
+        for (int i = 0; i < strandedAstronaut.size(); i++) {
+            strandedAstronaut[i]->draw();
         }
-    }
+        player.draw();
+        nautRenderer -> draw();
 
-    for (int i = 0; i < gui.size(); i++) {
-        gui[i]->draw();
-    }
-    for (int i = 0; i < strandedAstronaut.size(); i++) {
-        strandedAstronaut[i]->draw();
-    }
-    player.draw();
-    nautRenderer -> draw();
-
-    fadeIn.draw();
+        fadeIn.draw();
+        ofPopMatrix();
     ofPopMatrix();
 
     /// LAYER 3 -- GUI (!CAMERA && !ZOOM)
     drawGUI();
     drawLevelEditorGUI();
+}
+
+ofVec2f GameScreen::getPlayerDirection() {
+    ofVec2f playerDirection;
+    playerDirection.set(player.getPreCollisionVelocity());
+    return playerDirection;
 }
 
 void GameScreen::drawLevelEditorGUI() {
@@ -722,21 +767,6 @@ void GameScreen::keyPressed(int key) {
             gravitator.clear();
         }
         break;
-    case OF_KEY_UP:
-        if (!player.IS_DEAD) {
-            if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
-                player.jetpack(true);
-                break;
-            } else if (player.TRAVERSE_MODE) {
-                if (player.ROTATE_LEFT || player.ROTATE_RIGHT) {
-                    //player.ROTATE_LEFT = false;
-                    //player.ROTATE_RIGHT = false;
-                }
-                player.chargeJump();
-                break;
-            }
-        }
-        break;
     case OF_KEY_PAGE_UP:
         if (clickState == "placing gravitators") {
             if (new_gravitator_type == "") {
@@ -785,7 +815,7 @@ void GameScreen::keyPressed(int key) {
         if (!player.CHARGING_JUMP) {player.ROTATE_RIGHT = true;}
         break;
     case 32:
-        if (!player.IS_DEAD) {
+        if (!player.KILL_PLAYER) {
             if (player.CAN_JETPACK && !player.TRAVERSE_MODE && !player.DEATH_ANIMATION) {
                 player.jetpack(true);
                 break;
@@ -829,29 +859,11 @@ void GameScreen::keyPressed(int key) {
 //--------------------------------------------------------------
 void GameScreen::keyReleased(int key) {
     switch (key) {
-    case OF_KEY_UP:
-        if (player.TRAVERSE_MODE) {
-            player.jump();
-            if (!ENABLE_EDITOR) {
-                exportLevel();
-            }
-            break;
-        } else {
-            player.CAN_JETPACK = true;
-            break;
-        }
     case 32:
-        if (player.TRAVERSE_MODE) {
-            player.jump();
-            if (!ENABLE_EDITOR) {
-                exportLevel();
-            }
-            break;
-        } else {
-            player.CAN_JETPACK = true;
-            player.CHARGING_JUMP = false;
-            break;
-        }
+        player.jump();
+        player.CAN_JETPACK = true;
+        player.CHARGING_JUMP = false;
+        break;
     case OF_KEY_LEFT:
         if (player.ROTATE_LEFT && !player.DEATH_ANIMATION) {
             player.anim = idle;

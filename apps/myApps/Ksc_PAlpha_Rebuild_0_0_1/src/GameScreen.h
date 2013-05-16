@@ -46,10 +46,7 @@ public:
         void windowResized(int w, int h);
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
-        bool isGameOver() const;
-        int getLevel() const;
-        void setLevel(int level_number);
-        void setGameOver(bool _gameOver);
+
         void exportSessionData();
         void exit();
 
@@ -59,12 +56,19 @@ public:
 		void reset();
 		void loadSound();
 		void drawGUI();
-		ofVec2f getLocalPosition(ofVec2f global_pos);
-		ofVec2f getGlobalPosition(ofVec2f local_pos);
 
         void exportLevel();
         void importLevel();
         void importLevel(int levelID);
+
+        /// Getters & Setters
+		ofVec2f getLocalPosition(ofVec2f global_pos);
+		ofVec2f getGlobalPosition(ofVec2f local_pos);
+        bool isGameOver() const;
+        int getLevel() const;
+        void setLevel(int level_number);
+        void setGameOver(bool _gameOver);
+        void setCameraLerpSpeed(int speed) { camera_lerp_speed = speed; }
 
         std::vector<Gravitator *> gravitator;
         std::vector<StrandedAstronaut *> strandedAstronaut;
@@ -83,8 +87,6 @@ public:
         ofxSpriteSheetRenderer * planetRenderer;
         ofxSpriteSheetRenderer * nautRenderer;
         bool CONTINUOUS_CAMERA;
-
-        //enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE};
 
         /// Level Editor
         string clickState;
@@ -118,6 +120,7 @@ private:
         void generateStars();
         void loadResources();
         void clearMetrics();
+        ofVec2f getPlayerDirection();
 
         int planet_base_m;
         int planet_mass_multiplier;
@@ -136,6 +139,7 @@ private:
         bool FREEZE_PLAYER;
         bool GAME_OVER;
         bool HIT_PAUSE;
+        bool SCREEN_SHAKE;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;
@@ -148,6 +152,7 @@ private:
         int iddqd;
 
         float camera_lerp_speed;
+        static const float camera_lerp_speed_init = 4;
         float view_scale;
         float view_scale_target;
         static const float default_view_scale = 1.0;
@@ -157,6 +162,9 @@ private:
         float level_over_timer;
         float hit_pause_timer;
         static const float hit_pause_timer_init = 0.4;
+        float screen_shake_timer;
+        static const float screen_shake_timer_init = 0.10;
+        static const float screen_shake_max = 150.0;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;

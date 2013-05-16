@@ -56,6 +56,7 @@ void Player::setup() {
     HAVE_ASTRONAUT          = false;
     KILL_PLAYER             = false;
     CHARGING_JUMP           = false;
+    CAN_SCREEN_SHAKE        = true;
 
     p1Renderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);               /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 64
 	p1Renderer->loadTexture("ART/playerSheet2.png", 384, GL_NEAREST);           /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
@@ -327,6 +328,7 @@ void Player::checkState() {
         if (jump_timer < 0) {
             LEAVING_PLANET = false;
             TRAVERSE_MODE = false;
+            CAN_SCREEN_SHAKE = true;
         }
     }
     if (HIT_GRAVITATOR && ORIENT_TO_PLANET) {
@@ -464,10 +466,16 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
                 if (gravitator_type == "planet") {
                     orientToPlanet(i);
                     gravitatorBounce();
+                    preCollisionVel = v;
                     v.set(0, 0);
                     f.set(0, 0);
                     USING_GRAVITY       = false;
                     TRAVERSE_MODE       = true;
+
+                    if (CAN_SCREEN_SHAKE) {
+                        setScreenShake(true);
+                        CAN_SCREEN_SHAKE = false;
+                    }
                 }
 
                 HIT_GRAVITATOR          = true;
@@ -589,17 +597,6 @@ void Player::rotateDirection(bool rotate_left) {
     }
 }
 
-inline ofQuaternion Player::AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v) {
-    float x = angular_v.x;
-    float y = angular_v.y;
-    float z = 0.0;
-    ofQuaternion q;
-    //spin.x 0.5 * ofQuaternion( 0, x, y, z ) * orientation;
-    q.set(0, x, y, z);
-    //return 0.5 * q * orientation;
-}
-
-
 void Player::chargeJump() {
     CHARGING_JUMP = true;
     if (jumpStrength == 0) {
@@ -621,7 +618,7 @@ void Player::jump() {
     }
 
     if (TRAVERSE_MODE) {
-        fxJump.setSpeed(ofRandom(0.9, 1.2));
+        fxJump.setSpeed(ofRandom(0.9, 1.1));
         fxJump.play();
         starting_pos = pos;
         f += jumpStrength;

@@ -152,7 +152,6 @@ public:
     void rotateDirection(bool rotate_left);
     void traversePlanet(bool move_left);
     void jetpack(bool JETPACK_FORWARD);
-    inline ofQuaternion AngularVelocityToSpin(ofQuaternion orientation, ofVec2f angular_v);
     void keyPressed(ofKeyEventArgs& args);
     void keyReleased(ofKeyEventArgs& args);
     void drawGUIOverlay(ofVec2f _pos, string text);
@@ -160,6 +159,11 @@ public:
     void displayMessage(ofVec2f _pos, string text, ofColor background_color, ofColor foreground_color);
     void soundPlayer(string sound);
     void loadSound();
+
+    /// Getters & Setters
+    bool getScreenShake() const { return SCREEN_SHAKE; }
+    void setScreenShake(bool _screenShake) { SCREEN_SHAKE = _screenShake; }
+    ofVec2f getPreCollisionVelocity() const { return preCollisionVel; }
 
     std::vector<Gravitator *> *gravitator;
     std::vector<StrandedAstronaut *> *strandedAstronaut;
@@ -183,9 +187,6 @@ public:
     float oxygen_depletion_speed;
     float camera_move_delay;
     int flame_rotation;
-//    float v_limit;
-//    float v_limit_in_gravity;
-//    float v_limit_in_space;
 
     bool CAN_JETPACK;
     bool TRAVERSE_MODE;
@@ -224,12 +225,16 @@ private:
     ofVec2f display_g;
     ofVec2f display_a;
     ofVec2f display_f;
+    ofVec2f preCollisionVel;
 
     float jump_strength_1;
     float jump_strength_2;
     float jump_strength_3;
     float jump_timer;
     float death_timer;
+
+    bool SCREEN_SHAKE;
+    bool CAN_SCREEN_SHAKE;
 };
 
 #endif // PLAYER_H
