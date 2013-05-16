@@ -39,7 +39,7 @@ void Player::setup() {
     f.set(0,0);
     v.set(0,0);
     dir.set(-1, 0);
-    pos.set(starting_pos);
+    //pos.set(starting_pos);
 
     IS_DEAD                 = false;
     HIT_GRAVITATOR          = false;

@@ -209,11 +209,9 @@ void GameScreen::getState() {
         importLevel(levelID);
         if (!GAME_OVER) {
             reset();
-            fadeIn.setActive(true);
-            FREEZE_PLAYER = false;
             generateStars();
         } else {
-            //PAUSE = true;
+
         }
     }
 }
@@ -270,7 +268,6 @@ void GameScreen::update() {
         }
     }
     camera();
-    fadeIn.pos.interpolate(camera_target, camera_lerp_speed * dt);
     renderSprites();
     player.camera_pos = camera_pos;
     player.camera_target = camera_target;
@@ -301,6 +298,9 @@ void GameScreen::camera() {
         CAMERA_SCALING = true;
     }
     camera_pos.interpolate(camera_target, camera_lerp_speed * dt);
+//    fadeIn.pos.interpolate(camera_target, camera_lerp_speed * dt);
+    fadeIn.pos.set(camera_pos);
+
 }
 
 void GameScreen::setCameraTarget(ofVec2f target) {
@@ -614,9 +614,8 @@ void GameScreen::drawLevelEditorGUI() {
 }
 
 void GameScreen::reset() {
-    importLevel(levelID);
     player.setup();
-    fadeIn.setup();
+    importLevel(levelID);
     level_over_timer = level_over_timer_start;
     FREEZE_PLAYER = false;
     GAME_OVER = false;
@@ -1027,6 +1026,8 @@ void GameScreen::exportLevel() {
 }
 
 void GameScreen::importLevel(int levelID) {
+    fadeIn.setup();
+    fadeIn.setActive(true);
     string levelName;
     if (ENABLE_EDITOR) {
         levelName = "data/levels/level_" + ofToString(levelID);
@@ -1069,6 +1070,8 @@ void GameScreen::importLevel(int levelID) {
         input >> player_start_x >> player_start_y;
         player.starting_pos.set(player_start_x, player_start_y);
         player.pos.set(player.starting_pos);
+        camera_pos.set(ofVec2f(player.pos.x - ofGetWidth()/2, player.pos.y - ofGetHeight()/2));
+        fadeIn.pos.set(ofVec2f(player.pos.x - ofGetWidth()/2, player.pos.y - ofGetHeight()/2));
         for(int i = 0; i < listSize; i++) {
             float x, y;
             int r, m, gR, size;
@@ -1118,8 +1121,6 @@ void GameScreen::importLevel(int levelID) {
         } else {
             LEVEL_HAS_ASTRONAUTS    = false;
         }
-        camera_pos.set(ofVec2f(player.pos.x - ofGetWidth()/2, player.pos.y - ofGetHeight()/2));
-        fadeIn.pos.set(ofVec2f(player.pos.x - ofGetWidth()/2, player.pos.y - ofGetHeight()/2));
         input.close();
     } else {
         levelState = "That level doesn't exist.";
