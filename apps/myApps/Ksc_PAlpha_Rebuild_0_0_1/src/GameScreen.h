@@ -121,6 +121,7 @@ private:
         void loadResources();
         void clearMetrics();
         ofVec2f getPlayerDirection();
+        bool checkAllAstronautsDead();
 
         int planet_base_m;
         int planet_mass_multiplier;

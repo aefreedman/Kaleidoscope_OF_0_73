@@ -53,6 +53,7 @@ public:
     bool CAN_TALK;
     bool CAN_HIT_ASTRONAUTS;
     bool RELEASED;
+    bool CHECKED_DEAD;
 
     string type;
     int id;

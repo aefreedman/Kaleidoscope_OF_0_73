@@ -125,10 +125,10 @@ void GameScreen::loadSound() {
     jupiterSound.setLoop(true);
     jupiterSound.setVolume(0.3);
     jupiterSound.play();
-    backgroundSound.loadSound("AUDIO/background.wav");
-    backgroundSound.setLoop(true);
-    backgroundSound.setVolume(0.25);
-    backgroundSound.play();
+//    backgroundSound.loadSound("AUDIO/background.wav");
+//    backgroundSound.setLoop(true);
+//    backgroundSound.setVolume(0.25);
+//    backgroundSound.play();
 }
 
 void GameScreen::getState() {
@@ -180,9 +180,11 @@ void GameScreen::getState() {
         }
     }
     if (LEVEL_HAS_ASTRONAUTS) {
-        if (strandedAstronaut.size() == 0) {
+        if (checkAllAstronautsDead()) {
             if (player.IS_DEAD) {
-                WON_LEVEL = true;
+                level_over_timer = countdownTimer(level_over_timer);
+                if (level_over_timer <= 0)
+                    WON_LEVEL = true;
             }
         } else if (player.IS_DEAD) {
             FREEZE_PLAYER = true;
@@ -216,6 +218,16 @@ void GameScreen::getState() {
     }
 }
 
+bool GameScreen::checkAllAstronautsDead() {
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        if (!strandedAstronaut[i]->IS_DEAD) {
+            return false;
+        } else if (i == strandedAstronaut.size()-1) {
+            return true;
+        }
+    }
+}
+
 void GameScreen::update() {
     astronautsFollowing = 0;
     getState();
@@ -239,12 +251,13 @@ void GameScreen::update() {
             gravitator[i]->update();
         }
         for (int i = 0; i < strandedAstronaut.size(); i++) {
-            if (strandedAstronaut[i]->FOLLOWING_PLAYER || strandedAstronaut[i]->FOLLOWING_ASTRONAUT) astronautsFollowing++;
+            if (strandedAstronaut[i]->FOLLOWING_PLAYER || strandedAstronaut[i]->FOLLOWING_ASTRONAUT)
 
+            astronautsFollowing++;
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
 
-            if (strandedAstronaut[i]->IS_DEAD) {
+            if (strandedAstronaut[i]->IS_DEAD && !strandedAstronaut[i]->CHECKED_DEAD) {
                 AN_ASTRONAUT_DIED = true;
                 HIT_PAUSE = true;
                 if (strandedAstronaut[i]->FOLLOWING_PLAYER) {
@@ -256,8 +269,9 @@ void GameScreen::update() {
                         strandedAstronaut[j]->THE_END = false;
                     }
                 }
-                delete strandedAstronaut[i];
-                strandedAstronaut.erase(strandedAstronaut.begin()+i);
+                strandedAstronaut[i]->CHECKED_DEAD = true;
+                //delete strandedAstronaut[i];
+                //strandedAstronaut.erase(strandedAstronaut.begin()+i);
             }
         }
         for (int i = 0; i < gui.size(); i++) {
@@ -331,7 +345,8 @@ void GameScreen::renderSprites() {
     nautRenderer->clear(); // clear the sheet
     for (int i=0; i<strandedAstronaut.size(); i++) {
         float scaleFactor = 1;
-        nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
+        if (!strandedAstronaut[i]->IS_DEAD)
+            nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
     nautRenderer->update(ofGetElapsedTimeMillis());
 }
