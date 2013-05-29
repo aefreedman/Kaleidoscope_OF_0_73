@@ -15,7 +15,7 @@ void testApp::setup() {
     /// YOU CAN CHANGE THESE
     ///------------------------------
     currentScreen                   = &menuScreen;
-    LOAD_WITH_SOUND                 = true;
+    LOAD_WITH_SOUND                 = false;
 
     ///------------------------------
     /// DON'T CHANGE THESE

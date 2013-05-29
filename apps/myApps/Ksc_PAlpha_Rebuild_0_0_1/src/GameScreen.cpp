@@ -25,6 +25,7 @@ void GameScreen::setup() {
     USING_LEVEL_EDITOR              = false;
     CAMERA_SCALING                  = false;
     WON_LEVEL                       = false;
+    LOST_LEVEL                      = false;
     MAP_VIEW                        = false;
     GAME_OVER                       = false;
     HIT_PAUSE                       = false;
@@ -197,7 +198,13 @@ void GameScreen::getState() {
                 metric_playerDeaths.push_back(ofVec4f(player.pos.x, player.pos.y, levelID, ofGetElapsedTimef()));
                 metric_playerDeaths_cause.push_back(player.gravitator_type);
                 //metric_playerJetpackUses.push_back
-                reset();
+                if (!LOST_LEVEL) {
+                    LOST_LEVEL = true;
+                    level_over_timer = lost_level_delay_time;
+                    astronautTarget = pickLivingAstronaut();
+                } else if (LOST_LEVEL) {
+                    reset();
+                }
             }
         }
     }
@@ -215,6 +222,9 @@ void GameScreen::getState() {
         } else {
 
         }
+    }
+    if (LOST_LEVEL) {
+        level_over_timer = countdownTimer(level_over_timer);
     }
 }
 
@@ -289,7 +299,13 @@ void GameScreen::update() {
 
 void GameScreen::camera() {
     if (!PAUSE) {
-        setCameraTarget(player.pos);
+        if (LOST_LEVEL) {
+            setCameraTarget(strandedAstronaut[astronautTarget]->pos);
+            setCameraViewScaleTarget(4.0);
+        } else {
+            setCameraViewScaleTarget(1.0);
+            setCameraTarget(player.pos);
+        }
         if (SCREEN_SHAKE) {
             setCameraLerpSpeed(2);
             ofVec2f direction;
@@ -313,6 +329,18 @@ void GameScreen::camera() {
     fadeIn.pos.set(camera_pos);
     player.camera_pos = camera_pos;
     player.camera_target = camera_target;
+}
+
+int GameScreen::pickLivingAstronaut() {
+    std::vector<int> livingAstronauts;
+    int randomLivingAstronaut;
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        if (!strandedAstronaut[i]->IS_DEAD) {
+            livingAstronauts.push_back(i);
+        }
+    }
+    randomLivingAstronaut = livingAstronauts[ofRandom(0, livingAstronauts.size())];
+    return randomLivingAstronaut;
 }
 
 void GameScreen::setCameraTarget(ofVec2f target) {
@@ -630,6 +658,7 @@ void GameScreen::reset() {
     player.setup();
     importLevel(levelID);
     level_over_timer = level_over_timer_start;
+    LOST_LEVEL = false;
     FREEZE_PLAYER = false;
     GAME_OVER = false;
     HIT_PAUSE = false;
