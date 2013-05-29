@@ -59,6 +59,7 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     THE_END                     = false;
     CAN_HIT_ASTRONAUTS          = false;
     RELEASED                    = false;
+    CHECKED_DEAD                = false;
 
     type = "strandedastronaut";
     anim = floating;
@@ -229,17 +230,20 @@ string StrandedAstronaut::pickMessage(int messageNumber) {
 }
 
 void StrandedAstronaut::draw() {
-    if (FOLLOWING_PLAYER || FOLLOWING_ASTRONAUT) {
-        ofPushMatrix();
-        ofNoFill();
-        ofSetColor(240, 206, 103, 200);
-        int d = 4;
-        int offset = 2;
-        ofBezier(player_pos.x, player_pos.y, player_pos.x, player_pos.y, pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
-        ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
-        ofPopMatrix();
+    if (!IS_DEAD) {
+        if (FOLLOWING_PLAYER || FOLLOWING_ASTRONAUT) {
+            ofPushMatrix();
+            ofNoFill();
+            ofSetColor(240, 206, 103, 200);
+            int d = 4;
+            int offset = 2;
+            ofBezier(player_pos.x, player_pos.y, player_pos.x, player_pos.y, pos.x + (v.x / d), pos.y + (v.y / d), pos.x, pos.y);
+            ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
+            ofPopMatrix();
+        }
+        dialogueBubble->draw();
     }
-    dialogueBubble->draw();
+
 }
 
 void StrandedAstronaut::detectGravitatorCollisions() {

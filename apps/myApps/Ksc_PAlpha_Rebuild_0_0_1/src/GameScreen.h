@@ -69,6 +69,8 @@ public:
         void setLevel(int level_number);
         void setGameOver(bool _gameOver);
         void setCameraLerpSpeed(int speed) { camera_lerp_speed = speed; }
+        void setCameraViewScaleTarget(float scale) { view_scale_target = scale; }
+        float getCameraViewScale() const { return view_scale; }
 
         std::vector<Gravitator *> gravitator;
         std::vector<StrandedAstronaut *> strandedAstronaut;
@@ -122,6 +124,8 @@ private:
         void loadResources();
         void clearMetrics();
         ofVec2f getPlayerDirection();
+        bool checkAllAstronautsDead();
+        int pickLivingAstronaut();
 
         int planet_base_m;
         int planet_mass_multiplier;
@@ -141,6 +145,7 @@ private:
         bool GAME_OVER;
         bool HIT_PAUSE;
         bool SCREEN_SHAKE;
+        bool LOST_LEVEL;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;
@@ -166,6 +171,8 @@ private:
         float screen_shake_timer;
         static const float screen_shake_timer_init = 0.10;
         static const float screen_shake_max = 150.0;
+        static const float lost_level_delay_time = 5.0;
+        int astronautTarget;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;

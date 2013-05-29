@@ -25,6 +25,7 @@ void GameScreen::setup() {
     USING_LEVEL_EDITOR              = false;
     CAMERA_SCALING                  = false;
     WON_LEVEL                       = false;
+    LOST_LEVEL                      = false;
     MAP_VIEW                        = false;
     GAME_OVER                       = false;
     HIT_PAUSE                       = false;
@@ -125,10 +126,10 @@ void GameScreen::loadSound() {
     jupiterSound.setLoop(true);
     jupiterSound.setVolume(0.3);
     jupiterSound.play();
-    backgroundSound.loadSound("AUDIO/background.wav");
-    backgroundSound.setLoop(true);
-    backgroundSound.setVolume(0.25);
-    backgroundSound.play();
+//    backgroundSound.loadSound("AUDIO/background.wav");
+//    backgroundSound.setLoop(true);
+//    backgroundSound.setVolume(0.25);
+//    backgroundSound.play();
 }
 
 void GameScreen::getState() {
@@ -180,9 +181,11 @@ void GameScreen::getState() {
         }
     }
     if (LEVEL_HAS_ASTRONAUTS) {
-        if (strandedAstronaut.size() == 0) {
+        if (checkAllAstronautsDead()) {
             if (player.IS_DEAD) {
-                WON_LEVEL = true;
+                level_over_timer = countdownTimer(level_over_timer);
+                if (level_over_timer <= 0)
+                    WON_LEVEL = true;
             }
         } else if (player.IS_DEAD) {
             FREEZE_PLAYER = true;
@@ -195,7 +198,13 @@ void GameScreen::getState() {
                 metric_playerDeaths.push_back(ofVec4f(player.pos.x, player.pos.y, levelID, ofGetElapsedTimef()));
                 metric_playerDeaths_cause.push_back(player.gravitator_type);
                 //metric_playerJetpackUses.push_back
-                reset();
+                if (!LOST_LEVEL) {
+                    LOST_LEVEL = true;
+                    level_over_timer = lost_level_delay_time;
+                    astronautTarget = pickLivingAstronaut();
+                } else if (LOST_LEVEL) {
+                    reset();
+                }
             }
         }
     }
@@ -212,6 +221,19 @@ void GameScreen::getState() {
             generateStars();
         } else {
 
+        }
+    }
+    if (LOST_LEVEL) {
+        level_over_timer = countdownTimer(level_over_timer);
+    }
+}
+
+bool GameScreen::checkAllAstronautsDead() {
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        if (!strandedAstronaut[i]->IS_DEAD) {
+            return false;
+        } else if (i == strandedAstronaut.size()-1) {
+            return true;
         }
     }
 }
@@ -239,12 +261,13 @@ void GameScreen::update() {
             gravitator[i]->update();
         }
         for (int i = 0; i < strandedAstronaut.size(); i++) {
-            if (strandedAstronaut[i]->FOLLOWING_PLAYER || strandedAstronaut[i]->FOLLOWING_ASTRONAUT) astronautsFollowing++;
+            if (strandedAstronaut[i]->FOLLOWING_PLAYER || strandedAstronaut[i]->FOLLOWING_ASTRONAUT)
 
+            astronautsFollowing++;
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
 
-            if (strandedAstronaut[i]->IS_DEAD) {
+            if (strandedAstronaut[i]->IS_DEAD && !strandedAstronaut[i]->CHECKED_DEAD) {
                 ghosts.push_back(new Ghost(strandedAstronaut[i]->pos));
                 AN_ASTRONAUT_DIED = true;
                 HIT_PAUSE = true;
@@ -257,8 +280,9 @@ void GameScreen::update() {
                         strandedAstronaut[j]->THE_END = false;
                     }
                 }
-                delete strandedAstronaut[i];
-                strandedAstronaut.erase(strandedAstronaut.begin()+i);
+                strandedAstronaut[i]->CHECKED_DEAD = true;
+                //delete strandedAstronaut[i];
+                //strandedAstronaut.erase(strandedAstronaut.begin()+i);
             }
         }
         for (int i = 0; i < gui.size(); i++) {
@@ -281,7 +305,13 @@ void GameScreen::update() {
 
 void GameScreen::camera() {
     if (!PAUSE) {
-        setCameraTarget(player.pos);
+        if (LOST_LEVEL) {
+            setCameraTarget(strandedAstronaut[astronautTarget]->pos);
+            setCameraViewScaleTarget(4.0);
+        } else {
+            setCameraViewScaleTarget(1.0);
+            setCameraTarget(player.pos);
+        }
         if (SCREEN_SHAKE) {
             setCameraLerpSpeed(2);
             ofVec2f direction;
@@ -305,6 +335,18 @@ void GameScreen::camera() {
     fadeIn.pos.set(camera_pos);
     player.camera_pos = camera_pos;
     player.camera_target = camera_target;
+}
+
+int GameScreen::pickLivingAstronaut() {
+    std::vector<int> livingAstronauts;
+    int randomLivingAstronaut;
+    for (int i = 0; i < strandedAstronaut.size(); i++) {
+        if (!strandedAstronaut[i]->IS_DEAD) {
+            livingAstronauts.push_back(i);
+        }
+    }
+    randomLivingAstronaut = livingAstronauts[ofRandom(0, livingAstronauts.size())];
+    return randomLivingAstronaut;
 }
 
 void GameScreen::setCameraTarget(ofVec2f target) {
@@ -341,7 +383,8 @@ void GameScreen::renderSprites() {
         nautRenderer->addCenteredTile(&strandedAstronaut[i]->flameAnim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
         }
 
-        nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
+        if (!strandedAstronaut[i]->IS_DEAD)
+            nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
     }
     for (int i = 0; i<ghosts.size();i++){
         float scaleFactor = 2;
@@ -630,6 +673,7 @@ void GameScreen::reset() {
     player.setup();
     importLevel(levelID);
     level_over_timer = level_over_timer_start;
+    LOST_LEVEL = false;
     FREEZE_PLAYER = false;
     GAME_OVER = false;
     HIT_PAUSE = false;
