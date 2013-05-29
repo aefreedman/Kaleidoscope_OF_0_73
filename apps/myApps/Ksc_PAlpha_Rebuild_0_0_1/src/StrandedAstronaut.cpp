@@ -53,13 +53,16 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
     USING_GRAVITY               = true;
     CAN_TALK                    = true;
     DRAW_MESSAGE                = false;
+    DYING                       = false;
     IS_DEAD                     = false;
+    GHOSTLY                     = false;
     THE_END                     = false;
     CAN_HIT_ASTRONAUTS          = false;
     RELEASED                    = false;
 
     type = "strandedastronaut";
     anim = floating;
+    flameAnim = nautFire;
 
 	ofEnableAlphaBlending();
 	setName(_name);
@@ -102,6 +105,11 @@ void StrandedAstronaut::update() {
         displayMessage();
     }
     dialogueBubble->update();
+
+    if (anim.index == 14 && anim.frame >= 11){
+        IS_DEAD = true;
+        DYING = false;
+    }
 }
 
 void StrandedAstronaut::move() {
@@ -260,8 +268,9 @@ void StrandedAstronaut::detectGravitatorCollisions() {
                     pos.y = (sin(theta) * (planet_r + r)) + planet_pos.y;
                 }
             }
-            if (gravitator_type == "sun" || gravitator_type == "comet") {
-                IS_DEAD = true;
+            if ((gravitator_type == "sun" || gravitator_type == "comet") && DYING == false) {
+                DYING = true;
+                anim = nautDeath;
             }
             if (gravitator_type == "blackhole") {
 

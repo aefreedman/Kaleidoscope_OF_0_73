@@ -72,6 +72,7 @@ public:
 
         std::vector<Gravitator *> gravitator;
         std::vector<StrandedAstronaut *> strandedAstronaut;
+        std::vector<Ghost *> ghosts;
         std::vector<GUI *> gui;
         int astronautsFollowing;
         Player player;
