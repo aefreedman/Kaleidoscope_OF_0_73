@@ -16,7 +16,7 @@ Ghost::Ghost(ofVec2f _pos){
 
 void Ghost::setup(){
     dir.set(0,-1);
-    v = dir * 2;
+    v = dir * ofRandom(1,2);
 
     anim = ghost;
 

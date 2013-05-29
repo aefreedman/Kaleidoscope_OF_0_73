@@ -267,7 +267,7 @@ void GameScreen::update() {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
 
-            if (strandedAstronaut[i]->IS_DEAD && !strandedAstronaut[i]->CHECKED_DEAD) {
+            if (strandedAstronaut[i]->DYING && !strandedAstronaut[i]->CHECKED_DEAD) {
                 ghosts.push_back(new Ghost(strandedAstronaut[i]->pos));
                 AN_ASTRONAUT_DIED = true;
                 HIT_PAUSE = true;
@@ -389,7 +389,6 @@ void GameScreen::renderSprites() {
     for (int i = 0; i<ghosts.size();i++){
         float scaleFactor = 2;
         nautRenderer->addCenteredTile(&ghosts[i]->anim,ghosts[i]->pos.x,ghosts[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,ghosts[i]->opacity);
-        cout << "ADDING GHOST \n";
     }
     nautRenderer->update(ofGetElapsedTimeMillis());
 }
