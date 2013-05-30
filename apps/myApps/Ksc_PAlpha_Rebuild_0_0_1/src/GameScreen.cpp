@@ -303,7 +303,6 @@ void GameScreen::update() {
     renderSprites();
 }
 
-
 void GameScreen::camera() {
     if (!PAUSE) {
         if (LOST_LEVEL) {
