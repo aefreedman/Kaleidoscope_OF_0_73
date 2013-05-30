@@ -340,6 +340,9 @@ int GameScreen::pickLivingAstronaut() {
         }
     }
     randomLivingAstronaut = livingAstronauts[ofRandom(0, livingAstronauts.size())];
+    strandedAstronaut[randomLivingAstronaut]->setName(StrandedAstronaut::LEFT_BEHIND);
+    strandedAstronaut[randomLivingAstronaut]->loadMessages();
+    strandedAstronaut[randomLivingAstronaut]->displayMessage();
     return randomLivingAstronaut;
 }
 
@@ -509,13 +512,18 @@ void GameScreen::draw() {
             gui[i]->draw();
         }
         for (int i = 0; i < strandedAstronaut.size(); i++) {
-            strandedAstronaut[i]->draw();
+            strandedAstronaut[i]->draw(view_scale);
         }
-        player.draw();
+        player.draw(view_scale);
         nautRenderer -> draw();
 
-        fadeIn.draw();
         ofPopMatrix();
+    ofPopMatrix();
+
+    ofPushMatrix();
+    ofSetColor(255);
+    ofTranslate(-camera_pos);
+    fadeIn.draw();
     ofPopMatrix();
 
     /// LAYER 3 -- GUI (!CAMERA && !ZOOM)

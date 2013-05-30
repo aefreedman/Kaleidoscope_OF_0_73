@@ -183,7 +183,7 @@ void Player::move() {
     }
 }
 
-void Player::draw() {
+void Player::draw(float scale) {
     if (DEBUG_GUI) {
         drawDebugGUI();
     }

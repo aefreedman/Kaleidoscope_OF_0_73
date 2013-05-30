@@ -20,14 +20,14 @@ static animation_t floating =
 
 class StrandedAstronaut : public Astronaut {
 public:
-    enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE};
+    enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE, LEFT_BEHIND, COMMON};
 
     StrandedAstronaut();
     StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravitator *> *gravitator, std::vector<StrandedAstronaut *> *strandedAstronaut);
 
     virtual ~StrandedAstronaut();
     void update();
-    void draw();
+    void draw(float scale);
     void move();
     void checkState();
     void bounce(int other);
@@ -46,6 +46,8 @@ public:
     void detectPlayerCollisions();
     void followPlayer(ofVec2f _player_pos);
     void getPlayerData(ofVec2f _other_pos, ofVec2f _other_v);
+    void setName(name _name) { thisAstronautIs = _name; };
+    void loadMessages();
 
     bool FOLLOWING_PLAYER;
     bool FOLLOWING_ASTRONAUT;
@@ -72,10 +74,6 @@ public:
 protected:
 
 private:
-    void setName(name _name);
-
-    void loadMessages();
-
     int message_display_chance;
     int message_dieroll;
     float message_timer;

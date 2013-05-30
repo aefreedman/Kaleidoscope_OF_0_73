@@ -11,7 +11,7 @@ public:
     Message(ofVec2f _pos, string _message, ofColor _background, ofColor _foreground);
     virtual ~Message();
     void update();
-    void draw();
+    void draw(float scale);
     void changeMessage(string _message);
 protected:
 private:

@@ -55,7 +55,7 @@ void Message::changeMessage(string _message) {
     ACTIVE = true;
 }
 
-void Message::draw() {
+void Message::draw(float scale) {
 
     ofSetMinMagFilters(GL_NEAREST, GL_NEAREST);
     if (ACTIVE) {
@@ -100,7 +100,10 @@ void Message::draw() {
         tail.draw(pos.x + 2, pos.y + lines*8 - 16);
         ofSetColor(175,247,236);
         //ofDrawBitmapStringHighlight(message, pos, background, foreground);
-        ofDrawBitmapString(message,pos);
+            ofPushMatrix();
+                ofScale(scale, scale, 1);
+                ofDrawBitmapString(message,pos / scale);
+            ofPopMatrix();
         ofPopMatrix();
     }
 }

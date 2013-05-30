@@ -135,7 +135,7 @@ public:
 
     void setup();
     void update();
-    void draw();
+    void draw(float scale);
     void drawDebugGUI();
     void move();
     void jump();

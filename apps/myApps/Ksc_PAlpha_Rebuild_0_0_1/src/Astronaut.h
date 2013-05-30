@@ -19,7 +19,7 @@ public:
     virtual ~Astronaut();
 
     virtual void update() = 0;
-    virtual void draw() = 0;
+    virtual void draw(float scale) = 0;
     virtual void move() = 0;
     virtual void detectGravitatorCollisions();
     virtual void collisionData(int collision);

@@ -71,16 +71,20 @@ StrandedAstronaut::StrandedAstronaut(ofVec2f _pos, name _name, std::vector<Gravi
 StrandedAstronaut::~StrandedAstronaut() {
 }
 
-void StrandedAstronaut::setName(name _name) {
-    thisAstronautIs = _name;
-}
-
 void StrandedAstronaut::loadMessages() {
     ofxXmlSettings dialogue;
+    message.clear();
     if (dialogue.loadFile("data/messages/dialogue.xml")) {
         dialogue.pushTag("dialogue");
             dialogue.pushTag("ENUM_" + ofToString(thisAstronautIs));
                 int numberOfMessages = dialogue.getNumTags("message");
+                for (int i = 0; i < numberOfMessages; i++) {
+                    string m = dialogue.getValue("message", "", i);
+                    message.push_back(m);
+                }
+            dialogue.popTag();
+            dialogue.pushTag("ENUM_5");
+                numberOfMessages = dialogue.getNumTags("message");
                 for (int i = 0; i < numberOfMessages; i++) {
                     string m = dialogue.getValue("message", "", i);
                     message.push_back(m);
@@ -221,7 +225,8 @@ string StrandedAstronaut::pickMessage(int messageNumber) {
     return m;
 }
 
-void StrandedAstronaut::draw() {
+void StrandedAstronaut::draw(float scale) {
+    //ofScale(scale, scale, 1);
     if (!IS_DEAD) {
         if (FOLLOWING_PLAYER || FOLLOWING_ASTRONAUT) {
             ofPushMatrix();
@@ -233,7 +238,7 @@ void StrandedAstronaut::draw() {
             ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
             ofPopMatrix();
         }
-        dialogueBubble->draw();
+        dialogueBubble->draw(scale);
     }
 
 }
