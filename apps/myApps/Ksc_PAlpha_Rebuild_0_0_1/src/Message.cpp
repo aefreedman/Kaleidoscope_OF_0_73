@@ -24,7 +24,7 @@ Message::Message(ofVec2f _pos, string _message) : GUI(_pos) {
     center.loadImage("ART/message/C.png");
     tail.loadImage ("ART/message/tail.png");
 
-
+    font.loadFont("fonts/pixelmix.ttf",8);
 }
 
 Message::Message(ofVec2f _pos, string _message, ofColor _background, ofColor _foreground) : GUI(_pos) {
@@ -100,10 +100,8 @@ void Message::draw(float scale) {
         tail.draw(pos.x + 2, pos.y + lines*8 - 16);
         ofSetColor(175,247,236);
         //ofDrawBitmapStringHighlight(message, pos, background, foreground);
-            ofPushMatrix();
-                ofScale(scale, scale, 1);
-                ofDrawBitmapString(message,pos / scale);
-            ofPopMatrix();
+        //ofDrawBitmapString(message,pos);
+        font.drawString(message,pos.x,pos.y);
         ofPopMatrix();
     }
 }

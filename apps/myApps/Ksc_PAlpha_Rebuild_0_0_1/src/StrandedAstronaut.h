@@ -1,6 +1,7 @@
 #ifndef STRANDEDASTRONAUT_H
 #define STRANDEDASTRONAUT_H
 #include "Astronaut.h"
+#include "Ghost.h"
 #include "Shell.h"
 #include "ofxXmlSettings.h"
 #include <vector>
@@ -17,7 +18,30 @@ static animation_t floating =
 	-1,	/* .finalindex		(int) - the index of the final tile to draw when the animation finishes. -1 is the default so total_frames-1 will be the last frame.				*/
 	1	/* .frameskip		(int) - the incrementation of each frame. 1 should be set by default. If you wanted the animation to play backwards you could set this to -1, etc.	*/
 };
-
+static animation_t nautDeath =
+{	14,	/* .index			(int) - this is the index of the first animation frame. indicies start at 0 and go left to right, top to bottom by tileWidth on the spriteSheet		*/
+	0,	/* .frame			(int) - this is the current frame. It's an internal variable and should always be set to 0 at init													*/
+	12,	/* .totalframes		(int) - the animation length in frames																												*/
+	1,	/* .width			(int) - the width of each animation frame in tiles																									*/
+	1,	/* .height			(int) - the height of each animation frame in tiles																									*/
+	75,	/* .frameduration	(unsigned int) - how many milliseconds each frame should be on screen. Less = faster																*/
+	0,	/* .nexttick		(unsigned int) - the next time the frame should change. based on frame duration. This is an internal variable and should always be set to 0 at init	*/
+	1,	/* .loops			(int) - the number of loops to run. -1 equals infinite. This can be adjusted at runtime to pause animations, etc.									*/
+	-1,	/* .finalindex		(int) - the index of the final tile to draw when the animation finishes. -1 is the default so total_frames-1 will be the last frame.				*/
+	1	/* .frameskip		(int) - the incrementation of each frame. 1 should be set by default. If you wanted the animation to play backwards you could set this to -1, etc.	*/
+};
+static animation_t nautFire =
+{	28,	/* .index			(int) - this is the index of the first animation frame. indicies start at 0 and go left to right, top to bottom by tileWidth on the spriteSheet		*/
+	0,	/* .frame			(int) - this is the current frame. It's an internal variable and should always be set to 0 at init													*/
+	12,	/* .totalframes		(int) - the animation length in frames																												*/
+	1,	/* .width			(int) - the width of each animation frame in tiles																									*/
+	1,	/* .height			(int) - the height of each animation frame in tiles																									*/
+	75,	/* .frameduration	(unsigned int) - how many milliseconds each frame should be on screen. Less = faster																*/
+	0,	/* .nexttick		(unsigned int) - the next time the frame should change. based on frame duration. This is an internal variable and should always be set to 0 at init	*/
+	1,	/* .loops			(int) - the number of loops to run. -1 equals infinite. This can be adjusted at runtime to pause animations, etc.									*/
+	-1,	/* .finalindex		(int) - the index of the final tile to draw when the animation finishes. -1 is the default so total_frames-1 will be the last frame.				*/
+	1	/* .frameskip		(int) - the incrementation of each frame. 1 should be set by default. If you wanted the animation to play backwards you could set this to -1, etc.	*/
+};
 class StrandedAstronaut : public Astronaut {
 public:
     enum name {UNNAMED, TUTORIAL_ONE, TUTORIAL_TWO, TUTORIAL_THREE, LEFT_BEHIND, COMMON};
@@ -52,6 +76,8 @@ public:
     bool FOLLOWING_PLAYER;
     bool FOLLOWING_ASTRONAUT;
     bool THE_END;
+    bool DYING;
+    bool GHOSTLY;
     bool CAN_TALK;
     bool CAN_HIT_ASTRONAUTS;
     bool RELEASED;
@@ -69,6 +95,8 @@ public:
     int spring_spacing;
     int released_spacing;
     int no_spacing;
+
+    animation_t flameAnim;
 
     name thisAstronautIs;
 protected:

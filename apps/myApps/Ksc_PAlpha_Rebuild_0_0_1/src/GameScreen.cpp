@@ -72,8 +72,8 @@ void GameScreen::setup() {
     planetRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 128); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
     planetRenderer->loadTexture("ART/planets.png", 512, GL_NEAREST); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
-    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 64);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
-    nautRenderer->loadTexture("ART/nauts.png", 512, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    nautRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 32);             /// declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 32
+    nautRenderer->loadTexture("ART/nauts2.png", 448, GL_NEAREST);                /// load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
 
     ofEnableAlphaBlending(); // turn on alpha blending. important!
 
@@ -267,7 +267,9 @@ void GameScreen::update() {
             strandedAstronaut[i]->id = i;
             strandedAstronaut[i]->update();
 
-            if (strandedAstronaut[i]->IS_DEAD && !strandedAstronaut[i]->CHECKED_DEAD) {
+            if (strandedAstronaut[i]->DYING && !strandedAstronaut[i]->CHECKED_DEAD) {
+                ghosts.push_back(new Ghost(strandedAstronaut[i]->pos));
+                strandedAstronaut[i]->v.set(0,0);
                 AN_ASTRONAUT_DIED = true;
                 HIT_PAUSE = true;
                 if (strandedAstronaut[i]->FOLLOWING_PLAYER) {
@@ -290,6 +292,11 @@ void GameScreen::update() {
                 gui[i]->pos.interpolate(player.pos, 10 * dt);
             }
         }
+
+        for(int i = 0; i < ghosts.size(); i++){
+            ghosts[i]->update();
+        }
+
     camera();
 
     }
@@ -301,7 +308,7 @@ void GameScreen::camera() {
     if (!PAUSE) {
         if (LOST_LEVEL) {
             setCameraTarget(strandedAstronaut[astronautTarget]->pos);
-            setCameraViewScaleTarget(4.0);
+            setCameraViewScaleTarget(3.0);
         } else {
             setCameraViewScaleTarget(1.0);
             setCameraTarget(player.pos);
@@ -375,9 +382,17 @@ void GameScreen::renderSprites() {
     planetRenderer->update(ofGetElapsedTimeMillis());
     nautRenderer->clear(); // clear the sheet
     for (int i=0; i<strandedAstronaut.size(); i++) {
-        float scaleFactor = 1;
+        float scaleFactor = 2;
+        if (strandedAstronaut[i]->DYING){
+        nautRenderer->addCenteredTile(&strandedAstronaut[i]->flameAnim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
+        }
+
         if (!strandedAstronaut[i]->IS_DEAD)
             nautRenderer->addCenteredTile(&strandedAstronaut[i]->anim,strandedAstronaut[i]->pos.x,strandedAstronaut[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,255);
+    }
+    for (int i = 0; i<ghosts.size();i++){
+        float scaleFactor = 2;
+        nautRenderer->addCenteredTile(&ghosts[i]->anim,ghosts[i]->pos.x,ghosts[i]->pos.y,-1,F_NONE,scaleFactor,255,255,255,ghosts[i]->opacity);
     }
     nautRenderer->update(ofGetElapsedTimeMillis());
 }

@@ -471,6 +471,7 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
                     f.set(0, 0);
                     USING_GRAVITY       = false;
                     TRAVERSE_MODE       = true;
+                    anim = land;
 
                     if (CAN_SCREEN_SHAKE) {
                         setScreenShake(true);

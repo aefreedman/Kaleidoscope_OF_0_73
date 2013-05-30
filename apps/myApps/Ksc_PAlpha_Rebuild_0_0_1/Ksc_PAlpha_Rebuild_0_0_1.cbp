@@ -237,6 +237,12 @@
 		<Unit filename="src\GameScreen.h">
 			<Option virtualFolder="src\SCREENS\" />
 		</Unit>
+		<Unit filename="src\Ghost.cpp">
+			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
+		<Unit filename="src\Ghost.h">
+			<Option virtualFolder="src\ASTRONAUT\" />
+		</Unit>
 		<Unit filename="src\Gravitator.cpp">
 			<Option virtualFolder="src\GRAVITATOR\" />
 		</Unit>
