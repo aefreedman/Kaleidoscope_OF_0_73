@@ -269,6 +269,7 @@ void GameScreen::update() {
 
             if (strandedAstronaut[i]->DYING && !strandedAstronaut[i]->CHECKED_DEAD) {
                 ghosts.push_back(new Ghost(strandedAstronaut[i]->pos));
+                strandedAstronaut[i]->v.set(0,0);
                 AN_ASTRONAUT_DIED = true;
                 HIT_PAUSE = true;
                 if (strandedAstronaut[i]->FOLLOWING_PLAYER) {

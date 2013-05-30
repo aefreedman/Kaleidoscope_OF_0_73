@@ -18,6 +18,7 @@ private:
     string message;
     float message_life;
     float timer;
+    ofTrueTypeFont font;
     ofColor background;
     ofColor foreground;
 
