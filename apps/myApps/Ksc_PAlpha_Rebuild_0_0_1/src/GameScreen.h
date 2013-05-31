@@ -126,6 +126,7 @@ private:
         ofVec2f getPlayerDirection();
         bool checkAllAstronautsDead();
         int pickLivingAstronaut();
+        int pickGhost();
 
         int planet_base_m;
         int planet_mass_multiplier;
@@ -146,6 +147,7 @@ private:
         bool HIT_PAUSE;
         bool SCREEN_SHAKE;
         bool LOST_LEVEL;
+        bool ALL_DEAD;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;
@@ -173,6 +175,7 @@ private:
         static const float screen_shake_max = 150.0;
         static const float lost_level_delay_time = 5.0;
         int astronautTarget;
+        int ghostTarget;
 
         ofVec3f topRightCorner;
         ofVec3f bottomRightCorner;

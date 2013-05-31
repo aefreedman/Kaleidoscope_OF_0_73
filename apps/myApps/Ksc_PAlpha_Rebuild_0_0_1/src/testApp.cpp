@@ -110,9 +110,11 @@ void testApp::keyPressed(int key) {
         }
         break;
     case OF_KEY_F1:
-        gameScreen.ENABLE_EDITOR = true;
-        currentScreen = &gameScreen;
-        menuScreen.fxEngineLoop.stop();
+        if (currentScreen == &menuScreen) {
+            gameScreen.ENABLE_EDITOR = true;
+            currentScreen = &gameScreen;
+            menuScreen.fxEngineLoop.stop();
+        }
         break;
     }
 }
