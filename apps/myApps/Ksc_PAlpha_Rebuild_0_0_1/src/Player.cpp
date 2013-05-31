@@ -113,6 +113,8 @@ void Player::loadSound() {
     fxJetpackLoop.loadSound("AUDIO/ksc_AUDIO_player_jetloop_002.wav");
     fxJetpackLoop.setLoop(true);
 
+    fxLand.loadSound("AUDIO/ksc_AUDIO_player_landing_002.wav");
+
     int random = ofRandom (1, 4);
     if (random == 1) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_001.wav");}
     if (random == 2) {    fxJump.loadSound("AUDIO/ksc_AUDIO_player_jump_002.wav");}
@@ -476,6 +478,13 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
                     if (CAN_SCREEN_SHAKE) {
                         setScreenShake(true);
                         CAN_SCREEN_SHAKE = false;
+
+                        float v_length = preCollisionVel.lengthSquared() / 200;
+                        float v_percent = v_length / v_limit;
+                        float vol = fmin(fmax(v_percent, 0.1), 1.0);
+
+                        fxLand.setVolume(vol);
+                        fxLand.play();
                     }
                 }
 

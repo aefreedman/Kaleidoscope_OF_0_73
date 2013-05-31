@@ -225,6 +225,7 @@ public:
     ofSoundPlayer fxJetpackLoop;
     ofSoundPlayer fxAstronautCollect;
     ofSoundPlayer fxAstronautRelease;
+    ofSoundPlayer fxLand;
     //vector <ofSoundPlayer> fxJump;
     ofSoundPlayer fxJump;
     ofSoundPlayer fxRotate;
