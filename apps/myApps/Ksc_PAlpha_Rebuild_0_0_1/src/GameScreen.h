@@ -127,6 +127,8 @@ private:
         bool checkAllAstronautsDead();
         int pickLivingAstronaut();
         int pickGhost();
+        void drawLevelName();
+        void activateLevelName() { LEVEL_NAME_ACTIVE = true; };
 
         int planet_base_m;
         int planet_mass_multiplier;
@@ -148,11 +150,14 @@ private:
         bool SCREEN_SHAKE;
         bool LOST_LEVEL;
         bool ALL_DEAD;
+        bool LEVEL_NAME_ACTIVE;
 
         ofSoundPlayer jupiterSound;
         ofSoundPlayer backgroundSound;
 
         ofVec2f player_start_pos;
+
+        std::vector<string> levelName;
 
         std::vector<ofVec4f> stars;
         std::vector<ofVec4f> stars_dark;
@@ -174,6 +179,8 @@ private:
         static const float screen_shake_timer_init = 0.10;
         static const float screen_shake_max = 150.0;
         static const float lost_level_delay_time = 5.0;
+        static const float level_name_active_time_init = 5.0;
+        float level_name_active_time;
         int astronautTarget;
         int ghostTarget;
 

@@ -31,6 +31,8 @@ void GameScreen::setup() {
     GAME_OVER                       = false;
     HIT_PAUSE                       = false;
     SCREEN_SHAKE                    = false;
+    LEVEL_NAME_ACTIVE               = true;
+    level_name_active_time          = level_name_active_time_init;
     view_scale                      = 1;
     view_scale_target               = 1;
     background.loadImage("ART/bg.png");
@@ -84,6 +86,8 @@ void GameScreen::setup() {
     O2bar.loadImage("ART/O2_bar.png");
     text.loadFont("fonts/pixelmix.ttf",12);
 
+    loadResources();
+
 }
 
 void GameScreen::generateStars() {
@@ -120,7 +124,22 @@ void GameScreen::generateStars() {
     }
 }
 
-void GameScreen::loadResources() {}
+void GameScreen::loadResources() {
+    ofxXmlSettings levelNames;
+    levelName.clear();
+    if (levelNames.loadFile("data/messages/levelNames.xml")) {
+        levelNames.pushTag("names");
+            int numberOfNames = levelNames.getNumTags("name");
+            for (int i = 0; i < numberOfNames; i++) {
+                string m = levelNames.getValue("name", "", i);
+                levelName.push_back(m);
+            }
+        levelNames.popTag();
+    }
+    else {
+        ofLogError("Name file did not load!");
+    }
+}
 
 void GameScreen::loadSound() {
     jupiterSound.loadSound("AUDIO/ksc_AUDIO_background_music_001.mp3");
@@ -219,6 +238,7 @@ void GameScreen::getState() {
     if (WON_LEVEL) {
         levelID++;
         importLevel(levelID);
+        activateLevelName();
         if (!GAME_OVER) {
             reset();
             generateStars();
@@ -442,6 +462,20 @@ void GameScreen::drawGUI() {
     }
 }
 
+void GameScreen::drawLevelName() {
+    ofPushMatrix();
+    ofSetColor(ofColor::white);
+    if (LEVEL_NAME_ACTIVE) {
+        ofDrawBitmapString(ofToString(levelName[levelID-1]), ofGetWidth()/2, ofGetHeight() - 100);
+        level_name_active_time = countdownTimer(level_name_active_time);
+        if (level_name_active_time < 0) {
+            LEVEL_NAME_ACTIVE = false;
+            level_name_active_time = level_name_active_time_init;
+        }
+    }
+    ofPopMatrix();
+}
+
 void GameScreen::draw() {
     /// LAYER 0 -- Background (CAMERA; !ZOOM)
     ofPushMatrix();
@@ -558,6 +592,7 @@ void GameScreen::draw() {
     /// LAYER 3 -- GUI (!CAMERA && !ZOOM)
     drawGUI();
     drawLevelEditorGUI();
+    drawLevelName();
 }
 
 ofVec2f GameScreen::getPlayerDirection() {
