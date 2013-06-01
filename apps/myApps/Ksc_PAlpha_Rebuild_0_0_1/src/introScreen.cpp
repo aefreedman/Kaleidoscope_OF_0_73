@@ -60,6 +60,13 @@ void IntroScreen::update(){
         FADING_OUT = true;
     }
 
+    if (anim.index == 16 || anim.index == 11 || anim.index == 26 || anim.index == 37){
+        if (anim.frame == anim.total_frames - 1){
+            currentFrame += 1;
+            nextFrame();
+        }
+    }
+
 }
 
 void IntroScreen::draw(){
@@ -92,9 +99,17 @@ void IntroScreen::draw(){
 void IntroScreen::keyPressed(int key){
     if (key == ' '){
         currentFrame += 1;
+        nextFrame();
     }
 
-        switch (currentFrame){
+
+
+
+}
+
+void IntroScreen::nextFrame(){
+
+            switch (currentFrame){
         case 0:
             anim = shipExplode;
             break;
@@ -169,6 +184,5 @@ void IntroScreen::keyPressed(int key){
             anim = flyOff;
             break;
     }
-
 
 }

@@ -481,7 +481,7 @@ void Player::detectGravitatorCollisions() {             ///This method only dete
 
                         float v_length = preCollisionVel.lengthSquared() / 200;
                         float v_percent = v_length / v_limit;
-                        float vol = fmin(fmax(v_percent, 0.1), 1.0);
+                        float vol = fmin(fmax(v_percent, 0.3), 1.0);
 
                         fxLand.setVolume(vol);
                         fxLand.play();
