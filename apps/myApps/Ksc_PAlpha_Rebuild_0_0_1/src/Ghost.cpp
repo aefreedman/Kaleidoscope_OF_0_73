@@ -20,7 +20,7 @@ void Ghost::setup() {
     anim = ghost;
 
     opacity = 0;
-    opacityMod = 5;
+    opacityMod = 3;
     IS_DEAD = false;
 	dialogueBubble = new Message(pos, "");
     dialogueBubble->changeMessage("Thank you!");

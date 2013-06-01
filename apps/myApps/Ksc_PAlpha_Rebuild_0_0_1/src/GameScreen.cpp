@@ -392,7 +392,6 @@ int GameScreen::pickLivingAstronaut() {
 }
 
 int GameScreen::pickGhost() {
-//    int randomGhost = ofRandom(0, ghosts.size());
     int randomGhost = ghosts.size()-1;
     return randomGhost;
 }
@@ -476,7 +475,7 @@ void GameScreen::drawLevelName() {
     ofPushMatrix();
     ofSetColor(ofColor::white);
     if (LEVEL_NAME_ACTIVE) {
-        ofDrawBitmapString(ofToString(levelName[levelID-1]), ofGetWidth()/2, ofGetHeight() - 100);
+        text.drawString(ofToString(levelName[levelID-1]), ofGetWidth()/2 - text.stringWidth(ofToString(levelName[levelID-1]))/2, ofGetHeight() - 100);
         level_name_active_time = countdownTimer(level_name_active_time);
         if (level_name_active_time < 0) {
             LEVEL_NAME_ACTIVE = false;
@@ -959,9 +958,9 @@ void GameScreen::keyPressed(int key) {
             MAP_VIEW = !MAP_VIEW;
         }
         break;
-    case 'R':
-        reset();
-        break;
+//    case 'R':
+//        reset();
+//        break;
     case 'z':
         for (int i = 0; i < strandedAstronaut.size(); i++) {
             strandedAstronaut[i]->FOLLOWING_ASTRONAUT = false;

@@ -109,13 +109,13 @@ void testApp::keyPressed(int key) {
             menuScreen.EXPLODING = true;
         }
         break;
-    case OF_KEY_F1:
-        if (currentScreen == &menuScreen) {
-            gameScreen.ENABLE_EDITOR = true;
-            currentScreen = &gameScreen;
-            menuScreen.fxEngineLoop.stop();
-        }
-        break;
+//    case OF_KEY_F1:
+//        if (currentScreen == &menuScreen) {
+//            gameScreen.ENABLE_EDITOR = true;
+//            currentScreen = &gameScreen;
+//            menuScreen.fxEngineLoop.stop();
+//        }
+//        break;
     }
 }
 
