@@ -51,7 +51,6 @@ void GameScreen::setup() {
     planet_mass_multiplier          = 250;
     camera_lerp_speed               = camera_lerp_speed_init;
     view_lerp_speed                 = 4;
-    map_view_scale_target           = .25;
     levelID                         = 1;
 
     CONTINUOUS_CAMERA               = true;
@@ -354,6 +353,16 @@ void GameScreen::camera() {
             setCameraLerpSpeed(camera_lerp_speed_init);
         }
     }
+    if (PAUSE) {
+        if (MAP_VIEW) {
+            setCameraViewScaleTarget(map_view_scale_target);
+            setCameraTarget(player.pos);
+        } else if (!MAP_VIEW) {
+            setCameraViewScaleTarget(default_view_scale);
+            setCameraTarget(player.pos);
+        }
+    }
+
     view_scale = ofLerp(view_scale, view_scale_target, view_lerp_speed * dt);
 
     if (view_scale >= view_scale_target * 0.95 && view_scale <= view_scale_target * 1.05) {
@@ -383,7 +392,8 @@ int GameScreen::pickLivingAstronaut() {
 }
 
 int GameScreen::pickGhost() {
-    int randomGhost = ofRandom(0, ghosts.size());
+//    int randomGhost = ofRandom(0, ghosts.size());
+    int randomGhost = ghosts.size()-1;
     return randomGhost;
 }
 
@@ -576,6 +586,9 @@ void GameScreen::draw() {
         }
         for (int i = 0; i < strandedAstronaut.size(); i++) {
             strandedAstronaut[i]->draw(view_scale);
+        }
+        for (int i = 0; i < ghosts.size(); i++) {
+            ghosts[i]->draw(view_scale);
         }
         player.draw(view_scale);
         nautRenderer -> draw();
@@ -943,14 +956,6 @@ void GameScreen::keyPressed(int key) {
         break;
     case 'm':
         if (ENABLE_EDITOR) {
-            if (!MAP_VIEW) {
-                view_scale_target = map_view_scale_target;
-                setCameraTarget(player.pos);
-            } else if (MAP_VIEW) {
-                view_scale_target = default_view_scale;
-                setCameraTarget(player.pos);
-
-            }
             MAP_VIEW = !MAP_VIEW;
         }
         break;

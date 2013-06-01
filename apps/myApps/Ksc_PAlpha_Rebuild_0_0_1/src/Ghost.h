@@ -35,6 +35,8 @@ class Ghost : public Astronaut
         virtual ~Ghost();
     protected:
     private:
+
+    Message * dialogueBubble;
 };
 
 #endif // GHOST_H

@@ -246,7 +246,7 @@ void StrandedAstronaut::draw(float scale) {
             ofBezier(player_pos.x, player_pos.y, player_pos.x + (-player_v.x / d), player_pos.y + (-player_v.y / d), pos.x, pos.y, pos.x, pos.y);
             ofPopMatrix();
         }
-        dialogueBubble->draw(scale);
+        dialogueBubble->draw(scale, 255);
     }
 
 }

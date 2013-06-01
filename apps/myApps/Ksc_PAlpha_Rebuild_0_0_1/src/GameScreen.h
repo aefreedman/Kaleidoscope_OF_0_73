@@ -170,7 +170,7 @@ private:
         float view_scale_target;
         static const float default_view_scale = 1.0;
         float view_lerp_speed;
-        float map_view_scale_target;
+        static const float map_view_scale_target = 0.25;
         float level_over_timer_start;
         float level_over_timer;
         float hit_pause_timer;

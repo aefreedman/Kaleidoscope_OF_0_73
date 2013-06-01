@@ -55,7 +55,7 @@ void Message::changeMessage(string _message) {
     ACTIVE = true;
 }
 
-void Message::draw(float scale) {
+void Message::draw(float scale, int alpha) {
 
     ofSetMinMagFilters(GL_NEAREST, GL_NEAREST);
     if (ACTIVE) {
@@ -63,42 +63,38 @@ void Message::draw(float scale) {
         int lines = std::count(message.begin(), message.end(), '\n')+ 4;
         int bubWidth = (message.length() / (lines -3)) + 3;
 
-
-
-
-
         ofPushMatrix();
-        ofSetColor(255,255,255,255);
+        ofSetColor(255,255,255,alpha);
         for (int y = 0; y<lines; y++){
             for (int x = 0; x < bubWidth; x++){
 
             ofPoint drawPos;
             drawPos.set(pos.x+(x*8)-4,pos.y+(y*8)-16);
 
-                    if (y == 0 && x == 0){
-                        topLeft.draw(drawPos);
-                    } else if ( y == 0 && x == bubWidth - 1) {
-                        topRight.draw(drawPos);
-                    }else if ( y == lines-1 && x == 0) {
-                        bottomLeft.draw(drawPos);
-                    }else if (y == 0) {
-                        top.draw(drawPos);
-                    } else if (x == 0) {
-                        left.draw(drawPos);
-                    } else if ( y == lines-1 && x == bubWidth-1) {
-                        bottomRight.draw(drawPos);
-                    } else if (x == bubWidth-1){
-                        right.draw(drawPos);
-                    } else if (y == lines-1){
-                        bottom.draw(drawPos);
-                    } else {
-                        center.draw(drawPos);
-                    }
+                if (y == 0 && x == 0){
+                    topLeft.draw(drawPos);
+                } else if ( y == 0 && x == bubWidth - 1) {
+                    topRight.draw(drawPos);
+                }else if ( y == lines-1 && x == 0) {
+                    bottomLeft.draw(drawPos);
+                }else if (y == 0) {
+                    top.draw(drawPos);
+                } else if (x == 0) {
+                    left.draw(drawPos);
+                } else if ( y == lines-1 && x == bubWidth-1) {
+                    bottomRight.draw(drawPos);
+                } else if (x == bubWidth-1){
+                    right.draw(drawPos);
+                } else if (y == lines-1){
+                    bottom.draw(drawPos);
+                } else {
+                    center.draw(drawPos);
+                }
             }
         }
 
         tail.draw(pos.x + 2, pos.y + lines*8 - 16);
-        ofSetColor(175,247,236);
+        ofSetColor(175,247,236, alpha);
         //ofDrawBitmapStringHighlight(message, pos, background, foreground);
         //ofDrawBitmapString(message,pos);
         font.drawString(message,pos.x,pos.y);
